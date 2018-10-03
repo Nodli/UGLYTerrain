@@ -2,15 +2,15 @@
 
 bool Box2d::contains(const Eigen::Vector2d p) const
 {
-	return p.x > _a.x && p.x < _b.x && p.y > _a.y && p.y < _b.y;
+	return p(0) > _a(0) && p(0) < _b(0) && p(1) > _a(1) && p(1) < _b(1);
 }
 
 bool Box2d::intersect(const Box2d &b) const
 {
-	if(_b.x < b._a.x || _a.x > b._b.x)
+	if(_b(0) < b._a(0) || _a(0) > b._b(0))
 		return false;
 
-	if(_b.y < b._a.y || _a.y > b._b.y)
+	if(_b(1) < b._a(1) || _a(1) > b._b(1))
 		return false;
 
 	return true;

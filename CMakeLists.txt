@@ -6,6 +6,18 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories("src/include")
 
-add_executable(genTerrain 
-    "src/main.cpp")
+set(sources
+    "src/Box2d.cpp")
 
+set(test_sources
+    "src/tests/test_Box2d.cpp")
+
+add_library(terrain STATIC ${sources})
+
+add_executable(genTerrain
+    "src/main.cpp")
+target_link_libraries(genTerrain terrain)
+
+add_executable(tests
+    ${test_sources})
+target_link_libraries(tests terrain)
