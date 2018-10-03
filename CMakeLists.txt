@@ -7,10 +7,12 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories("src/include")
 
 set(sources
-    "src/Box2d.cpp")
+    "src/Box2d.cpp"
+    "src/Grid2d.cpp")
 
 set(test_sources
-    "src/tests/test_Box2d.cpp")
+    "src/tests/test_Box2d.cpp"
+    "src/tests/test_Grid2d.cpp")
 
 add_library(terrain STATIC ${sources})
 
