@@ -8,11 +8,13 @@ include_directories("src/include")
 
 set(sources
     "src/Box2d.cpp"
-    "src/Grid2d.cpp")
+    "src/Grid2d.cpp"
+    "src/ScalarField.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
-    "src/tests/test_Grid2d.cpp")
+    "src/tests/test_Grid2d.cpp"
+    "src/tests/test_ScalarField.cpp")
 
 add_library(terrain STATIC ${sources})
 

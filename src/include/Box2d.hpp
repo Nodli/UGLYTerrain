@@ -22,7 +22,7 @@ class Box2d
     bool contains(const Eigen::Vector2d p) const;
     bool intersect(const Box2d &b) const;
 
-  private:
+  protected:
     Eigen::Vector2d _a;
     Eigen::Vector2d _b;
 };
