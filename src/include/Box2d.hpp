@@ -15,16 +15,19 @@ class Box2d
     Box2d(double ax, double ay, double bx, double by)
         : _a(std::min(ax, bx), std::min(ay, by)), _b(std::max(ax, bx), std::max(ay, by)) {}
 
-    double width() const {return _b(0)-_a(0);}
-    double height() const {return _b(1)-_a(1);}
+    double width() const { return _b(0) - _a(0); }
+    double height() const { return _b(1) - _a(1); }
 
-    Eigen::Vector2d min() const {return _a;}
+    Eigen::Vector2d min() const { return _a; }
 
     bool contains(const Eigen::Vector2d p) const;
     bool intersect(const Box2d &b) const;
 
-    Box2d& operator=(const Box2d& b);
-    Box2d& operator=(Box2d&& b);
+    void reshape(double ax, double ay, double bx, double by);
+    void reshape(const Eigen::Vector2d a, const Eigen::Vector2d b);
+
+    Box2d &operator=(const Box2d &b);
+    Box2d &operator=(Box2d &&b);
 
   protected:
     Eigen::Vector2d _a;

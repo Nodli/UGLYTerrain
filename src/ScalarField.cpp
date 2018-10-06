@@ -58,6 +58,30 @@ void ScalarField::set_value(const int i, const int j, double value)
     _values.at(index(i, j)) = value;
 }
 
+void ScalarField::copy_values(const ScalarField& sf)
+{
+    if(_grid_height == sf._grid_height && _grid_width == sf._grid_width)
+    {
+        _values = sf._values;
+    }
+    else
+    {
+        throw std::invalid_argument("Wrong ScalarField size");
+    }
+}
+
+void ScalarField::copy_values(ScalarField&& sf)
+{
+    if(_grid_height == sf._grid_height && _grid_width == sf._grid_width)
+    {
+        _values = std::move(sf._values);
+    }
+    else
+    {
+        throw std::invalid_argument("Wrong ScalarField size");
+    }
+}
+
 ScalarField& ScalarField::operator=(const ScalarField& sf)
 {
     if(this != &sf)

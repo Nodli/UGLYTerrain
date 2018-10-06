@@ -6,21 +6,17 @@
 
 TEST_CASE("Test Grid functionment", "[Grid2d]")
 {
-    Eigen::Vector2d a(0, 0);
-    Eigen::Vector2d b(1, 1);
-    Grid2d grid(a, b, 2, 2);
-    REQUIRE(grid.position(0, 0) == a);
+    Grid2d grid(2, 2);
+    REQUIRE(grid.position(0, 0) == Eigen::Vector2d(0, 0));
     REQUIRE(grid.position(1, 1) == Eigen::Vector2d(1, 1));
-    Grid2d grid2(a, b, 3, 3);
+    Grid2d grid2(3, 3);
     REQUIRE(grid2.position(1, 1) == Eigen::Vector2d(0.5, 0.5));
     REQUIRE(grid2.position(2, 2) == Eigen::Vector2d(1, 1));
 }
 
 TEST_CASE("Test grid get grid position", "[Grid2d]")
 {
-    Eigen::Vector2d a(0, 0);
-    Eigen::Vector2d b(1, 1);
-    Grid2d grid(a, b, 3, 3);
+    Grid2d grid(3, 3);
 
     REQUIRE(grid.grid_position(0.5, 0.5) == Eigen::Vector2i(1, 1));
     REQUIRE(grid.grid_position(0.25, 0.25) == Eigen::Vector2i(0, 0));
@@ -29,7 +25,7 @@ TEST_CASE("Test grid get grid position", "[Grid2d]")
 
 TEST_CASE("Test grid construction", "[Grid2d]")
 {
-    Grid2d grid({0, 0}, {1, 1}, 3, 3);
+    Grid2d grid(3, 3);
 
     SECTION("Copy constructor is working")
     {
@@ -47,14 +43,14 @@ TEST_CASE("Test grid construction", "[Grid2d]")
     }
     SECTION("Affectation is working")
     {
-        Grid2d grid2({0, 0}, {1.5, 1.5}, 8, 8);
+        Grid2d grid2(8, 8, {0, 0}, {1.5, 1.5});
         grid2 = grid;
         REQUIRE(grid2.cell_number() == grid.cell_number());
         REQUIRE(grid2.width() == grid.width());
     }
     SECTION("Move is working")
     {
-        Grid2d grid2({0, 0}, {1, 1}, 8, 8);
+        Grid2d grid2(8, 8, {0, 0}, {1.5, 1.5});
         grid2 = std::move(grid);
         REQUIRE(grid2.cell_number() == grid.cell_number());
         REQUIRE(grid2.width() == grid.width());
