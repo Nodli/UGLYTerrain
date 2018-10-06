@@ -9,6 +9,7 @@ class Box2d
   public:
     Box2d() = delete;
     Box2d(const Box2d &box) : _a(box._a), _b(box._b) {}
+    Box2d(Box2d &&box) : _a(box._a), _b(box._b) {}
     Box2d(const Eigen::Vector2d a, const Eigen::Vector2d b)
         : _a(std::min(a(0), b(0)), std::min(a(1), b(1))), _b(std::max(a(0), b(0)), std::max(a(1), b(1))) {}
     Box2d(double ax, double ay, double bx, double by)
@@ -21,6 +22,9 @@ class Box2d
 
     bool contains(const Eigen::Vector2d p) const;
     bool intersect(const Box2d &b) const;
+
+    Box2d& operator=(const Box2d& b);
+    Box2d& operator=(Box2d&& b);
 
   protected:
     Eigen::Vector2d _a;

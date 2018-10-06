@@ -7,6 +7,7 @@ class Grid2d : public Box2d
   public:
     Grid2d() = delete;
     Grid2d(const Grid2d &g);
+    Grid2d(Grid2d &&g);
     Grid2d(const Box2d &b, const int width, const int height);
     Grid2d(const Eigen::Vector2d a, const Eigen::Vector2d b, const int width, const int height);
 
@@ -14,8 +15,11 @@ class Grid2d : public Box2d
     Eigen::Vector2d position(const int x, const int y) const;
     Eigen::Vector2i grid_position(const double x, const double y) const;
 
+    Grid2d& operator=(const Grid2d& g);
+    Grid2d& operator=(Grid2d&& g);
+
   protected:
-    const int _grid_width;
-    const int _grid_height;
+    int _grid_width;
+    int _grid_height;
     Eigen::Vector2d _cell_size;
 };

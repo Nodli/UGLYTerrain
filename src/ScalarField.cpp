@@ -57,3 +57,25 @@ void ScalarField::set_value(const int i, const int j, double value)
 {
     _values.at(index(i, j)) = value;
 }
+
+ScalarField& ScalarField::operator=(const ScalarField& sf)
+{
+    if(this != &sf)
+    {
+        Grid2d::operator=(sf);
+        this->_values = sf._values;
+    }
+
+    return *this;
+}
+
+ScalarField& ScalarField::operator=(ScalarField&& sf)
+{
+    if(this != &sf)
+    {
+        Grid2d::operator=(sf);
+        this->_values = std::move(sf._values);
+    }
+
+    return *this;
+}

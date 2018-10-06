@@ -26,3 +26,37 @@ TEST_CASE("Test grid get grid position", "[Grid2d]")
     REQUIRE(grid.grid_position(0.25, 0.25) == Eigen::Vector2i(0, 0));
     REQUIRE(grid.grid_position(0.75, 0.75) == Eigen::Vector2i(1, 1));
 }
+
+TEST_CASE("Test grid construction", "[Grid2d]")
+{
+    Grid2d grid({0, 0}, {1, 1}, 3, 3);
+
+    SECTION("Copy constructor is working")
+    {
+        Grid2d grid2(grid);
+
+        REQUIRE(grid2.cell_number() == grid.cell_number());
+        REQUIRE(grid2.width() == grid.width());
+    }
+    SECTION("Move constructor is working")
+    {
+        Grid2d grid2(std::move(grid));
+
+        REQUIRE(grid2.cell_number() == grid.cell_number());
+        REQUIRE(grid2.width() == grid.width());
+    }
+    SECTION("Affectation is working")
+    {
+        Grid2d grid2({0, 0}, {1.5, 1.5}, 8, 8);
+        grid2 = grid;
+        REQUIRE(grid2.cell_number() == grid.cell_number());
+        REQUIRE(grid2.width() == grid.width());
+    }
+    SECTION("Move is working")
+    {
+        Grid2d grid2({0, 0}, {1, 1}, 8, 8);
+        grid2 = std::move(grid);
+        REQUIRE(grid2.cell_number() == grid.cell_number());
+        REQUIRE(grid2.width() == grid.width());
+    }
+}

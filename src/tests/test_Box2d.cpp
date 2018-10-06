@@ -56,3 +56,38 @@ TEST_CASE("Test box intersection", "[Box2d]")
     REQUIRE(!b1.intersect(b2));
     REQUIRE(!b2.intersect(b1));
 }
+
+TEST_CASE("Test box equality", "[Box2d]")
+{
+    Box2d b1(0, 0, 1, 1);
+
+    SECTION("Copy constructor is working"){
+        Box2d b2(b1);
+
+        REQUIRE(b2.width() == b1.width());
+        REQUIRE(b2.height() == b1.height());
+    }
+
+    SECTION("Move constructor is working"){
+        Box2d b2(std::move(b1));
+
+        REQUIRE(b2.width() == b1.width());
+        REQUIRE(b2.height() == b1.height());
+    }
+
+    SECTION("Affectation is working"){
+        Box2d b2(0, 0, 1.5, 1.5);
+        b2 = b1;
+
+        REQUIRE(b2.width() == b1.width());
+        REQUIRE(b2.height() == b1.height());
+    }
+
+    SECTION("Move is working"){
+        Box2d b2(0, 0, 1.5, 1.5);
+        b2 = std::move(b1);
+
+        REQUIRE(b2.width() == b1.width());
+        REQUIRE(b2.height() == b1.height());
+    }
+}

@@ -15,3 +15,17 @@ bool Box2d::intersect(const Box2d &b) const
 
 	return true;
 }
+
+Box2d& Box2d::operator=(const Box2d &b)
+{
+	this->_a = b._a;
+	this->_b = b._b;
+
+	return *this;
+}
+
+Box2d& Box2d::operator=(Box2d &&b)
+{
+	*this = b;
+	return *this;
+}

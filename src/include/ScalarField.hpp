@@ -10,7 +10,7 @@ class ScalarField : public Grid2d
     ScalarField() = delete;
     ScalarField(const ScalarField& hf)
         : Grid2d(hf), _values(hf._values) {}
-    ScalarField(const ScalarField&& hf)
+    ScalarField(ScalarField&& hf)
         : Grid2d(hf), _values(std::move(hf._values)) {}
     ScalarField(const Grid2d &g)
         : Grid2d(g) {_values.resize(g.cell_number());}
@@ -28,6 +28,9 @@ class ScalarField : public Grid2d
     double slope(int i, int j) const;
 
     void set_value(const int i, const int j, double value);
+
+    ScalarField& operator=(const ScalarField& sf);
+    ScalarField& operator=(ScalarField&& sf);
 
   private:
     std::vector<double> _values;
