@@ -5,12 +5,14 @@ project (genTerrain)
 set(CMAKE_CXX_STANDARD 11)
 
 include_directories("src/include")
+include_directories("src/FastNoise")
 
 set(sources
     "src/Box2d.cpp"
     "src/Grid2d.cpp"
     "src/ScalarField.cpp"
-    "src/MultiLayerMap.cpp")
+    "src/MultiLayerMap.cpp"
+    "src/FastNoise/FastNoise.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
