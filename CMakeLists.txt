@@ -12,7 +12,9 @@ set(sources
     "src/Grid2d.cpp"
     "src/ScalarField.cpp"
     "src/MultiLayerMap.cpp"
-    "src/FastNoise/FastNoise.cpp")
+    "src/FastNoise/FastNoise.cpp"
+    "src/ParameterizedNoise.cpp"
+    "src/FieldValues.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
