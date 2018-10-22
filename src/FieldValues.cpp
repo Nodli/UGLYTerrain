@@ -9,15 +9,19 @@ void FieldValues::add_noise(const FastNoise::NoiseType noise_type, const double 
 
 void FieldValues::compute_harmonics(const int index, const int number)
 {
-  int amplitude = _noises[index].get_amplitude();
-  int wave_length = _noises[index].get_wave_length();
-  FastNoise::NoiseType noise_type = _noises[index].get_noise_type();
-
-  for(int i = 0; i < number; i++)
+  if(index < _noises.size())
   {
-    amplitude >>= 1 ;
-    wave_length >>= 1 ;
-    add_noise(noise_type, amplitude, wave_length);
+    ParameterizedNoise& noise = _noises[index];
+    double amplitude = noise.get_amplitude();
+    double wave_length = noise.get_wave_length();
+    FastNoise::NoiseType noise_type = noise.get_noise_type();
+
+    for(int i = 0; i < number; i++)
+    {
+      amplitude /= 2 ;
+      wave_length /= 2 ;
+      add_noise(noise_type, amplitude, wave_length);
+    }
   }
 }
 
