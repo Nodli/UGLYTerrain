@@ -157,4 +157,6 @@ void ScalarField::exportAsObj(const std::string filename, const std::string name
 			output << " " << id2 << "/" << id2 << "/" << id2 << std::endl;
 		}
 	}
+
+	output.close();
 }
