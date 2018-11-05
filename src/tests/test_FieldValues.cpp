@@ -21,7 +21,7 @@ TEST_CASE("Test FieldValues functionment", "[FieldValues]")
 {
     FieldValues fv = FieldValues();
     fv.add_noise(FastNoise::Perlin, 10.0, 440.0);
-    fv.compute_harmonics(0, 3);
+    fv.compute_octaves(0, 3);
     double sum = fv.compute_noises_sum(0, 0);
 
     REQUIRE(fv.get_noises_number() == 4);

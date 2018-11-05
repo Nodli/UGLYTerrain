@@ -7,7 +7,7 @@ void FieldValues::add_noise(const FastNoise::NoiseType noise_type, const double 
   _noises.push_back(ParameterizedNoise(noise, amplitude, wave_length));
 }
 
-void FieldValues::compute_harmonics(const int index, const int number)
+void FieldValues::compute_octaves(const int index, const int number)
 {
   if(index < _noises.size())
   {
