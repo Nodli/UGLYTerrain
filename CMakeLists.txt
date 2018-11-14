@@ -44,13 +44,18 @@ find_package(GLUT REQUIRED)
 
 add_library(terrain STATIC ${sources})
 add_library(imgui STATIC ${imgui_sources})
-target_link_libraries(imgui ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} glfw)
+target_link_libraries(imgui ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} glfw)
 add_library(fnoise STATIC ${fnoise_sources})
 
 
+add_executable(genTerrainGraphique
+    "src/mainGraph.cpp")
+target_link_libraries(genTerrainGraphique ${GLEW_LIBRARIES} glfw imgui fnoise terrain)
+
 add_executable(genTerrain
     "src/main.cpp")
-target_link_libraries(genTerrain ${GLEW_LIBRARIES} glfw imgui fnoise terrain)
+target_link_libraries(genTerrain fnoise terrain)
+
 
 add_executable(tests
     ${test_sources})
