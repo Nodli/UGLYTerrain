@@ -14,13 +14,13 @@ set(sources
     "src/MultiLayerMap.cpp"
     "src/FastNoise/FastNoise.cpp"
     "src/ParameterizedNoise.cpp"
-    "src/FieldValues.cpp")
+    "src/MultiNoise.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
     "src/tests/test_Grid2d.cpp"
     "src/tests/test_ScalarField.cpp"
-    "src/tests/test_FieldValues.cpp")
+    "src/tests/test_MultiNoise.cpp")
 
 add_library(terrain STATIC ${sources})
 

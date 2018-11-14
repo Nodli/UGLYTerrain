@@ -4,7 +4,7 @@
 #include "FastNoise.hpp"
 #include "ParameterizedNoise.hpp"
 
-class FieldValues
+class MultiNoise
 {
   public:
     void add_noise(const FastNoise::NoiseType noise_type, const double amplitude, const double wave_length);

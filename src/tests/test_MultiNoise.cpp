@@ -2,7 +2,7 @@
 
 #include <Eigen/Core>
 
-#include <FieldValues.hpp>
+#include <MultiNoise.hpp>
 
 TEST_CASE("Test ParameterizedNoise functionment", "[ParameterizedNoise]")
 {
@@ -17,9 +17,9 @@ TEST_CASE("Test ParameterizedNoise functionment", "[ParameterizedNoise]")
     REQUIRE(pn.get_noise_type() == FastNoise::Perlin);
 }
 
-TEST_CASE("Test FieldValues functionment", "[FieldValues]")
+TEST_CASE("Test MultiNoise functionment", "[MultiNoise]")
 {
-    FieldValues fv = FieldValues();
+    MultiNoise fv = MultiNoise();
     fv.add_noise(FastNoise::Perlin, 10.0, 440.0);
     fv.compute_octaves(0, 3);
     double sum = fv.compute_noises_sum(0, 0);

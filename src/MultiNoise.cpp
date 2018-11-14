@@ -1,13 +1,13 @@
-#include <FieldValues.hpp>
+#include <MultiNoise.hpp>
 
-void FieldValues::add_noise(const FastNoise::NoiseType noise_type, const double amplitude, const double wave_length)
+void MultiNoise::add_noise(const FastNoise::NoiseType noise_type, const double amplitude, const double wave_length)
 {
   FastNoise noise;
   noise.SetNoiseType(noise_type);
   _noises.push_back(ParameterizedNoise(noise, amplitude, wave_length));
 }
 
-void FieldValues::compute_octaves(const int index, const int number)
+void MultiNoise::compute_octaves(const int index, const int number)
 {
   if(index < _noises.size())
   {
@@ -25,7 +25,7 @@ void FieldValues::compute_octaves(const int index, const int number)
   }
 }
 
-double FieldValues::compute_noises_sum(const int x, const int y)
+double MultiNoise::compute_noises_sum(const int x, const int y)
 {
   double sum = 0;
   
