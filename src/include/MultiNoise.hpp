@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "FastNoise.hpp"
-#include "ParameterizedNoise.hpp"
+#include "Noise/ParameterizedNoise.hpp"
 
 class MultiNoise
 {

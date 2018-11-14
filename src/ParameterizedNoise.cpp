@@ -1,1 +1,1 @@
-#include <ParameterizedNoise.hpp>
+#include <Noise/ParameterizedNoise.hpp>

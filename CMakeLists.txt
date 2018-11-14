@@ -14,7 +14,8 @@ set(sources
     "src/MultiLayerMap.cpp"
     "src/FastNoise/FastNoise.cpp"
     "src/ParameterizedNoise.cpp"
-    "src/MultiNoise.cpp")
+    "src/MultiNoise.cpp"
+    "src/TerrainNoise.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
