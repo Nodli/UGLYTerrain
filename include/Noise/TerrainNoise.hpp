@@ -1,4 +1,4 @@
-#include <FastNoise.hpp>
+#include <FastNoise/FastNoise.hpp>
 
 class TerrainNoise
 {
@@ -14,7 +14,6 @@ public:
 
 	double getNoise(int i, int j);
 
-private:
 	FastNoise _base_noise;
 	FastNoise _ridge_noise;
 	double _amplitude;
