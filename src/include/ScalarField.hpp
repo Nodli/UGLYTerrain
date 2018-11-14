@@ -59,6 +59,8 @@ public:
 	void exportAsObj(const std::string filename, std::string name = "") const;
 	void exportAsPgm(const std::string filename, bool minMan = true, float rangeMin = 0, float rangeMax = 1) const;
 
+	double slope_erosion(int i, int j, double k) { return k * slope(i, j); };
+
 private:
 	std::vector<double> _values;
 };
