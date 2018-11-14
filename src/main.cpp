@@ -1,6 +1,8 @@
 #include <iostream>
 #include <ScalarField.hpp>
 #include <Noise/TerrainNoise.hpp>
+
+#ifdef __linux__
 #include <ImGui/imgui.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -13,9 +15,12 @@ static void glfw_error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
+#endif
+
 
 int main()
 {
+#ifdef __linux__
 	char saveName[256] = "default.obj";
 	int sizeWidth = 500;
 	int sizeHeight = 500;
@@ -130,6 +135,10 @@ int main()
 	ImGui::DestroyContext();
 	glfwDestroyWindow(window);
 	glfwTerminate();
+#endif
+#ifdef __WIN32__
+	std::cout << "yolo c'est rigolo" << std::endl;
+#endif
 	return 0;
 }
 
