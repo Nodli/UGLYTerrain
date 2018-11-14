@@ -30,6 +30,7 @@ public:
     void reshape(const Eigen::Vector2d a, const Eigen::Vector2d b);
 
     void erode(double k);
+    void erode_and_create(double k);
 
     MultiLayerMap& operator=(const MultiLayerMap& mlm);
     MultiLayerMap& operator=(MultiLayerMap&& mlm);
