@@ -37,5 +37,6 @@
 
 build/
 .vscode/
+thirdParties/ImGui/examples
 
 # End of https://www.gitignore.io/api/c++

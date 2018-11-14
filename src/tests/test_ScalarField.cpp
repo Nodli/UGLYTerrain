@@ -3,6 +3,7 @@
 #include <Eigen/Core>
 
 #include <ScalarField.hpp>
+#include <Noise/TerrainNoise.hpp>
 
 TEST_CASE("Test ScalarField functionment", "[ScalarField]")
 {
@@ -87,4 +88,23 @@ TEST_CASE("Test if Obj exporter", "[ScalarField]")
 	sf.set_value(2, 1, 1);
 	sf.set_value(2, 2, 1.5);
 	sf.exportAsObj("test3.obj");
+}
+
+TEST_CASE("Test if pgm exporter and slope_map getter works", "[ScalardField]")
+{
+	ScalarField sf(100, 100, { -25, -25}, {25, 25});
+	TerrainNoise t_noise(10.0, 1.0 / 200.0, 8);
+
+	for(int j = 0; j < 100; ++j)
+	{
+		for(int i = 0; i < 100; i++)
+		{
+			sf.at(i, j) = t_noise.getNoise(i, j);
+		}
+	}
+
+	sf.exportAsObj("Test_pgm.obj");
+	sf.exportAsPgm("Test_pgm.pgm");
+	sf.get_slope_map().exportAsPgm("Test_pgm_slope.pgm");
+	sf.get_slope_map().exportAsObj("Test_pgm_slope.obj");
 }
