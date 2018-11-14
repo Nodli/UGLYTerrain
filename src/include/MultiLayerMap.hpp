@@ -4,6 +4,7 @@
 
 class MultiLayerMap : public Grid2d
 {
+public:
     MultiLayerMap() = delete;
     MultiLayerMap(const MultiLayerMap& map) : Grid2d(map), _fields(map._fields) {}
     MultiLayerMap(MultiLayerMap&& map) : Grid2d(std::move(map)), _fields(std::move(map._fields)) {}
@@ -23,8 +24,12 @@ class MultiLayerMap : public Grid2d
     void add_field(const ScalarField& field){_fields.push_back(field);}
     void add_field(ScalarField&& field){_fields.push_back(std::move(field));}
 
+    ScalarField& new_field();
+
     void reshape(double ax, double ay, double bx, double by);
     void reshape(const Eigen::Vector2d a, const Eigen::Vector2d b);
+
+    void erode(double k);
 
     MultiLayerMap& operator=(const MultiLayerMap& mlm);
     MultiLayerMap& operator=(MultiLayerMap&& mlm);

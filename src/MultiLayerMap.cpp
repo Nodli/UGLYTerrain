@@ -1,4 +1,9 @@
 #include <MultiLayerMap.hpp>
+ScalarField& MultiLayerMap::new_field()
+{
+    add_field(ScalarField(_grid_width, _grid_height, _a, _b));
+    return _fields.back();
+}
 
 void MultiLayerMap::reshape(double ax, double ay, double bx, double by)
 {
@@ -12,6 +17,16 @@ void MultiLayerMap::reshape(const Eigen::Vector2d a, const Eigen::Vector2d b)
     Grid2d::reshape(a, b);
     for (int i = 0; i < _fields.size(); ++i)
         _fields.at(i).reshape(a, b);
+}
+
+void MultiLayerMap::erode(double k) {
+    for (int i = 0; i < _grid_width; ++i)
+    {
+        for (int j = 0; j < _grid_height; ++j)
+        {
+            _fields.back().at(i, j) -= k * _fields.back().slope(i, j);
+        }
+    }
 }
 
 MultiLayerMap& MultiLayerMap::operator=(const MultiLayerMap &mlm)

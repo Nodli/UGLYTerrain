@@ -1,11 +1,14 @@
 #include <iostream>
+#include <MultiLayerMap.hpp>
 #include <ScalarField.hpp>
 #include <Noise/TerrainNoise.hpp>
 
 
 int main()
 {
-	ScalarField sf(500, 500, { -25, -25}, {25, 25});
+	MultiLayerMap mlm(500, 500, { -25, -25}, {25, 25});
+	ScalarField sf = mlm.new_field();
+	
 	TerrainNoise t_noise(5.0, 1.0 / 200.0, 8);
 
 	for(int j = 0; j < 500; ++j)
@@ -16,6 +19,12 @@ int main()
 		}
 	}
 
+
+
 	sf.exportAsObj("Terrain.obj");
+
+	mlm.erode(1.0);
+	sf.exportAsObj("TerrainErode.obj");
+
 	return 0;
 }
