@@ -57,6 +57,8 @@ public:
 
 	void exportAsObj(const std::string filename, std::string name = "") const;
 
+	double slope_erosion(int i, int j, double k) { return k * slope(i, j); };
+
 private:
 	std::vector<double> _values;
 };

@@ -20,11 +20,26 @@ void MultiLayerMap::reshape(const Eigen::Vector2d a, const Eigen::Vector2d b)
 }
 
 void MultiLayerMap::erode(double k) {
-    for (int i = 0; i < _grid_width; ++i)
+    for (int j = 0; j < _grid_height; ++j)
+    {
+        for (int i = 0; i < _grid_width; ++i)
+        {
+            _fields.front().at(i, j) -= _fields.front().slope_erosion(i, j, k);
+        }
+    }
+}
+
+void MultiLayerMap::erode_and_create(double k) {
+    if(_fields.size() > 1) 
     {
         for (int j = 0; j < _grid_height; ++j)
         {
-            _fields.back().at(i, j) -= k * _fields.back().slope(i, j);
+            for (int i = 0; i < _grid_width; ++i)
+            {
+                double eroded_quantity = _fields.front().slope_erosion(i, j, k);
+                _fields.front().at(i, j) -= eroded_quantity;
+                _fields[1].at(i, j) += eroded_quantity;
+            }
         }
     }
 }
