@@ -41,6 +41,7 @@ public:
 	}
 
 	double slope(const int i, const int j) const;
+	ScalarField get_slope_map() const;
 	Eigen::Vector2d gradient(const int i, const int j) const;
 	Eigen::Vector3d normal(const int i, const int j) const;
 
@@ -56,6 +57,7 @@ public:
 	ScalarField& operator=(ScalarField&& sf);
 
 	void exportAsObj(const std::string filename, std::string name = "") const;
+	void exportAsPgm(const std::string filename, bool minMan = true, float rangeMin = 0, float rangeMax = 1) const;
 
 private:
 	std::vector<double> _values;

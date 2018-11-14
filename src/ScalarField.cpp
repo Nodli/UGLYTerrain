@@ -11,6 +11,22 @@ double ScalarField::get_value(const double x, const double y) const
 	return (1 - u) * (1 - v) * get_value(ij(0), ij(1)) + (1 - u) * v * get_value(ij(0), ij(1) + 1) + u * (1 - v) * get_value(ij(0) + 1, ij(1)) + u * v * get_value(ij(0) + 1, ij(1) + 1);
 }
 
+
+ScalarField ScalarField::get_slope_map() const
+{
+	ScalarField sf(static_cast<Grid2d>(*this));
+
+	for(int j = 0; j < _grid_height; ++j)
+	{
+		for(int i = 0; i < _grid_width; ++i)
+		{
+			sf.at(i, j) = slope(i, j);
+		}
+	}
+
+	return std::move(sf);
+}
+
 double ScalarField::slope(const int i, const int j) const
 {
 	Eigen::Vector2d grad = gradient(i, j);
@@ -159,4 +175,32 @@ void ScalarField::exportAsObj(const std::string filename, const std::string name
 	}
 
 	output.close();
+}
+
+
+void ScalarField::exportAsPgm(const std::string filename, bool minMax, float rangeMin, float rangeMax) const
+{
+	int maxVal = 255;
+	std::ofstream output(filename, std::ofstream::out);
+	output << "P2" << std::endl;
+	output << _grid_width << " " << _grid_height << std::endl;
+	output << maxVal << std::endl;
+
+	if(minMax)
+	{
+		rangeMax = *max_element(_values.begin(), _values.end());
+		rangeMin = *min_element(_values.begin(), _values.end());
+	}
+
+	float range = rangeMax - rangeMin;
+
+	for(int j = _grid_height - 1; j >= 0; --j)
+	{
+		for(int i = 0; i < _grid_width; ++i)
+		{
+			output << static_cast<int>(((get_value(i, j) - rangeMin) / range)*maxVal) << " ";
+		}
+
+		output << std::endl;
+	}
 }
