@@ -104,7 +104,7 @@ int main()
 				{
 					for(int i = 0; i < sizeWidth; i++)
 					{
-						sf.at(i, j) = t_noise.getNoise(i, j);
+						sf.at(i, j) = t_noise.get_noise(i, j);
 					}
 				}
 

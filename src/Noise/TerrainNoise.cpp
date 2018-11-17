@@ -1,6 +1,6 @@
 #include "Noise/TerrainNoise.hpp"
 
-double TerrainNoise::getNoise(int i, int j)
+double TerrainNoise::get_noise(int i, int j)
 {
 	double value = 0.0;
 	double freq = _base_freq;
