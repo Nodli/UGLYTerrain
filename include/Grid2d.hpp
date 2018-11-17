@@ -79,7 +79,7 @@ public:
 	/**
 	 * @brief Gets the position on the grid of a point in the plan
 	 *
-	 * @param x, y      the position of point on the plane
+	 * @param x, y      the position of the point on the plane
 	 *
 	 * @return Eigen::Vector2i the position of the corresponding cell in the grid
 	 */
