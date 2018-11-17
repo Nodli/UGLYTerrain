@@ -99,7 +99,7 @@ TEST_CASE("Test if pgm exporter and slope_map getter works", "[ScalardField]")
 	{
 		for(int i = 0; i < 100; i++)
 		{
-			sf.at(i, j) = t_noise.getNoise(i, j);
+			sf.at(i, j) = t_noise.get_noise(i, j);
 		}
 	}
 
