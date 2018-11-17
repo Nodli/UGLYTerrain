@@ -2,6 +2,9 @@
 
 #include <MultiLayerMap.hpp>
 
+/** \addtogroup Erosion
+ * @{
+ */
 /**
  * @brief Basicaly erode a Multi Layer Map
  *
@@ -17,3 +20,5 @@ void erode(MultiLayerMap& layers, double k);
  * @param k         the erosion factor
  */
 void erode_and_create(MultiLayerMap& layers, double k);
+
+/** @}*/
