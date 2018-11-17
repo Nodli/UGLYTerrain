@@ -15,30 +15,30 @@ public:
 	/**
 	 * @brief Construct a new Box 2d object from an other box
 	 *
-	 * @param[in] box the box to copy
+	 * @param box the box to copy
 	 */
 	Box2d(const Box2d &box) : _a(box._a), _b(box._b) {}
 	/**
 	 * @brief Construct a new Box 2d object from an other box
 	 *
-	 * @param[in] box the box to copy
+	 * @param box the box to copy
 	 */
 	Box2d(Box2d &&box) : _a(box._a), _b(box._b) {}
 	/**
 	 * @brief Construct a new Box 2d object from two points
 	 *
-	 * @param[in] a first point of the box
-	 * @param[in] b second point of the box
+	 * @param a first point of the box
+	 * @param b second point of the box
 	 */
 	Box2d(const Eigen::Vector2d a, const Eigen::Vector2d b)
 		: _a(std::min(a(0), b(0)), std::min(a(1), b(1))), _b(std::max(a(0), b(0)), std::max(a(1), b(1))) {}
 	/**
 	 * @brief Construct a new Box 2d object from two positions
 	 *
-	 * @param[in] ax first x position
-	 * @param[in] ay first y position
-	 * @param[in] bx second x position
-	 * @param[in] by second y position
+	 * @param ax first x position
+	 * @param ay first y position
+	 * @param bx second x position
+	 * @param by second y position
 	 */
 	Box2d(double ax, double ay, double bx, double by)
 		: _a(std::min(ax, bx), std::min(ay, by)), _b(std::max(ax, bx), std::max(ay, by)) {}
@@ -76,7 +76,7 @@ public:
 	/**
 	 * @brief Tells if a point is inside a box
 	 *
-	 * @param[in] p 2D point
+	 * @param p 2D point
 	 * @return true if the point is inside the box
 	 * @return false if the point is not inside the box
 	 */
@@ -84,7 +84,7 @@ public:
 	/**
 	 * @brief Tells if a box intersect this one
 	 *
-	 * @param[in] b box to check intersection with
+	 * @param b box to check intersection with
 	 * @return true if b intersect this box
 	 * @return false if b does not intersect this box
 	 */
@@ -93,31 +93,31 @@ public:
 	/**
 	 * @brief Reshape the box to a new size and position
 	 *
-	 * @param[in] ax first x position
-	 * @param[in] ay first y position
-	 * @param[in] bx second x position
-	 * @param[in] by second y position
+	 * @param ax first x position
+	 * @param ay first y position
+	 * @param bx second x position
+	 * @param by second y position
 	 */
 	void reshape(double ax, double ay, double bx, double by);
 	/**
 	 * @brief Reshape the box to a nex size and position
 	 *
-	 * @param[in] a first point of the box
-	 * @param[in] b second point of the box
+	 * @param a first point of the box
+	 * @param b second point of the box
 	 */
 	void reshape(const Eigen::Vector2d a, const Eigen::Vector2d b);
 
 	/**
 	 * @brief Affectation operator
 	 *
-	 * @param[in] b the box used for the affectation
+	 * @param b the box used for the affectation
 	 * @return Box2d& a reference to this box
 	 */
 	Box2d &operator=(const Box2d &b);
 	/**
 	 * @brief Rvalue affectation operator
 	 *
-	 * @param[in] b the box used for the affectation
+	 * @param b the box used for the affectation
 	 * @return Box2d& a reference to this box
 	 */
 	Box2d &operator=(Box2d &&b);
