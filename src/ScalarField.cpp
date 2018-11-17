@@ -1,4 +1,5 @@
 #include <ScalarField.hpp>
+#include <algorithm>
 
 double ScalarField::get_value(const double x, const double y) const
 {
@@ -73,9 +74,9 @@ Eigen::Vector3d ScalarField::normal(const int i, const int j) const
 {
 	Eigen::Vector3d result;
 	Eigen::Vector2d grad = gradient(i, j);
-	result[0] = -grad[0];
-	result[1] = -grad[1];
-	result[2] = 1;
+	result[0] = grad[0];
+	result[1] = grad[1];
+	result[2] = -1;
 	result.normalize();
 	return result;
 }
@@ -188,7 +189,7 @@ void ScalarField::exportAsObj(const std::string filename, const std::string name
 }
 
 
-void ScalarField::exportAsPgm(const std::string filename, bool minMax, float rangeMin, float rangeMax) const
+void ScalarField::exportAsPgm(const std::string filename, bool minMax, double rangeMin, double rangeMax) const
 {
 	int maxVal = 255;
 	std::ofstream output(filename, std::ofstream::out);
@@ -208,7 +209,7 @@ void ScalarField::exportAsPgm(const std::string filename, bool minMax, float ran
 	{
 		for(int i = 0; i < _grid_width; ++i)
 		{
-			output << static_cast<int>(((get_value(i, j) - rangeMin) / range)*maxVal) << " ";
+			output << static_cast<int>(((std::max((std::min(get_value(i, j), rangeMax) - rangeMin), 0.) / range)*maxVal)) << " ";
 		}
 
 		output << std::endl;

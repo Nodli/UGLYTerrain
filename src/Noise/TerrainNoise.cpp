@@ -11,8 +11,8 @@ double TerrainNoise::get_noise(int i, int j)
 		_base_noise.SetFrequency(freq);
 		_ridge_noise.SetFrequency(freq);
 		freq *= 2.0;
-		double tv = _base_noise.GetNoise(i, j);
-		double rv = _ridge_noise.GetNoise(i, j);
+		double tv = _base_noise.GetNoise(i + k * 100, j + k * 100);
+		double rv = _ridge_noise.GetNoise(i + k * 100, j + k * 100);
 		double v = (tv < rv) ? tv : 2 * rv - tv;
 		double kf = 1.0 - 1.0 / (double)(0.5 + k * k);
 

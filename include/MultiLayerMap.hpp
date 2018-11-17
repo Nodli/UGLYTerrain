@@ -114,7 +114,11 @@ public:
 		_fields.push_back(std::move(field));
 	}
 
-
+	/**
+	 * @brief Add a new layer to the map
+	 *
+	 * @return ScalarField&     a reference to the newly created layer
+	 */
 	ScalarField& new_field();
 
 	void erode(double k);

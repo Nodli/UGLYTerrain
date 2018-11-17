@@ -90,6 +90,11 @@ public:
 	 */
 	double slope(const int i, const int j) const;
 
+	/**
+	 * @brief Generate a Scalar Field containing the slope information
+	 *
+	 * @return ScalarField  the field of slopes.
+	 */
 	ScalarField get_slope_map() const;
 
 	/**
@@ -154,13 +159,22 @@ public:
 	ScalarField& operator=(ScalarField&& sf);
 
 	/**
-	 * @brief Export the Scalard Field as a obj
+	 * @brief Export the Scalar Field as a obj
 	 *
 	 * @param filename      the name of the file
 	 * @param name          the name of the object in the file
 	 */
 	void exportAsObj(const std::string filename, std::string name = "") const;
-	void exportAsPgm(const std::string filename, bool minMan = true, float rangeMin = 0, float rangeMax = 1) const;
+
+	/**
+	 * @brief Export the Scalar Field as a pgm
+	 *
+	 * @param filename      the name of the file
+	 * @param minMan        tells of the values should be ranged automatically
+	 * @param rangeMin      give a minimal value
+	 * @param rangeMax      give a maximal value
+	 */
+	void exportAsPgm(const std::string filename, bool minMan = true, double rangeMin = 0, double rangeMax = 1) const;
 
 	double slope_erosion(int i, int j, double k)
 	{
