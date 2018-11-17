@@ -2,6 +2,7 @@
 #include <MultiLayerMap.hpp>
 #include <ScalarField.hpp>
 #include <Noise/TerrainNoise.hpp>
+#include <Weather/Erosion.hpp>
 
 int main()
 {
@@ -18,9 +19,12 @@ int main()
 	}
 
 	sf.exportAsObj("Terrain.obj");
-	sf.get_slope_map().exportAsPgm("Terrain.pgm", true);
-	mlm.erode(0.5);
-	sf.exportAsObj("TerrainErode.obj");
+	sf.exportAsPgm("Terrain.pgm", true);
+	sf.get_slope_map().exportAsPgm("Slope.pgm", true);
+	erode_and_create(mlm, 0.1);
+	mlm.get_field(0).exportAsPgm("TerrainErode.pgm", true);
+	mlm.get_field(0).exportAsObj("TerrainErode.obj");
+	mlm.get_field(1).exportAsObj("TerrainEroded.obj");
 	return 0;
 }
 

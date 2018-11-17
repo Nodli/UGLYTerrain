@@ -176,11 +176,6 @@ public:
 	 */
 	void exportAsPgm(const std::string filename, bool minMan = true, double rangeMin = 0, double rangeMax = 1) const;
 
-	double slope_erosion(int i, int j, double k)
-	{
-		return k * slope(i, j);
-	};
-
 protected:
 	/**
 	 * @brief Gets the index on the array of values for a given position

@@ -34,6 +34,16 @@ public:
 		: Grid2d(width, height, a, b) {}
 
 	/**
+	 * @brief Get the number of layers
+	 *
+	 * @return int      the number of layers
+	 */
+	int get_layer_number() const
+	{
+		return _fields.size();
+	}
+
+	/**
 	 * @brief Get the a field of the Multi Layer Map
 	 *
 	 * @param field_index           the index of the field in the map
@@ -120,9 +130,6 @@ public:
 	 * @return ScalarField&     a reference to the newly created layer
 	 */
 	ScalarField& new_field();
-
-	void erode(double k);
-	void erode_and_create(double k);
 
 	/**
 	 * @brief Reshape the MultiLayerMap to a new size and position

@@ -1,8 +1,8 @@
 #include <MultiLayerMap.hpp>
 ScalarField& MultiLayerMap::new_field()
 {
-    add_field(ScalarField(_grid_width, _grid_height, _a, _b));
-    return _fields.back();
+	add_field(ScalarField(_grid_width, _grid_height, _a, _b));
+	return _fields.back();
 }
 
 void MultiLayerMap::reshape(double ax, double ay, double bx, double by)
@@ -23,31 +23,6 @@ void MultiLayerMap::reshape(const Eigen::Vector2d a, const Eigen::Vector2d b)
 	{
 		_fields.at(i).reshape(a, b);
 	}
-}
-
-void MultiLayerMap::erode(double k) {
-    for (int j = 0; j < _grid_height; ++j)
-    {
-        for (int i = 0; i < _grid_width; ++i)
-        {
-            _fields.front().at(i, j) -= _fields.front().slope_erosion(i, j, k);
-        }
-    }
-}
-
-void MultiLayerMap::erode_and_create(double k) {
-    if(_fields.size() > 1) 
-    {
-        for (int j = 0; j < _grid_height; ++j)
-        {
-            for (int i = 0; i < _grid_width; ++i)
-            {
-                double eroded_quantity = _fields.front().slope_erosion(i, j, k);
-                _fields.front().at(i, j) -= eroded_quantity;
-                _fields[1].at(i, j) += eroded_quantity;
-            }
-        }
-    }
 }
 
 MultiLayerMap& MultiLayerMap::operator=(const MultiLayerMap &mlm)

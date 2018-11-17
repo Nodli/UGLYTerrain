@@ -27,7 +27,8 @@ set(sources
     "src/Grid2d.cpp"
     "src/ScalarField.cpp"
     "src/MultiLayerMap.cpp"
-    "src/Noise/TerrainNoise.cpp")
+    "src/Noise/TerrainNoise.cpp"
+    "src/Weather/Erosion.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
