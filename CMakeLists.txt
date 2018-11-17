@@ -27,15 +27,12 @@ set(sources
     "src/Grid2d.cpp"
     "src/ScalarField.cpp"
     "src/MultiLayerMap.cpp"
-    "src/Noise/ParameterizedNoise.cpp"
-    "src/Noise/MultiNoise.cpp"
     "src/Noise/TerrainNoise.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
     "src/tests/test_Grid2d.cpp"
-    "src/tests/test_ScalarField.cpp"
-    "src/tests/test_MultiNoise.cpp")
+    "src/tests/test_ScalarField.cpp")
 
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)
