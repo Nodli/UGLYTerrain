@@ -6,7 +6,7 @@
 #include <fstream>
 
 /**
- * @brief A field of values spread across a grid on the plane
+ * @brief Defines a field of values spread across a grid on the plane
  *
  */
 class ScalarField : public Grid2d
@@ -82,8 +82,8 @@ public:
 	}
 
 	/**
-	 * @brief Calculate the slope of the field at a given cell
-	 * the slope is calculated to be the norm of the gradient
+	 * @brief Calculate the slope of the field at a given cell.
+	 * The slope is calculated to be the norm of the gradient
 	 *
 	 * @param i, j      the position of the cell on the grid
 	 * @return double   the value of the slope at that cell
