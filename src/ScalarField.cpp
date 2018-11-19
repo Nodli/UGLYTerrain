@@ -1,4 +1,5 @@
 #include <ScalarField.hpp>
+#include <algorithm>
 
 double ScalarField::get_value(const double x, const double y) const
 {
@@ -73,9 +74,9 @@ Eigen::Vector3d ScalarField::normal(const int i, const int j) const
 {
 	Eigen::Vector3d result;
 	Eigen::Vector2d grad = gradient(i, j);
-	result[0] = -grad[0];
-	result[1] = -grad[1];
-	result[2] = 1;
+	result[0] = grad[0];
+	result[1] = grad[1];
+	result[2] = -1;
 	result.normalize();
 	return result;
 }
@@ -134,27 +135,37 @@ ScalarField& ScalarField::operator=(ScalarField&& sf)
 
 void ScalarField::exportAsObj(const std::string filename, const std::string name) const
 {
+	// Open the output file
 	std::ofstream output(filename, std::ofstream::out);
 
+	// Give the name to the object if specified
 	if(name != "")
 	{
 		output << "o " << name << std::endl;
 	}
 
+	// Set the information for each points
 	for(int j = 0; j < _grid_height; ++j)
 	{
+		// a => the lower left corner of the field in world coordinate
+		// Calculate the y coordinate
 		double vy = _a[1] + j * _cell_size[1];
 
 		for(int i = 0; i < _grid_width; ++i)
 		{
+			// Compute the normal of the point
 			Eigen::Vector3d norm = normal(i, j);
+			// Set the vertex information
 			output << "v " << _a[0] + i * _cell_size[0] << " " << get_value(i, j) << " " << vy << std::endl;
+			// Set the texture information
 			output << "vt " << (double)i / (_grid_width - 1) << " " << (double)j / (_grid_height - 1) << std::endl;
+			// Set the normal information
 			output << "vn " << norm[0] << " " << norm[2] << " " << norm[1] << std::endl;
 			output << std::endl;
 		}
 	}
 
+	// Set the information for each face
 	for(int j = 0; j < _grid_height - 1; ++j)
 	{
 		for(int i = 1; i < _grid_width; ++i)
@@ -178,7 +189,7 @@ void ScalarField::exportAsObj(const std::string filename, const std::string name
 }
 
 
-void ScalarField::exportAsPgm(const std::string filename, bool minMax, float rangeMin, float rangeMax) const
+void ScalarField::exportAsPgm(const std::string filename, bool minMax, double rangeMin, double rangeMax) const
 {
 	int maxVal = 255;
 	std::ofstream output(filename, std::ofstream::out);
@@ -198,7 +209,7 @@ void ScalarField::exportAsPgm(const std::string filename, bool minMax, float ran
 	{
 		for(int i = 0; i < _grid_width; ++i)
 		{
-			output << static_cast<int>(((get_value(i, j) - rangeMin) / range)*maxVal) << " ";
+			output << static_cast<int>(((std::max((std::min(get_value(i, j), rangeMax) - rangeMin), 0.) / range)*maxVal)) << " ";
 		}
 
 		output << std::endl;
