@@ -55,6 +55,10 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 
 			for(int c = 0; c < nb; ++c)
 			{
+				if(cv > values[c])
+				{
+					///Stuck actually don't understand what I am doing anymore
+				}
 			}
 		}
 	}
