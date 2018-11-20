@@ -18,13 +18,13 @@ int main()
 		}
 	}
 
-	sf.exportAsObj("Terrain.obj");
-	sf.exportAsPgm("Terrain.pgm", true);
-	sf.get_slope_map().exportAsPgm("Slope.pgm", true);
-	erode_and_create(mlm, 0.1);
-	mlm.get_field(0).exportAsPgm("TerrainErode.pgm", true);
-	mlm.get_field(0).exportAsObj("TerrainErode.obj");
-	mlm.get_field(1).exportAsObj("TerrainEroded.obj");
+	sf.export_as_obj("Terrain.obj");
+	sf.export_as_pgm("Terrain.pgm", true);
+	sf.get_slope_map().export_as_pgm("Slope.pgm", true);
+	erode_and_transport(mlm, 0.1);
+	mlm.get_field(0).export_as_pgm("TerrainErode.pgm", true);
+	mlm.get_field(0).export_as_obj("TerrainErode.obj");
+	mlm.get_field(1).export_as_obj("TerrainEroded.obj");
 	return 0;
 }
 

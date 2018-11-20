@@ -87,7 +87,7 @@ Eigen::Vector3d ScalarField::normal(const int i, const int j) const
 
 void ScalarField::set_value(const int i, const int j, double value)
 {
-	_values.at(index(i, j)) = value;
+	at(i, j) = value;
 }
 
 
@@ -153,7 +153,7 @@ ScalarField& ScalarField::operator=(ScalarField&& sf)
 }
 
 
-void ScalarField::exportAsObj(const std::string filename, const std::string name) const
+void ScalarField::export_as_obj(const std::string filename, const std::string name) const
 {
 	// Open the output file
 	std::ofstream output(filename, std::ofstream::out);
@@ -209,7 +209,7 @@ void ScalarField::exportAsObj(const std::string filename, const std::string name
 }
 
 
-void ScalarField::exportAsPgm(const std::string filename, bool minMax, double rangeMin, double rangeMax) const
+void ScalarField::export_as_pgm(const std::string filename, bool minMax, double rangeMin, double rangeMax) const
 {
 	int maxVal = 255;
 	std::ofstream output(filename, std::ofstream::out);
@@ -234,4 +234,20 @@ void ScalarField::exportAsPgm(const std::string filename, bool minMax, double ra
 
 		output << std::endl;
 	}
+}
+
+
+std::vector<std::pair<double, Eigen::Vector2i>> ScalarField::export_to_list() const
+{
+	std::vector<std::pair<double, Eigen::Vector2i>> field;
+
+	for(int j = 0; j < _grid_height; ++j)
+	{
+		for(int i = 0 ; i < _grid_width; ++i)
+		{
+			field.push_back(std::make_pair(value(i, j), Eigen::Vector2i(i, j)));
+		}
+	}
+
+	return std::move(field);
 }

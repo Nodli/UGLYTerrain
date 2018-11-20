@@ -88,7 +88,7 @@ public:
 	 */
 	double value(const Eigen::Vector2i p) const
 	{
-		return _values.at(index(p(0), p(1)));
+		return value(p(0), p(1));
 	}
 
 	/**
@@ -144,6 +144,19 @@ public:
 	/**
 	 * @brief Get all the information of a neigborhood
 	 *
+	 * @param pos       the position of the cell on the grid
+	 * @param v         the value of the neighbors
+	 * @param p         the positions of the neighbors
+	 * @param s         the slopes of the neighbors
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info(const Eigen::Vector2i pos, double v[8], Eigen::Vector2i p[8], double s[8]) const
+	{
+		return neighbors_info(pos(0), pos(1), v, p, s);
+	}
+	/**
+	 * @brief Get all the information of a neigborhood
+	 *
 	 * @param i, j      the position of the cell on the grid
 	 * @param v         the value of the neighbors
 	 * @param p         the positions of the neighbors
@@ -194,7 +207,7 @@ public:
 	 * @param filename      the name of the file
 	 * @param name          the name of the object in the file
 	 */
-	void exportAsObj(const std::string filename, std::string name = "") const;
+	void export_as_obj(const std::string filename, std::string name = "") const;
 
 	/**
 	 * @brief Export the Scalar Field as a pgm
@@ -204,7 +217,14 @@ public:
 	 * @param rangeMin      give a minimal value
 	 * @param rangeMax      give a maximal value
 	 */
-	void exportAsPgm(const std::string filename, bool minMan = true, double rangeMin = 0, double rangeMax = 1) const;
+	void export_as_pgm(const std::string filename, bool minMan = true, double rangeMin = 0, double rangeMax = 1) const;
+
+	/**
+	 * @brief export the ScalarField as a list of pairs <value/position>
+	 *
+	 * @return std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the Scalar Field
+	 */
+	std::vector<std::pair<double, Eigen::Vector2i>> export_to_list() const;
 
 protected:
 	/**

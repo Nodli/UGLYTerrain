@@ -75,8 +75,8 @@ TEST_CASE("Test if Obj exporter", "[ScalarField]")
 	sf.set_value(0, 1, 0.5);
 	sf.set_value(1, 0, 0.5);
 	sf.set_value(1, 1, 1.0);
-	sf.exportAsObj("test.obj");
-	sf.exportAsObj("test2.obj", "potato");
+	sf.export_as_obj("test.obj");
+	sf.export_as_obj("test2.obj", "potato");
 	sf = ScalarField(3, 3, { -5, -5}, {5, 5});
 	sf.set_value(0, 0, 0);
 	sf.set_value(0, 1, 2);
@@ -87,7 +87,7 @@ TEST_CASE("Test if Obj exporter", "[ScalarField]")
 	sf.set_value(2, 0, 0);
 	sf.set_value(2, 1, 1);
 	sf.set_value(2, 2, 1.5);
-	sf.exportAsObj("test3.obj");
+	sf.export_as_obj("test3.obj");
 }
 
 TEST_CASE("Test if pgm exporter and slope_map getter works", "[ScalardField]")
@@ -103,8 +103,8 @@ TEST_CASE("Test if pgm exporter and slope_map getter works", "[ScalardField]")
 		}
 	}
 
-	sf.exportAsObj("Test_pgm.obj");
-	sf.exportAsPgm("Test_pgm.pgm");
-	sf.get_slope_map().exportAsPgm("Test_pgm_slope.pgm");
-	sf.get_slope_map().exportAsObj("Test_pgm_slope.obj");
+	sf.export_as_obj("Test_pgm.obj");
+	sf.export_as_pgm("Test_pgm.pgm");
+	sf.get_slope_map().export_as_pgm("Test_pgm_slope.pgm");
+	sf.get_slope_map().export_as_obj("Test_pgm_slope.obj");
 }

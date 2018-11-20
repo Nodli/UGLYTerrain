@@ -108,7 +108,7 @@ int main()
 					}
 				}
 
-				sf.exportAsObj(saveName);
+				sf.export_as_obj(saveName);
 			}
 
 			ImGui::End();
