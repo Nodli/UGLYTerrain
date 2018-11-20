@@ -49,7 +49,7 @@ public:
 	 * @param field_index           the index of the field in the map
 	 * @return const ScalarField&   a reference to the field
 	 */
-	const ScalarField& get_field(int field_index) const
+	const ScalarField& get_field(const int field_index) const
 	{
 		return _fields.at(field_index);
 	}
@@ -59,7 +59,7 @@ public:
 	 * @param field_index           the index of the field in the map
 	 * @return const ScalarField&   a modifiable reference to the field
 	 */
-	ScalarField& get_field(int field_index)
+	ScalarField& get_field(const int field_index)
 	{
 		return _fields.at(field_index);
 	}
@@ -79,7 +79,7 @@ public:
 	 * @param i, j              the position of the cell to modify
 	 * @param v                 the new value to set
 	 */
-	void set_value(int field_index, int i, int j, double v)
+	void set_value(const int field_index, const int i, const int j, const double v)
 	{
 		_fields.at(field_index).set_value(i, j, v);
 	}
@@ -139,7 +139,7 @@ public:
 	 * @param bx second x position
 	 * @param by second y position
 	 */
-	void reshape(double ax, double ay, double bx, double by);
+	void reshape(const double ax, const double ay, const double bx, const double by);
 	/**
 	 * @brief Reshape the MultiLayerMap to a new size and position
 	 *

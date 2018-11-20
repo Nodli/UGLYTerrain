@@ -69,18 +69,36 @@ public:
 	 * @param x, y      the position of a point on the plane
 	 * @return double   the interpolated value of the field at that position
 	 */
-	double get_value(const double x, const double y) const;
+	double value(const double x, const double y) const;
 	/**
 	 * @brief Get the value of the field at a given cell
 	 *
 	 * @param i, j      the position of the cell on the grid
 	 * @return double   the exact value of the field in that cell
 	 */
-	double get_value(const int i, const int j) const
+	double value(const int i, const int j) const
 	{
 		return _values.at(index(i, j));
 	}
+	/**
+	 * @brief Get the value of the field at a given cell
+	 *
+	 * @param p         the position of the cell on the grid
+	 * @return double   the exact value of the field in that cell
+	 */
+	double value(const Eigen::Vector2i p) const
+	{
+		return _values.at(index(p(0), p(1)));
+	}
 
+	/**
+	 * @brief Calculate the slope of the field at a given cell.
+	 * The slope is calculated to be the norm of the gradient
+	 *
+	 * @param p         the position of the cell on the grid
+	 * @return double   the value of the slope at that cell
+	 */
+	double slope(const Eigen::Vector2i p) const;
 	/**
 	 * @brief Calculate the slope of the field at a given cell.
 	 * The slope is calculated to be the norm of the gradient
@@ -122,6 +140,18 @@ public:
 	{
 		return _values.at(index(i, j));
 	}
+
+	/**
+	 * @brief Get all the information of a neigborhood
+	 *
+	 * @param i, j      the position of the cell on the grid
+	 * @param v         the value of the neighbors
+	 * @param p         the positions of the neighbors
+	 * @param s         the slopes of the neighbors
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const;
+
 	/**
 	 * @brief Set the value of a cell of the field
 	 *

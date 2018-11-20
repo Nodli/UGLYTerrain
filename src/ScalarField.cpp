@@ -1,7 +1,7 @@
 #include <ScalarField.hpp>
 #include <algorithm>
 
-double ScalarField::get_value(const double x, const double y) const
+double ScalarField::value(const double x, const double y) const
 {
 	Eigen::Vector2i ij = grid_position(x, y);
 	Eigen::Vector2d pij = position(ij(0), ij(1));
@@ -9,7 +9,7 @@ double ScalarField::get_value(const double x, const double y) const
 	diff -= pij;
 	double u = diff(0) / _cell_size(0);
 	double v = diff(1) / _cell_size(1);
-	return (1 - u) * (1 - v) * get_value(ij(0), ij(1)) + (1 - u) * v * get_value(ij(0), ij(1) + 1) + u * (1 - v) * get_value(ij(0) + 1, ij(1)) + u * v * get_value(ij(0) + 1, ij(1) + 1);
+	return (1 - u) * (1 - v) * value(ij(0), ij(1)) + (1 - u) * v * value(ij(0), ij(1) + 1) + u * (1 - v) * value(ij(0) + 1, ij(1)) + u * v * value(ij(0) + 1, ij(1) + 1);
 }
 
 
@@ -28,6 +28,10 @@ ScalarField ScalarField::get_slope_map() const
 	return std::move(sf);
 }
 
+double ScalarField::slope(const Eigen::Vector2i p) const
+{
+	return slope(p(0), p(1));
+}
 double ScalarField::slope(const int i, const int j) const
 {
 	Eigen::Vector2d grad = gradient(i, j);
@@ -43,28 +47,28 @@ Eigen::Vector2d ScalarField::gradient(const int i, const int j) const
 
 	if(i <= 0)
 	{
-		grad(0) = (get_value(i + 1, j) - get_value(i, j)) / delta_x;
+		grad(0) = (value(i + 1, j) - value(i, j)) / delta_x;
 	}
 	else if(i >= _grid_width - 1)
 	{
-		grad(0) = (get_value(i, j) - get_value(i - 1, j)) / delta_x;
+		grad(0) = (value(i, j) - value(i - 1, j)) / delta_x;
 	}
 	else
 	{
-		grad(0) = (get_value(i + 1, j) - get_value(i - 1, j)) / (2.0 * delta_x);
+		grad(0) = (value(i + 1, j) - value(i - 1, j)) / (2.0 * delta_x);
 	}
 
 	if(j <= 0)
 	{
-		grad(1) = (get_value(i, j + 1) - get_value(i, j)) / delta_y;
+		grad(1) = (value(i, j + 1) - value(i, j)) / delta_y;
 	}
 	else if(j >= _grid_height - 1)
 	{
-		grad(1) = (get_value(i, j) - get_value(i, j - 1)) / delta_y;
+		grad(1) = (value(i, j) - value(i, j - 1)) / delta_y;
 	}
 	else
 	{
-		grad(1) = (get_value(i, j + 1) - get_value(i, j - 1)) / (2.0 * delta_y);
+		grad(1) = (value(i, j + 1) - value(i, j - 1)) / (2.0 * delta_y);
 	}
 
 	return scale * grad;
@@ -85,6 +89,22 @@ void ScalarField::set_value(const int i, const int j, double value)
 {
 	_values.at(index(i, j)) = value;
 }
+
+
+
+int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const
+{
+	int nb = neighbors(i, j, p);
+
+	for(int k = 0; k < nb; ++k)
+	{
+		v[k] = value(p[k]);
+		s[k] = slope(p[k]);
+	}
+
+	return nb;
+}
+
 
 void ScalarField::copy_values(const ScalarField& sf)
 {
@@ -156,7 +176,7 @@ void ScalarField::exportAsObj(const std::string filename, const std::string name
 			// Compute the normal of the point
 			Eigen::Vector3d norm = normal(i, j);
 			// Set the vertex information
-			output << "v " << _a[0] + i * _cell_size[0] << " " << get_value(i, j) << " " << vy << std::endl;
+			output << "v " << _a[0] + i * _cell_size[0] << " " << value(i, j) << " " << vy << std::endl;
 			// Set the texture information
 			output << "vt " << (double)i / (_grid_width - 1) << " " << (double)j / (_grid_height - 1) << std::endl;
 			// Set the normal information
@@ -209,7 +229,7 @@ void ScalarField::exportAsPgm(const std::string filename, bool minMax, double ra
 	{
 		for(int i = 0; i < _grid_width; ++i)
 		{
-			output << static_cast<int>(((std::max((std::min(get_value(i, j), rangeMax) - rangeMin), 0.) / range)*maxVal)) << " ";
+			output << static_cast<int>(((std::max((std::min(value(i, j), rangeMax) - rangeMin), 0.) / range)*maxVal)) << " ";
 		}
 
 		output << std::endl;

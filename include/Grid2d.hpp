@@ -68,6 +68,16 @@ public:
 	{
 		return _grid_width * _grid_height;
 	}
+
+	/**
+	 * @brief Get the positions of the neiboring cells
+	 *
+	 * @param i, j      the position of the cell
+	 * @param p         the positions of the neighbors to fill
+	 * @return int      the number of neighbors
+	 */
+	int neighbors(const int i, const int j, Eigen::Vector2i p[8]) const;
+
 	/**
 	 * @brief Gets the position of a cell.
 	 *
@@ -109,6 +119,7 @@ public:
 	Grid2d& operator=(Grid2d&& g);
 
 protected:
+	static const int def_nei[8][2];
 	int _grid_width;            /**< the number of cells on the width of the grid*/
 	int _grid_height;           /**< the number of cells on the height of the grid*/
 	Eigen::Vector2d _cell_size; /**< the size of a cell on the plane*/

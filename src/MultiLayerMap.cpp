@@ -5,7 +5,7 @@ ScalarField& MultiLayerMap::new_field()
 	return _fields.back();
 }
 
-void MultiLayerMap::reshape(double ax, double ay, double bx, double by)
+void MultiLayerMap::reshape(const double ax, const double ay, const double bx, const double by)
 {
 	Grid2d::reshape(ax, ay, bx, by);
 
@@ -55,7 +55,7 @@ ScalarField MultiLayerMap::generate_field() const
 
 			for(int f = 0; f < _fields.size(); ++f)
 			{
-				result.at(i, j) += _fields[f].get_value(i, j);
+				result.at(i, j) += _fields[f].value(i, j);
 			}
 		}
 	}
