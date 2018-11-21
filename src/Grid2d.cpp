@@ -1,7 +1,7 @@
 #include <Grid2d.hpp>
 
 const int Grid2d::def_nei[][2] = {{-1, -1}, {0, -1}, {1, -1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
-const int Grid2d::def_nei_dist[] = {sqrt(2.), 1., sqrt(2.), 1., 1., sqrt(2.), 1., sqrt(2.)};
+const double Grid2d::def_nei_dist[] = {sqrt(2.), 1., sqrt(2.), 1., 1., sqrt(2.), 1., sqrt(2.)};
 
 Grid2d::Grid2d(const Grid2d &g)
 	: Box2d(g), _grid_width(g._grid_width), _grid_height(g._grid_height), _cell_size(g._cell_size)
