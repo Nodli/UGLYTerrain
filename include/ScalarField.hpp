@@ -166,6 +166,33 @@ public:
 	int neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const;
 
 	/**
+	 * @brief Get the information of a neigborhood if the slope is superior to a threshold value
+	 *
+	 * @param pos       the position of the cell on the grid
+	 * @param v         the value of the neighbors
+	 * @param p         the positions of the neighbors
+	 * @param s         the slopes of the neighbors
+	 * @param s_filter  the minimal slope value to be considered as a neighbor
+	 * @param sup       1 if s > s_filter and 0 if s < s_filter using signed values
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info_filter(const Eigen::Vector2i pos, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const
+	{
+		return neighbors_info_filter(pos(0), pos(1), v, p, s);
+	}
+	/**
+	 * @brief Get all the information of a neigborhood
+	 *
+	 * @param i, j      the position of the cell on the grid
+	 * @param v         the value of the neighbors
+	 * @param p         the positions of the neighbors
+	 * @param s         the slopes of the neighbors
+	 * @param s_filter  the minimal slope value to be considered as a neighbor
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const;
+
+	/**
 	 * @brief Set the value of a cell of the field
 	 *
 	 * @param i, j      the position of the cell on the grid
@@ -178,7 +205,7 @@ public:
 	 *
 	 * @param value     the value to set the field to
 	 */
-	void set_all(float value);
+	void set_all(const double value);
 
 	/**
 	 * @brief Copies the values from an other field

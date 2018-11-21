@@ -90,7 +90,7 @@ void ScalarField::set_value(const int i, const int j, double value)
 	at(i, j) = value;
 }
 
-void ScalarField::set_all(float value){
+void ScalarField::set_all(const double value){
 	std::fill(_values.begin(), _values.end(), value);
 }
 
@@ -98,15 +98,44 @@ int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Ve
 {
 	int nb = neighbors(i, j, p);
 
+	double ij_value = value(i, j);
+
 	for(int k = 0; k < nb; ++k)
 	{
 		v[k] = value(p[k]);
-		s[k] = slope(p[k]);
+		s[k] = v[k] - ij_value;
 	}
 
 	return nb;
 }
 
+int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter, const bool sup) const{
+
+	int nb = neighbors(i, j, p);
+	int threshold_nb = 0;
+
+	double ij_value = value(i, j);
+
+	for(int ineigh = 0; ineigh < nb; ++ineigh){
+
+		// values are computed in place but will be overridden / not considered if threshold_nb is not incremented
+		v[threshold_nb] = value(p[ineigh]);
+		s[threshold_nb] = v[ineigh] - ij_value;
+
+		if(sup){
+			if(s[threshold_nb] >= s_filter){
+				++threshold_nb;
+			}
+		}else{
+			if(s[threshold_nb] <= s_filter){
+				++threshold_nb;
+			}
+		}
+
+	}
+
+	return threshold_nb;
+}
 
 void ScalarField::copy_values(const ScalarField& sf)
 {
