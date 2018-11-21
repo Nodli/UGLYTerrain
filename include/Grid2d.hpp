@@ -70,6 +70,16 @@ public:
 	}
 
 	/**
+	 * @brief Gets size of a cell of the grid
+	 *
+	 * @return int      the total number of cells
+	 */
+	Eigen::Vector2d cell_size() const
+	{
+		return _cell_size;
+	}
+
+	/**
 	 * @brief Get the positions of the neiboring cells
 	 *
 	 * @param i, j      the position of the cell
@@ -120,6 +130,7 @@ public:
 
 protected:
 	static const int def_nei[8][2];
+	static const double def_nei_dist[8];
 	int _grid_width;            /**< the number of cells on the width of the grid*/
 	int _grid_height;           /**< the number of cells on the height of the grid*/
 	Eigen::Vector2d _cell_size; /**< the size of a cell on the plane*/

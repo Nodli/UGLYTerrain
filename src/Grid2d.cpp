@@ -1,6 +1,7 @@
 #include <Grid2d.hpp>
 
 const int Grid2d::def_nei[][2] = {{-1, -1}, {0, -1}, {1, -1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+const double Grid2d::def_nei_dist[] = {sqrt(2.), 1., sqrt(2.), 1., 1., sqrt(2.), 1., sqrt(2.)};
 
 Grid2d::Grid2d(const Grid2d &g)
 	: Box2d(g), _grid_width(g._grid_width), _grid_height(g._grid_height), _cell_size(g._cell_size)
@@ -31,7 +32,7 @@ int Grid2d::neighbors(const int i, const int j, Eigen::Vector2i p[8]) const
 	for(int k = 0; k < 8; ++k)
 	{
 		if(def_nei[k][0] + i >= 0 && def_nei[k][0] + i < _grid_width
-				&& def_nei[k][1] + j >= 0 && def_nei[k][j] + j < _grid_height)
+				&& def_nei[k][1] + j >= 0 && def_nei[k][1] + j < _grid_height)
 		{
 			p[nb++] = Eigen::Vector2i(def_nei[k][0] + i, def_nei[k][1] + j);
 		}

@@ -28,7 +28,9 @@ set(sources
     "src/ScalarField.cpp"
     "src/MultiLayerMap.cpp"
     "src/Noise/TerrainNoise.cpp"
-    "src/Weather/Erosion.cpp")
+    "src/Weather/Erosion.cpp"
+    "src/Weather/Hydro.cpp"
+    "src/Utils.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
@@ -38,7 +40,6 @@ set(test_sources
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
 
 add_library(terrain STATIC ${sources})
 add_library(imgui STATIC ${imgui_sources})

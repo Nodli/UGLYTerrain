@@ -136,6 +136,16 @@ public:
 	 * @param i, j      the position of the cell on the grid
 	 * @return double&  a reference to the value of that cell
 	 */
+	double& at(const Eigen::Vector2i p)
+	{
+		return at(p(0), p(1));
+	}
+	/**
+	 * @brief Gets acess to a cell of the field
+	 *
+	 * @param i, j      the position of the cell on the grid
+	 * @return double&  a reference to the value of that cell
+	 */
 	double& at(const int i, const int j)
 	{
 		return _values.at(index(i, j));
@@ -166,12 +176,46 @@ public:
 	int neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const;
 
 	/**
+	 * @brief Get the information of a neigborhood if the slope is superior to a threshold value
+	 *
+	 * @param pos       the position of the cell on the grid
+	 * @param v         the value of the neighbors
+	 * @param p         the positions of the neighbors
+	 * @param s         the slopes of the neighbors
+	 * @param s_filter  the minimal slope value to be considered as a neighbor
+	 * @param sup       1 if s > s_filter and 0 if s < s_filter using signed values
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info_filter(const Eigen::Vector2i pos, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const
+	{
+		return neighbors_info_filter(pos(0), pos(1), v, p, s);
+	}
+	/**
+	 * @brief Get all the information of a neigborhood
+	 *
+	 * @param i, j      the position of the cell on the grid
+	 * @param v         the value of the neighbors
+	 * @param p         the positions of the neighbors
+	 * @param s         the slopes of the neighbors
+	 * @param s_filter  the minimal slope value to be considered as a neighbor
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const;
+
+	/**
 	 * @brief Set the value of a cell of the field
 	 *
 	 * @param i, j      the position of the cell on the grid
 	 * @param value     the value to which set the field
 	 */
 	void set_value(const int i, const int j, double value);
+
+	/**
+	 * @brief Set the value all cells in the field
+	 *
+	 * @param value     the value to set the field to
+	 */
+	void set_all(const double value);
 
 	/**
 	 * @brief Copies the values from an other field
@@ -194,12 +238,27 @@ public:
 	 */
 	ScalarField& operator=(const ScalarField& sf);
 	/**
-	 * @brief Affectation operatof
+	 * @brief Affectation operator
 	 *
 	 * @param sf            the Scalar field to affect
 	 * @return ScalarField& a reference to this Scalar Field
 	 */
 	ScalarField& operator=(ScalarField&& sf);
+	/**
+	 * @brief Addition assignment operator
+	 *
+	 * @param sf            the Scalar field to add
+	 * @return ScalarField& a reference to this Scalar Field
+	 */
+	ScalarField& operator+=(const ScalarField& sf);
+	/**
+	 * @brief Addition operator
+	 *
+	 * @param lsf            the Scalar field to add on the left
+	 * @param rsf            the Scalar field to add on the right
+	 * @return ScalarField, result of the addition, by value
+	 */
+	friend ScalarField operator+(ScalarField lsf, const ScalarField& rsf);
 
 	/**
 	 * @brief Export the Scalar Field as a obj
