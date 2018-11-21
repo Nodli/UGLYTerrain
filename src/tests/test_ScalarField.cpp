@@ -68,6 +68,44 @@ TEST_CASE("Test ScalarField equality", "[ScalarField]")
 	}
 }
 
+TEST_CASE("Test ScalarField addition", "[ScalarField]")
+{
+	ScalarField sf1(2, 2);
+	sf1.set_value(0, 0, 0);
+	sf1.set_value(0, 1, 0.25);
+	sf1.set_value(1, 0, 0.5);
+	sf1.set_value(1, 1, 1.0);
+
+	ScalarField sf2(2, 2);
+	sf2.set_value(0, 0, 1.0);
+	sf2.set_value(0, 1, 1.0);
+	sf2.set_value(1, 0, 1.0);
+	sf2.set_value(1, 1, 1.0);
+
+	SECTION("Addition give the good result")
+	{
+		ScalarField result = sf1 + sf2;
+		REQUIRE(result.value(0, 0) == 1.0);
+		REQUIRE(result.value(0, 1) == 1.25);
+		REQUIRE(result.value(1, 0) == 1.5);
+		REQUIRE(result.value(1, 1) == 2.0);
+	}
+
+	SECTION("Addition preserve added elements")
+	{
+		sf1 += sf2 + sf1 + sf2;
+		REQUIRE(sf1.value(0, 0) == 2.0);
+		REQUIRE(sf1.value(0, 1) == 2.5);
+		REQUIRE(sf1.value(1, 0) == 3.0);
+		REQUIRE(sf1.value(1, 1) == 4.0);
+
+		REQUIRE(sf2.value(0, 0) == 1.0);
+		REQUIRE(sf2.value(0, 1) == 1.0);
+		REQUIRE(sf2.value(1, 0) == 1.0);
+		REQUIRE(sf2.value(1, 1) == 1.0);
+	}
+}
+
 TEST_CASE("Test if Obj exporter", "[ScalarField]")
 {
 	ScalarField sf(2, 2);
