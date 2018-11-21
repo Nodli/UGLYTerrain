@@ -28,7 +28,8 @@ set(sources
     "src/ScalarField.cpp"
     "src/MultiLayerMap.cpp"
     "src/Noise/TerrainNoise.cpp"
-    "src/Weather/Erosion.cpp")
+    "src/Weather/Erosion.cpp"
+    "src/Weather/Hydro.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
