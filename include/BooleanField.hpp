@@ -39,17 +39,17 @@ public:
 	}
 
 	/**
-	 * @brief Get the value of the field at a given cell
+	 * @brief Get the value (copy) of the field at a given cell
 	 *
 	 * @param i, j      the position of the cell on the grid
 	 * @return double   the exact value of the field in that cell
 	 */
 	bool value(const int i, const int j) const
 	{
-		return _values.at(index(i, j));
+		return static_cast<bool>(_values.at(index(i, j)));
 	}
 	/**
-	 * @brief Get the value of the field at a given cell
+	 * @brief Get the value (copy) of the field at a given cell
 	 *
 	 * @param p         the position of the cell on the grid
 	 * @return double   the exact value of the field in that cell
@@ -62,10 +62,21 @@ public:
 	/**
 	 * @brief Gets acess to a cell of the field
 	 *
+	 * @param p      the position of the cell on the grid
+	 * @return double&  a reference to the value of that cell
+	 */
+	char& at(const Eigen::Vector2i p)
+	{
+		return at(p(0), p(1));
+	}
+
+	/**
+	 * @brief Gets acess to a cell of the field
+	 *
 	 * @param i, j      the position of the cell on the grid
 	 * @return double&  a reference to the value of that cell
 	 */
-	double& at(const int i, const int j)
+	char& at(const int i, const int j)
 	{
 		return _values.at(index(i, j));
 	}
@@ -89,9 +100,9 @@ protected:
 	 */
 	int index(const int i, const int j) const
 	{
-		int index = _grid_width * j + i;
+		int index = _width * j + i;
 
-		if(index >= cell_number())
+		if(index >= _width * _height)
 		{
 			throw std::invalid_argument("wrong access to a value in the BooleanField");
 		}
@@ -101,5 +112,5 @@ protected:
 
 	int _width;
 	int _height;
-	std::vector<bool> _values;    /**< array containing all the values of the field*/
+	std::vector<char> _values;    /**< array containing all the values of the field*/
 };

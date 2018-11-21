@@ -136,6 +136,16 @@ public:
 	 * @param i, j      the position of the cell on the grid
 	 * @return double&  a reference to the value of that cell
 	 */
+	double& at(const Eigen::Vector2i p)
+	{
+		return at(p(0), p(1));
+	}
+	/**
+	 * @brief Gets acess to a cell of the field
+	 *
+	 * @param i, j      the position of the cell on the grid
+	 * @return double&  a reference to the value of that cell
+	 */
 	double& at(const int i, const int j)
 	{
 		return _values.at(index(i, j));
