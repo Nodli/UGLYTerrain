@@ -12,7 +12,7 @@ double proportion(const int n, double* values, double* proportions){
 		}
 	}
 
-	for(int ivalue = 0; ivalue != n; ++ivalue){
+	for(int ivalue = 0; ivalue < n; ++ivalue){
 		proportions[ivalue] = values[ivalue] / sum;
 	}
 

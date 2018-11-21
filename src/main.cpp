@@ -7,13 +7,14 @@
 
 int main()
 {
-	MultiLayerMap mlm(100, 100, { -5, -5}, {5, 5});
+	int size = 100 ;
+	MultiLayerMap mlm(size, size, { -5, -5}, {5, 5});
 	ScalarField &sf = mlm.new_field();
 	TerrainNoise t_noise(2.5, 1.0 / 100.0, 8);
 
-	for(int j = 0; j < 100; ++j)
+	for(int j = 0; j < size; ++j)
 	{
-		for(int i = 0; i < 100; i++)
+		for(int i = 0; i < size; i++)
 		{
 			sf.at(i, j) = t_noise.get_noise(i, j);
 		}
