@@ -32,7 +32,7 @@ int Grid2d::neighbors(const int i, const int j, Eigen::Vector2i p[8]) const
 	for(int k = 0; k < 8; ++k)
 	{
 		if(def_nei[k][0] + i >= 0 && def_nei[k][0] + i < _grid_width
-				&& def_nei[k][1] + j >= 0 && def_nei[k][j] + j < _grid_height)
+				&& def_nei[k][1] + j >= 0 && def_nei[k][1] + j < _grid_height)
 		{
 			p[nb++] = Eigen::Vector2i(def_nei[k][0] + i, def_nei[k][1] + j);
 		}
