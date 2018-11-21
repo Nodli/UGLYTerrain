@@ -201,12 +201,27 @@ public:
 	 */
 	ScalarField& operator=(const ScalarField& sf);
 	/**
-	 * @brief Affectation operatof
+	 * @brief Affectation operator
 	 *
 	 * @param sf            the Scalar field to affect
 	 * @return ScalarField& a reference to this Scalar Field
 	 */
 	ScalarField& operator=(ScalarField&& sf);
+	/**
+	 * @brief Addition assignment operator
+	 *
+	 * @param sf            the Scalar field to add
+	 * @return ScalarField& a reference to this Scalar Field
+	 */
+	ScalarField& operator+=(const ScalarField& sf);
+	/**
+	 * @brief Addition operator
+	 *
+	 * @param lsf            the Scalar field to add on the left
+	 * @param rsf            the Scalar field to add on the right
+	 * @return ScalarField, result of the addition, by value
+	 */
+	friend ScalarField operator+(ScalarField lsf, const ScalarField& rsf);
 
 	/**
 	 * @brief Export the Scalar Field as a obj
