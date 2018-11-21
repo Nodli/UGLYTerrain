@@ -56,12 +56,16 @@ void erode_slope_controled(MultiLayerMap& layers, const double k){
 
 void erode_and_transport(MultiLayerMap& layers, const double k, const int iteration_max, const double rest_angle)
 {
+	#if 0
 	// creating erosion layer if needed
 	if(layers.get_layer_number() == 1)
 	{
 		layers.new_field();
 	}
 
+	double slope_stability_threshold = _cell_size.x() * tan(rest_angle) / _cell_size.y();
+
+	// conversion bedrock -> sediments
 	erode_slope_constant(layers, k);
 
 	double values[8];
@@ -85,16 +89,22 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 
 		while(!unstable_coord.empty()){
 
-			// stabilize the cell at the begining of the queue
-			Eigen::Vector2i unstable_cell = unstable_coord.pop();
+			const Eigen::Vector2i& unstable_cell = unstable_coord.front();
 
-			int neighbors = neighbors_info_filter(unstable_cell, values, positions, slopes, 0., false);
-			proportion(neighbors, slopes, slopes_proportions);
+			// neighbor values
+			int neighbors = terrain.neighbors_info_filter(unstable_cell, values, positions, slopes, - slope_stability_threshold, false);
+			double max_value = proportion(neighbors, slopes, slopes_proportions);
+
+			// stabilization
+
+			float available_to_transport = max_value - slope_stability_threshold;
 
 
-
+			// pushing neighbor that could now be unstable
 			unstable_coord.push();
 
+			// stabilize the cell at the begining of the queue
+			unstable_coord.pop();
 		}
 
 
@@ -113,4 +123,5 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 		}
 		*/
 	}
+	#endif
 }

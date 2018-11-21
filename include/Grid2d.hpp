@@ -70,6 +70,16 @@ public:
 	}
 
 	/**
+	 * @brief Gets size of a cell of the grid
+	 *
+	 * @return int      the total number of cells
+	 */
+	Eigen::Vector2d cell_size() const
+	{
+		return _cell_size;
+	}
+
+	/**
 	 * @brief Get the positions of the neiboring cells
 	 *
 	 * @param i, j      the position of the cell
