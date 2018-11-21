@@ -62,7 +62,7 @@ void set_up_imgui(GLFWwindow* window)
 
 int main()
 {
-	char saveName[256] = "default.obj";
+	char saveName[256] = "default";
 	int sizeWidth = 500;
 	int sizeHeight = 500;
 	Eigen::Vector2d posMin(-25, -25);
@@ -91,6 +91,21 @@ int main()
 			ImGui::PushItemWidth(100);
 			ImGui::InputText("export name", saveName, IM_ARRAYSIZE(saveName));
 
+			if(ImGui::CollapsingHeader("Presets"))
+			{
+				if(ImGui::Button("To Default"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+				{
+					strcpy(saveName, "default");
+					sizeWidth = 500;
+					sizeHeight = 500;
+					posMin = Eigen::Vector2d(-25, -25);
+					posMax = Eigen::Vector2d(25, 25);
+					t_noise._amplitude = 5.0;
+					t_noise._base_freq = 1.0 / 200.0;
+					t_noise._octaves = 8;
+				}
+			}
+
 			if(ImGui::CollapsingHeader("Caracteristics"))
 			{
 				ImGui::InputInt("Width", &sizeWidth);
@@ -108,7 +123,7 @@ int main()
 				if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 				{
 					//ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
-					mlm = MultiLayerMap(500, 500, posMin, posMax);
+					mlm = MultiLayerMap(sizeWidth, sizeHeight, posMin, posMax);
 					mlm.new_field();
 
 					for(int j = 0; j < sizeHeight; ++j)
@@ -118,8 +133,6 @@ int main()
 							mlm.get_field(0).at(i, j) = t_noise.get_noise(i, j);
 						}
 					}
-
-					sf.export_as_obj(saveName);
 				}
 			}
 
@@ -139,6 +152,16 @@ int main()
 
 					sf.export_as_obj(saveName);
 				}
+			}
+
+			if(ImGui::Button("Export as obj"))
+			{
+				mlm.generate_field().export_as_obj(std::string(saveName) + ".obj");
+			}
+
+			if(ImGui::Button("Export as pgm"))
+			{
+				mlm.generate_field().export_as_pgm(std::string(saveName) + ".pgm");
 			}
 
 			ImGui::End();
