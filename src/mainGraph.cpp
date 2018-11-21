@@ -1,5 +1,5 @@
 #include <iostream>
-#include <ScalarField.hpp>
+#include <MultiLayerMap.hpp>
 #include <Noise/TerrainNoise.hpp>
 
 #include <ImGui/imgui.h>
@@ -15,33 +15,25 @@ static void glfw_error_callback(int error, const char* description)
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-
-int main()
+GLFWwindow* set_up_window(const int width = 600, const int height = 400, std::string title = "pata patate")
 {
-	char saveName[256] = "default.obj";
-	int sizeWidth = 500;
-	int sizeHeight = 500;
-	Eigen::Vector2d posMin(-25, -25);
-	Eigen::Vector2d posMax(25, 25);
-	TerrainNoise t_noise(5.0, 1.0 / 200.0, 8);
 	// Setup window
 	glfwSetErrorCallback(glfw_error_callback);
 
 	if(!glfwInit())
 	{
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
-	const char* glsl_version = "#version 330";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	// Create window with graphics context
-	GLFWwindow* window = glfwCreateWindow(600, 400, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 
 	if(window == NULL)
 	{
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
 	glfwMakeContextCurrent(window);
@@ -51,30 +43,41 @@ int main()
 	if(err)
 	{
 		fprintf(stderr, "Failed to initialize OpenGL loader!\n");
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
+	return window;
+}
+
+void set_up_imgui(GLFWwindow* window)
+{
 	// Setup Dear ImGui binding
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	(void)io;
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
+	ImGui_ImplOpenGL3_Init("#version 330");
 	// Setup style
 	ImGui::StyleColorsDark();
-	bool show_demo_window = false;
-	bool show_another_window = false;
+}
+
+int main()
+{
+	char saveName[256] = "default.obj";
+	int sizeWidth = 500;
+	int sizeHeight = 500;
+	Eigen::Vector2d posMin(-25, -25);
+	Eigen::Vector2d posMax(25, 25);
+	TerrainNoise t_noise(5.0, 1.0 / 200.0, 8);
+	MultiLayerMap mlm(500, 500, posMin, posMax);
+	GLFWwindow* window = set_up_window();
+	set_up_imgui(window);
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	// Main loop
 	while(!glfwWindowShouldClose(window))
 	{
-		// Poll and handle events (inputs, window resize, etc.)
-		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 		glfwPollEvents();
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -84,31 +87,58 @@ int main()
 		{
 			static float f = 0.0f;
 			static int counter = 0;
-			ImGui::Begin("Configure Terrain");                          // Create a window called "Hello, world!" and append into it.
+			ImGui::Begin("Terrain");                         // Create a window called "Hello, world!" and append into it.
+			ImGui::PushItemWidth(100);
 			ImGui::InputText("export name", saveName, IM_ARRAYSIZE(saveName));
-			ImGui::InputInt("Width", &sizeWidth);
-			ImGui::InputInt("Height", &sizeHeight);
-			ImGui::InputDouble("minX", &posMin(0));
-			ImGui::InputDouble("minY", &posMin(1));
-			ImGui::InputDouble("maxX", &posMax(0));
-			ImGui::InputDouble("maxY", &posMax(1));
-			ImGui::InputDouble("Amplitude max", &t_noise._amplitude);
-			ImGui::InputDouble("Base frequency", &t_noise._base_freq);
-			ImGui::InputInt("Nb iterations", &t_noise._octaves);
 
-			if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+			if(ImGui::CollapsingHeader("Caracteristics"))
 			{
-				ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
+				ImGui::InputInt("Width", &sizeWidth);
+				ImGui::InputInt("Height", &sizeHeight);
+				ImGui::InputDouble("minX", &posMin(0));
+				ImGui::SameLine();
+				ImGui::InputDouble("minY", &posMin(1));
+				ImGui::InputDouble("maxX", &posMax(0));
+				ImGui::SameLine();
+				ImGui::InputDouble("maxY", &posMax(1));
+				ImGui::InputDouble("Amplitude max", &t_noise._amplitude);
+				ImGui::InputDouble("Base frequency", &t_noise._base_freq);
+				ImGui::InputInt("Nb iterations", &t_noise._octaves);
 
-				for(int j = 0; j < sizeHeight; ++j)
+				if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 				{
-					for(int i = 0; i < sizeWidth; i++)
-					{
-						sf.at(i, j) = t_noise.get_noise(i, j);
-					}
-				}
+					//ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
+					mlm = MultiLayerMap(500, 500, posMin, posMax);
+					mlm.new_field();
 
-				sf.export_as_obj(saveName);
+					for(int j = 0; j < sizeHeight; ++j)
+					{
+						for(int i = 0; i < sizeWidth; i++)
+						{
+							mlm.get_field(0).at(i, j) = t_noise.get_noise(i, j);
+						}
+					}
+
+					sf.export_as_obj(saveName);
+				}
+			}
+
+			if(ImGui::CollapsingHeader("Operations"))
+			{
+				if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+				{
+					ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
+
+					for(int j = 0; j < sizeHeight; ++j)
+					{
+						for(int i = 0; i < sizeWidth; i++)
+						{
+							sf.at(i, j) = t_noise.get_noise(i, j);
+						}
+					}
+
+					sf.export_as_obj(saveName);
+				}
 			}
 
 			ImGui::End();
