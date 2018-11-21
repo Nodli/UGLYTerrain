@@ -1,6 +1,8 @@
 #include <iostream>
 #include <MultiLayerMap.hpp>
 #include <Noise/TerrainNoise.hpp>
+#include <Weather/Erosion.hpp>
+#include <Weather/Hydro.hpp>
 
 #include <ImGui/imgui.h>
 #include <GL/glew.h>
@@ -70,6 +72,32 @@ void set_up_imgui(GLFWwindow* window)
 	ImGui::StyleColorsDark();
 }
 
+void export_tab(const ScalarField& sf, const std::string& name)
+{
+	if(ImGui::CollapsingHeader("Exports"))
+	{
+		if(ImGui::Button("Export as obj"))
+		{
+			sf.export_as_obj(name + ".obj");
+		}
+
+		if(ImGui::Button("Export as pgm"))
+		{
+			sf.export_as_pgm(name + ".pgm");
+		}
+
+		if(ImGui::Button("Export slope as pgm"))
+		{
+			sf.get_slope_map().export_as_pgm(name + "_slope_" + ".pgm");
+		}
+
+		if(ImGui::Button("Export hydro as pgm"))
+		{
+			//get_area(sf).export_as_pgm(name + "_hydro_" + ".pgm");
+		}
+	}
+}
+
 void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 {
 	ImGui::Begin("Terrain");                         // Create a window called "Hello, world!" and append into it.
@@ -123,32 +151,40 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 	if(ImGui::CollapsingHeader("Operations"))
 	{
+		if(ImGui::TreeNode("Erosion"))
+		{
+			static double erosion_factor = 0.0;
+			ImGui::InputDouble("Erosion Factor", &erosion_factor);
+
+			if(ImGui::Button("Erode constant"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+			{
+				erode_slope_constant(mlm, erosion_factor);
+			}
+
+			if(ImGui::Button("Erode controlled"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+			{
+				erode_slope_controled(mlm, erosion_factor);
+			}
+
+			ImGui::TreePop();
+		}
+
 		if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
-			ScalarField sf(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
+			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
+			mlm.new_field();
 
 			for(int j = 0; j < params.sizeHeight; ++j)
 			{
 				for(int i = 0; i < params.sizeWidth; i++)
 				{
-					sf.at(i, j) = params.t_noise.get_noise(i, j);
+					mlm.get_field(0).at(i, j) = params.t_noise.get_noise(i, j);
 				}
 			}
-
-			sf.export_as_obj(params.saveName);
 		}
 	}
 
-	if(ImGui::Button("Export as obj"))
-	{
-		mlm.generate_field().export_as_obj(std::string(params.saveName) + ".obj");
-	}
-
-	if(ImGui::Button("Export as pgm"))
-	{
-		mlm.generate_field().export_as_pgm(std::string(params.saveName) + ".pgm");
-	}
-
+	export_tab(mlm.generate_field(), std::string(params.saveName));
 	ImGui::End();
 }
 
@@ -177,17 +213,8 @@ int main()
 		{
 			if(ImGui::CollapsingHeader((std::string("Layer_") + std::to_string(l)).c_str()))// std::string("Layer _ " + l).c_str()))
 			{
-				if(ImGui::Button("Export as obj"))
-				{
-					mlm.get_field(l).export_as_obj(std::string(params.saveName) +
-												   std::string("_layer_") + std::to_string(l) + ".obj");
-				}
-
-				if(ImGui::Button("Export as pgm"))
-				{
-					mlm.get_field(l).export_as_pgm(std::string(params.saveName) +
-												   std::string("_layer_") + std::to_string(l) + ".pgm");
-				}
+				export_tab(mlm.get_field(l), std::string(params.saveName) +
+						   std::string("_layer_") + std::to_string(l));
 			}
 		}
 
