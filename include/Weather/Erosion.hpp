@@ -5,13 +5,30 @@
 /** \addtogroup Erosion
  * @{
  */
+
 /**
- * @brief Basicaly erode a Multi Layer Map
+ * @brief Erodes a Multi Layer Map using a slope value
  *
  * @param layers    the Multi Layer Map to erode
  * @param k         the erosion factor
  */
-void erode(MultiLayerMap& layers, const double k);
+void erode_slope_constant(MultiLayerMap& layers, const double k);
+
+/**
+ * @brief Function controling erosion based on a slope value
+ *
+ * @param slope     the slope value at the point
+ * @return value of erosion
+ */
+float erosion_control_function(const double slope);
+
+/**
+ * @brief Erodes a Multi Layer Map using erosion_control_function
+ *
+ * @param layers    the Multi Layer Map to erode
+ * @param k			the erosion factor
+ */
+void erode_slope_controled(MultiLayerMap& layers, const double k);
 
 /**
  * @brief Erode a Multi Layer Map adding a new layer and displacing the sediments
