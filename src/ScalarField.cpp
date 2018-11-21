@@ -90,7 +90,9 @@ void ScalarField::set_value(const int i, const int j, double value)
 	at(i, j) = value;
 }
 
-
+void set_all(float value){
+	std::fill(_values.begin(), _values.end(), value);
+}
 
 int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const
 {

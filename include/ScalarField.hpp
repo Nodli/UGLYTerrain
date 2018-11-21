@@ -174,6 +174,13 @@ public:
 	void set_value(const int i, const int j, double value);
 
 	/**
+	 * @brief Set the value all cells in the field
+	 *
+	 * @param value     the value to set the field to
+	 */
+	void set_all(float value);
+
+	/**
 	 * @brief Copies the values from an other field
 	 *
 	 * @param sf        the scalar field to copy the values from
