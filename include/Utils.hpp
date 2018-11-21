@@ -6,4 +6,4 @@
  * @param n         the number of values
  * @param values	the values to compute the proportions
  */
-void proportion(int n, double* values, double* proportions);
+void proportion(int n, double values[], double proportions[]);

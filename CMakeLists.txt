@@ -29,7 +29,8 @@ set(sources
     "src/MultiLayerMap.cpp"
     "src/Noise/TerrainNoise.cpp"
     "src/Weather/Erosion.cpp"
-    "src/Weather/Hydro.cpp")
+    "src/Weather/Hydro.cpp"
+    "src/Utils.cpp")
 
 set(test_sources
     "src/tests/test_Box2d.cpp"
