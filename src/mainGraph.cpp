@@ -10,6 +10,16 @@
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
 
+struct Parameters
+{
+	TerrainNoise t_noise = TerrainNoise(5.0, 1.0 / 200.0, 8);
+	char saveName[256] = "default";
+	int sizeWidth = 500;
+	int sizeHeight = 500;
+	Eigen::Vector2d posMin;//(-25, -25);
+	Eigen::Vector2d posMax;//(25, 25);
+};
+
 static void glfw_error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -60,15 +70,92 @@ void set_up_imgui(GLFWwindow* window)
 	ImGui::StyleColorsDark();
 }
 
+void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
+{
+	ImGui::Begin("Terrain");                         // Create a window called "Hello, world!" and append into it.
+	ImGui::PushItemWidth(100);
+	ImGui::InputText("export name", params.saveName, IM_ARRAYSIZE(params.saveName));
+
+	if(ImGui::CollapsingHeader("Presets"))
+	{
+		if(ImGui::Button("To Default"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			strcpy(params.saveName, "default");
+			params.sizeWidth = 500;
+			params.sizeHeight = 500;
+			params.posMin = Eigen::Vector2d(-25, -25);
+			params.posMax = Eigen::Vector2d(25, 25);
+			params.t_noise._amplitude = 5.0;
+			params.t_noise._base_freq = 1.0 / 200.0;
+			params.t_noise._octaves = 8;
+		}
+	}
+
+	if(ImGui::CollapsingHeader("Caracteristics"))
+	{
+		ImGui::InputInt("Width", &params.sizeWidth);
+		ImGui::InputInt("Height", &params.sizeHeight);
+		ImGui::InputDouble("minX", &params.posMin(0));
+		ImGui::SameLine();
+		ImGui::InputDouble("minY", &params.posMin(1));
+		ImGui::InputDouble("maxX", &params.posMax(0));
+		ImGui::SameLine();
+		ImGui::InputDouble("maxY", &params.posMax(1));
+		ImGui::InputDouble("Amplitude max", &params.t_noise._amplitude);
+		ImGui::InputDouble("Base frequency", &params.t_noise._base_freq);
+		ImGui::InputInt("Nb iterations", &params.t_noise._octaves);
+
+		if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			//ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
+			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
+			mlm.new_field();
+
+			for(int j = 0; j < params.sizeHeight; ++j)
+			{
+				for(int i = 0; i < params.sizeWidth; i++)
+				{
+					mlm.get_field(0).at(i, j) = params.t_noise.get_noise(i, j);
+				}
+			}
+		}
+	}
+
+	if(ImGui::CollapsingHeader("Operations"))
+	{
+		if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			ScalarField sf(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
+
+			for(int j = 0; j < params.sizeHeight; ++j)
+			{
+				for(int i = 0; i < params.sizeWidth; i++)
+				{
+					sf.at(i, j) = params.t_noise.get_noise(i, j);
+				}
+			}
+
+			sf.export_as_obj(params.saveName);
+		}
+	}
+
+	if(ImGui::Button("Export as obj"))
+	{
+		mlm.generate_field().export_as_obj(std::string(params.saveName) + ".obj");
+	}
+
+	if(ImGui::Button("Export as pgm"))
+	{
+		mlm.generate_field().export_as_pgm(std::string(params.saveName) + ".pgm");
+	}
+
+	ImGui::End();
+}
+
 int main()
 {
-	char saveName[256] = "default";
-	int sizeWidth = 500;
-	int sizeHeight = 500;
-	Eigen::Vector2d posMin(-25, -25);
-	Eigen::Vector2d posMax(25, 25);
-	TerrainNoise t_noise(5.0, 1.0 / 200.0, 8);
-	MultiLayerMap mlm(500, 500, posMin, posMax);
+	Parameters params;
+	MultiLayerMap mlm(500, 500);
 	GLFWwindow* window = set_up_window();
 	set_up_imgui(window);
 	ImGuiIO& io = ImGui::GetIO();
@@ -83,89 +170,28 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+		multi_layer_map_window(mlm, params);
+		ImGui::Begin("Layers");
+
+		for(int l = 0; l < mlm.get_layer_number(); ++l)
 		{
-			static float f = 0.0f;
-			static int counter = 0;
-			ImGui::Begin("Terrain");                         // Create a window called "Hello, world!" and append into it.
-			ImGui::PushItemWidth(100);
-			ImGui::InputText("export name", saveName, IM_ARRAYSIZE(saveName));
-
-			if(ImGui::CollapsingHeader("Presets"))
+			if(ImGui::CollapsingHeader((std::string("Layer_") + std::to_string(l)).c_str()))// std::string("Layer _ " + l).c_str()))
 			{
-				if(ImGui::Button("To Default"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+				if(ImGui::Button("Export as obj"))
 				{
-					strcpy(saveName, "default");
-					sizeWidth = 500;
-					sizeHeight = 500;
-					posMin = Eigen::Vector2d(-25, -25);
-					posMax = Eigen::Vector2d(25, 25);
-					t_noise._amplitude = 5.0;
-					t_noise._base_freq = 1.0 / 200.0;
-					t_noise._octaves = 8;
+					mlm.get_field(l).export_as_obj(std::string(params.saveName) +
+												   std::string("_layer_") + std::to_string(l) + ".obj");
+				}
+
+				if(ImGui::Button("Export as pgm"))
+				{
+					mlm.get_field(l).export_as_pgm(std::string(params.saveName) +
+												   std::string("_layer_") + std::to_string(l) + ".pgm");
 				}
 			}
-
-			if(ImGui::CollapsingHeader("Caracteristics"))
-			{
-				ImGui::InputInt("Width", &sizeWidth);
-				ImGui::InputInt("Height", &sizeHeight);
-				ImGui::InputDouble("minX", &posMin(0));
-				ImGui::SameLine();
-				ImGui::InputDouble("minY", &posMin(1));
-				ImGui::InputDouble("maxX", &posMax(0));
-				ImGui::SameLine();
-				ImGui::InputDouble("maxY", &posMax(1));
-				ImGui::InputDouble("Amplitude max", &t_noise._amplitude);
-				ImGui::InputDouble("Base frequency", &t_noise._base_freq);
-				ImGui::InputInt("Nb iterations", &t_noise._octaves);
-
-				if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
-				{
-					//ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
-					mlm = MultiLayerMap(sizeWidth, sizeHeight, posMin, posMax);
-					mlm.new_field();
-
-					for(int j = 0; j < sizeHeight; ++j)
-					{
-						for(int i = 0; i < sizeWidth; i++)
-						{
-							mlm.get_field(0).at(i, j) = t_noise.get_noise(i, j);
-						}
-					}
-				}
-			}
-
-			if(ImGui::CollapsingHeader("Operations"))
-			{
-				if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
-				{
-					ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
-
-					for(int j = 0; j < sizeHeight; ++j)
-					{
-						for(int i = 0; i < sizeWidth; i++)
-						{
-							sf.at(i, j) = t_noise.get_noise(i, j);
-						}
-					}
-
-					sf.export_as_obj(saveName);
-				}
-			}
-
-			if(ImGui::Button("Export as obj"))
-			{
-				mlm.generate_field().export_as_obj(std::string(saveName) + ".obj");
-			}
-
-			if(ImGui::Button("Export as pgm"))
-			{
-				mlm.generate_field().export_as_pgm(std::string(saveName) + ".pgm");
-			}
-
-			ImGui::End();
 		}
+
+		ImGui::End();
 		// Rendering
 		ImGui::Render();
 		int display_w, display_h;
@@ -179,7 +205,7 @@ int main()
 		glfwSwapBuffers(window);
 	}
 
-	// Cleanup
+// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
