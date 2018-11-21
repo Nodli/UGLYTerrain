@@ -103,7 +103,7 @@ int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Ve
 	for(int k = 0; k < nb; ++k)
 	{
 		v[k] = value(p[k]);
-		s[k] = v[k] - ij_value;
+		s[k] = (v[k] - ij_value) / def_nei_dist[k];
 	}
 
 	return nb;
@@ -120,7 +120,7 @@ int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Ei
 
 		// values are computed in place but will be overridden / not considered if threshold_nb is not incremented
 		v[threshold_nb] = value(p[ineigh]);
-		s[threshold_nb] = v[ineigh] - ij_value;
+		s[threshold_nb] = (v[ineigh] - ij_value) / def_nei_dist[ineigh];
 
 		if(sup){
 			if(s[threshold_nb] >= s_filter){
