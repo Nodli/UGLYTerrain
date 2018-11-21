@@ -90,7 +90,7 @@ void ScalarField::set_value(const int i, const int j, double value)
 	at(i, j) = value;
 }
 
-void set_all(float value){
+void ScalarField::set_all(float value){
 	std::fill(_values.begin(), _values.end(), value);
 }
 
