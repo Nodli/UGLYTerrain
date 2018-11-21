@@ -5,5 +5,6 @@
  *
  * @param n         the number of values
  * @param values	the values to compute the proportions
+ * @return 			the maximal value (not proportion)
  */
-void proportion(int n, double* values, double* proportions);
+double proportion(int n, double* values, double* proportions);
