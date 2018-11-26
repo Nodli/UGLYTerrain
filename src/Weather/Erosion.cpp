@@ -1,4 +1,6 @@
 #include <queue>
+#include <iostream>
+
 #include <Weather/Erosion.hpp>
 #include <BooleanField.hpp>
 #include <Utils.hpp>
@@ -56,17 +58,14 @@ void erode_slope_controled(MultiLayerMap& layers, const double k){
 
 void erode_and_transport(MultiLayerMap& layers, const double k, const int iteration_max, const double rest_angle)
 {
-	#if 0
 	// creating erosion layer if needed
 	if(layers.get_layer_number() == 1)
 	{
 		layers.new_field();
 	}
 
-	double slope_stability_threshold = _cell_size.x() * tan(rest_angle) / _cell_size.y();
-
-	// conversion bedrock -> sediments
-	erode_slope_constant(layers, k);
+	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle) / layers.cell_size().y();
+	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
 
 	double values[8];
 	Eigen::Vector2i positions[8];
@@ -75,7 +74,11 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 
 	for(int s = 0; s < iteration_max; ++s)
 	{
+		// conversion bedrock -> sediments
+		erode_slope_constant(layers, k);
+
 		ScalarField terrain = layers.generate_field();
+		ScalarField delta(static_cast<Grid2d>(terrain));
 
 		// all cells are considered unstable at initialization
 		std::queue<Eigen::Vector2i> unstable_coord;
@@ -88,6 +91,7 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 		BooleanField stability(layers.grid_width(), layers.grid_height(), true);
 
 		while(!unstable_coord.empty()){
+			std::cout << unstable_coord.size() << std::endl;
 
 			const Eigen::Vector2i& unstable_cell = unstable_coord.front();
 
@@ -96,14 +100,19 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 			double max_value = proportion(neighbors, slopes, slopes_proportions);
 
 			// stabilization
-
 			float available_to_transport = max_value - slope_stability_threshold;
 
+			for(int ineigh = 0; ineigh != neighbors; ++ineigh){
+				delta.at(positions[ineigh]) += available_to_transport * slopes_proportions[ineigh];
+				stability.at(unstable_cell) = true;
 
-			// pushing neighbor that could now be unstable
-			unstable_coord.push();
+				// stabilize the cell at the begining of the queue
+				if(stability.at(positions[ineigh])){
+					unstable_coord.push(positions[ineigh]);
+					stability.at(positions[ineigh]) = false;
+				}
+			}
 
-			// stabilize the cell at the begining of the queue
 			unstable_coord.pop();
 		}
 
@@ -123,5 +132,4 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 		}
 		*/
 	}
-	#endif
 }

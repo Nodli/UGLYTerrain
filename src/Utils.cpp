@@ -16,4 +16,6 @@ double proportion(const int n, double* values, double* proportions){
 		proportions[ivalue] = values[ivalue] / sum;
 	}
 
+	return max_value;
+
 }

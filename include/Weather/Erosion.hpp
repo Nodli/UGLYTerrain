@@ -38,6 +38,6 @@ void erode_slope_controled(MultiLayerMap& layers, const double k);
  * @param iteration_max the maximum number of iteration for the displacement
  * @param rest_angle    the angle at which the sediments will be moving
  */
-void erode_and_transport(MultiLayerMap& layers, const double k, const int iteration_max = 0, const double rest_angle = 90);
+void erode_and_transport(MultiLayerMap& layers, const double k, const int iteration_max = 0, const double rest_angle = 45);
 
 /** @}*/
