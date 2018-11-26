@@ -18,7 +18,7 @@ void erode_slope_constant(MultiLayerMap& layers, const double k)
 			layers.get_field(0).at(i, j) -= delta_value;
 
 			// adding to sediments
-			if(layers.get_layer_number() > 0){
+			if(layers.get_layer_number() > 1){
 				layers.get_field(1).at(i, j) += delta_value;
 			}
 
@@ -48,7 +48,7 @@ void erode_slope_controled(MultiLayerMap& layers, const double k){
 
 			layers.get_field(0).at(i, j) -= delta_value;
 
-			if(layers.get_layer_number() > 0){
+			if(layers.get_layer_number() > 1){
 				layers.get_field(1).at(i, j) += delta_value;
 			}
 		}
@@ -82,8 +82,8 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 
 		// all cells are considered unstable at initialization
 		std::queue<Eigen::Vector2i> unstable_coord;
-		for(int j = 0; j < terrain.grid_width(); ++j){
-			for(int i = 0; i < terrain.grid_height(); ++i){
+		for(int i = 0; i < terrain.grid_width(); ++i){
+			for(int j = 0; j < terrain.grid_height(); ++j){
 				unstable_coord.emplace(i, j);
 			}
 		}
