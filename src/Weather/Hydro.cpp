@@ -44,7 +44,6 @@ void repartition(ScalarField& heightMap, ScalarField& area, std::vector<std::pai
 		double proportions[8];
 
 		int neigh_nb = heightMap.neighbors_info_filter(field[i].second, values, positions, slopes);
-
 		proportion(neigh_nb, slopes, proportions);
 
 		// add to each neighbor the proportion of the ith highest cell value
