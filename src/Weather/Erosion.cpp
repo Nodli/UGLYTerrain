@@ -1,3 +1,7 @@
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
 #include <queue>
 #include <iostream>
 
@@ -8,11 +12,13 @@
 
 void erode_slope_constant(MultiLayerMap& layers, const double k)
 {
+	ScalarField terrain = layers.generate_field();
+
 	for(int j = 0; j < layers.grid_height(); ++j)
 	{
 		for(int i = 0; i < layers.grid_width(); ++i)
 		{
-			double delta_value = k * layers.get_field(0).slope(i, j);
+			double delta_value = k * terrain.slope(i, j);
 
 			// removing from bedrock
 			layers.get_field(0).at(i, j) -= delta_value;
@@ -64,7 +70,7 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 		layers.new_field();
 	}
 
-	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle) / layers.cell_size().y();
+	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle / 180. * 3.14) / layers.cell_size().y();
 	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
 
 	double values[8];
@@ -74,62 +80,75 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 
 	for(int s = 0; s < iteration_max; ++s)
 	{
+
+		std::cout << "iteration: " << s << std::endl;
+
 		// conversion bedrock -> sediments
 		erode_slope_constant(layers, k);
 
 		ScalarField terrain = layers.generate_field();
-		ScalarField delta(static_cast<Grid2d>(terrain));
 
 		// all cells are considered unstable at initialization
-		std::queue<Eigen::Vector2i> unstable_coord;
-		for(int i = 0; i < terrain.grid_width(); ++i){
-			for(int j = 0; j < terrain.grid_height(); ++j){
-				unstable_coord.emplace(i, j);
+		BooleanField unstable(layers.grid_width(), layers.grid_height(), true);
+
+		std::vector<Eigen::Vector2i> coord_vector;
+		for(int i = 0; i < terrain.grid_height(); ++i){
+			for(int j = 0; j < terrain.grid_width(); ++j){
+				coord_vector.push_back({i, j});
 			}
 		}
+		std::random_shuffle(coord_vector.begin(), coord_vector.end());
 
-		BooleanField stability(layers.grid_width(), layers.grid_height(), true);
+		std::queue<Eigen::Vector2i> unstable_coord;
+		for(int i = 0; i != coord_vector.size(); ++i){
+			unstable_coord.push(coord_vector[i]);
+		}
+
 
 		while(!unstable_coord.empty()){
-			std::cout << unstable_coord.size() << std::endl;
-
 			const Eigen::Vector2i& unstable_cell = unstable_coord.front();
 
 			// neighbor values
 			int neighbors = terrain.neighbors_info_filter(unstable_cell, values, positions, slopes, - slope_stability_threshold, false);
-			double max_value = proportion(neighbors, slopes, slopes_proportions);
+
+			proportion(neighbors, slopes, slopes_proportions);
 
 			// stabilization
-			float available_to_transport = max_value - slope_stability_threshold;
+			double max_slope = min_array(neighbors, slopes);
 
-			for(int ineigh = 0; ineigh != neighbors; ++ineigh){
-				delta.at(positions[ineigh]) += available_to_transport * slopes_proportions[ineigh];
-				stability.at(unstable_cell) = true;
+			// double available_to_transport = 0.;
+			// if(max_slope < slope_stability_threshold){ // values are negative | more matter than allowed by the threshold
+				// available_to_transport = - (layers.get_field(1).at(unstable_cell) + (max_slope - slope_stability_threshold)); // slope difference is negative
+			// }
 
-				// stabilize the cell at the begining of the queue
-				if(stability.at(positions[ineigh])){
-					unstable_coord.push(positions[ineigh]);
-					stability.at(positions[ineigh]) = false;
-				}
+			double available_to_transport = layers.get_field(1).at(unstable_cell);
+
+			if(unstable_cell.x() == 38 && unstable_cell.y() == 21){
+				std::cout << "available_to_transport: " << available_to_transport << std::endl;
 			}
 
+			for(int ineigh = 0; ineigh != neighbors; ++ineigh){
+				double neighbor_quantity = available_to_transport * slopes_proportions[ineigh];
+
+				if(positions[ineigh].x() == 38 && positions[ineigh].y() == 21){
+					std::cout << "adding: " << neighbor_quantity << std::endl;
+				}
+
+				layers.get_field(1).at(positions[ineigh]) += neighbor_quantity;
+
+				// add neighbor to queue if it became unstable
+				if(!unstable.at(positions[ineigh])){
+					unstable.at(positions[ineigh]) = true;
+					unstable_coord.push(positions[ineigh]);
+				}
+
+				layers.get_field(1).at(unstable_cell) -= neighbor_quantity;
+			}
+
+			// unstable_cell becomes stable
+			unstable.at(unstable_cell) = false;
 			unstable_coord.pop();
 		}
 
-
-		/*
-			Eigen::Vector2i p_current = current_it->second;
-			int cv = terrain.value(p_current);
-			int nb = terrain.neighbors_info(p_current, values, positions, slopes);
-
-			for(int c = 0; c < nb; ++c)
-			{
-				if(cv > values[c])
-				{
-					///Stuck actually don't understand what I am doing anymore
-				}
-			}
-		}
-		*/
 	}
 }
