@@ -119,8 +119,9 @@ int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Ei
 	for(int ineigh = 0; ineigh < nb; ++ineigh){
 
 		// values are computed in place but will be overridden / not considered if threshold_nb is not incremented
-		v[threshold_nb] = value(p[ineigh]);
-		s[threshold_nb] = (v[ineigh] - ij_value) / def_nei_dist[ineigh];
+		p[threshold_nb] = p[ineigh];
+		v[threshold_nb] = value(p[threshold_nb]);
+		s[threshold_nb] = (v[threshold_nb] - ij_value) / def_nei_dist[ineigh];
 
 		if(sup){
 			if(s[threshold_nb] >= s_filter){
