@@ -93,7 +93,7 @@ void export_tab(const ScalarField& sf, const std::string& name)
 
 		if(ImGui::Button("Export hydro as pgm"))
 		{
-			//get_area(sf).export_as_pgm(name + "_hydro_" + ".pgm");
+			get_area(sf).export_as_pgm(name + "_hydro_" + ".pgm");
 		}
 	}
 }
@@ -115,6 +115,18 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.posMax = Eigen::Vector2d(25, 25);
 			params.t_noise._amplitude = 5.0;
 			params.t_noise._base_freq = 1.0 / 200.0;
+			params.t_noise._octaves = 8;
+		}
+
+		if(ImGui::Button("Quick Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			strcpy(params.saveName, "default");
+			params.sizeWidth = 100;
+			params.sizeHeight = 100;
+			params.posMin = Eigen::Vector2d(-5, -5);
+			params.posMax = Eigen::Vector2d(5, 5);
+			params.t_noise._amplitude = 2.5;
+			params.t_noise._base_freq = 1.0 / 100.0;
 			params.t_noise._octaves = 8;
 		}
 	}
@@ -153,8 +165,12 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 	{
 		if(ImGui::TreeNode("Erosion"))
 		{
-			static double erosion_factor = 0.0;
+			static double erosion_factor = 0.1;
+			static double iterations = 1.0;
+			static double rest_angle = 45;
 			ImGui::InputDouble("Erosion Factor", &erosion_factor);
+			ImGui::InputDouble("Iterations", &iterations);
+			ImGui::InputDouble("Rest angle", &rest_angle);
 
 			if(ImGui::Button("Erode constant"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
@@ -164,6 +180,11 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			if(ImGui::Button("Erode controlled"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
 				erode_slope_controled(mlm, erosion_factor);
+			}
+
+			if(ImGui::Button("Erode and transport"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+			{
+				erode_and_transport(mlm, erosion_factor, iterations, rest_angle);
 			}
 
 			ImGui::TreePop();
