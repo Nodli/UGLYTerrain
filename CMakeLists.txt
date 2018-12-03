@@ -42,6 +42,7 @@ find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
 add_library(terrain STATIC ${sources})
+target_link_libraries(terrain fnoise)
 add_library(imgui STATIC ${imgui_sources})
 target_link_libraries(imgui ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} glfw)
 add_library(fnoise STATIC ${fnoise_sources})
