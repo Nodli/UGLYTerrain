@@ -13,4 +13,5 @@
  */
 ScalarField get_area(MultiLayerMap& layers);
 
+void erode_from_area(MultiLayerMap& layers);
 /** @}*/

@@ -30,6 +30,8 @@ int main()
 
 	ScalarField area = get_area(mlm);
 	area.export_as_pgm("HydraulicArea.pgm", true);
+	erode_from_area(mlm);
+	mlm.get_field(0).export_as_pgm("TerrainHydroErode.pgm", true);
 
 	return 0;
 }

@@ -14,7 +14,7 @@ void one_way(ScalarField& heightMap, ScalarField& area, std::vector<std::pair<do
 		Eigen::Vector2i positions[8];
 		double slopes[8];
 
-		int neigh_nb = heightMap.neighbors_info(field[i].second, values, positions, slopes);
+		int neigh_nb = heightMap.neighbors_info_filter(field[i].second, values, positions, slopes);
 
 		int lowest_neigh = 0;
 
@@ -70,4 +70,10 @@ ScalarField get_area(MultiLayerMap& layers)
 	repartition(heightMap, area, field);
 
 	return area;
+}
+
+void erode_from_area(MultiLayerMap& layers)
+{
+	ScalarField area = get_area(layers);
+	layers.get_field(0) -= area;
 }

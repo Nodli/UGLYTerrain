@@ -259,6 +259,36 @@ public:
 	 * @return ScalarField, result of the addition, by value
 	 */
 	friend ScalarField operator+(ScalarField lsf, const ScalarField& rsf);
+	/**
+	 * @brief Substraction assignment operator
+	 *
+	 * @param sf            the Scalar field to substract
+	 * @return ScalarField& a reference to this Scalar Field
+	 */
+	ScalarField& operator-=(const ScalarField& sf);
+	/**
+	 * @brief Substraction operator
+	 *
+	 * @param lsf            the Scalar field to substract on the left
+	 * @param rsf            the Scalar field to substract on the right
+	 * @return ScalarField, result of the substraction, by value
+	 */
+	friend ScalarField operator-(ScalarField lsf, const ScalarField& rsf);
+	/**
+	 * @brief Multiplication assignment operator
+	 *
+	 * @param sf            the Scalar field to multiply
+	 * @return ScalarField& a reference to this Scalar Field
+	 */
+	ScalarField& operator*=(const ScalarField& sf);
+	/**
+	 * @brief Multiplication operator
+	 *
+	 * @param lsf            the Scalar field to multiply on the left
+	 * @param rsf            the Scalar field to multiply on the right
+	 * @return ScalarField, result of the multiplication, by value
+	 */
+	friend ScalarField operator*(ScalarField lsf, const ScalarField& rsf);
 
 	/**
 	 * @brief Export the Scalar Field as a obj

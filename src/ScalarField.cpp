@@ -202,6 +202,44 @@ ScalarField operator+(ScalarField lsf, const ScalarField& rsf)
 	return lsf;
 }
 
+ScalarField& ScalarField::operator-=(const ScalarField& sf)
+{
+	if(this->_values.size() == sf._values.size())
+	{
+		for(int i = 0; i < this->_values.size(); ++i)
+		{
+			this->_values[i] -= sf._values[i];
+		}
+	}
+
+	return *this;
+}
+
+ScalarField operator-(ScalarField lsf, const ScalarField& rsf)
+{
+	lsf -= rsf;
+	return lsf;
+}
+
+ScalarField& ScalarField::operator*=(const ScalarField& sf)
+{
+	if(this->_values.size() == sf._values.size())
+	{
+		for(int i = 0; i < this->_values.size(); ++i)
+		{
+			this->_values[i] *= sf._values[i];
+		}
+	}
+
+	return *this;
+}
+
+ScalarField operator*(ScalarField lsf, const ScalarField& rsf)
+{
+	lsf *= rsf;
+	return lsf;
+}
+
 void ScalarField::export_as_obj(const std::string filename, const std::string name) const
 {
 	// Open the output file
