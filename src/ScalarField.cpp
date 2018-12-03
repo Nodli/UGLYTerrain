@@ -141,6 +141,16 @@ int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Ei
 	return threshold_nb;
 }
 
+void ScalarField::normalize()
+{
+	double valMin = get_min();
+	double valMax = get_max();
+	double range = valMax - valMin;
+
+	for(int i = 0; i < _values.size(); i++)
+		_values[i] /= range;
+}
+
 void ScalarField::copy_values(const ScalarField& sf)
 {
 	if(_grid_height == sf._grid_height && _grid_width == sf._grid_width)

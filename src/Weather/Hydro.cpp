@@ -62,8 +62,8 @@ ScalarField get_area(const ScalarField& heightmap)
 	{
 		return a.first > b.first;
 	});
-	one_way(heightmap, area, field);
-	// repartition(heightmap, area, field);
+	// one_way(heightmap, area, field);
+	repartition(heightmap, area, field);
 	return area;
 }
 
@@ -71,11 +71,12 @@ void erode_from_area(MultiLayerMap& layers, double k)
 {
 	ScalarField heightmap = layers.generate_field();
 	ScalarField area = get_area(heightmap);
+	area.normalize();
 	for(int j = 0; j < area.grid_height(); ++j)
 	{
 		for(int i = 0; i < area.grid_width(); i++)
 		{
-			area.set_value(i, j, k * sqrt(area.value(i, j))); // normalisé
+			area.set_value(i, j, k * sqrt(area.value(i, j)));
 		}
 	}
 

@@ -92,6 +92,25 @@ public:
 	}
 
 	/**
+	 * @brief Get the min value of the field
+	 *
+	 * @return double   the min value
+	 */
+	double get_min() const
+	{
+		return *min_element(_values.begin(), _values.end());
+	}
+	/**
+	 * @brief Get the max value of the field
+	 *
+	 * @return double   the max value
+	 */
+	double get_max() const
+	{
+		return *max_element(_values.begin(), _values.end());
+	}
+
+	/**
 	 * @brief Calculate the slope of the field at a given cell.
 	 * The slope is calculated to be the norm of the gradient
 	 *
@@ -216,6 +235,11 @@ public:
 	 * @param value     the value to set the field to
 	 */
 	void set_all(const double value);
+
+	/**
+	 * @brief Normalize the values of the field
+	 */
+	void normalize();
 
 	/**
 	 * @brief Copies the values from an other field

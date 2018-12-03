@@ -30,7 +30,7 @@ int main()
 	mlm.generate_field().export_as_obj("ErodedTerrain.obj");*/
 	ScalarField area = get_area(mlm.generate_field());
 	area.export_as_pgm("HydraulicArea.pgm", true);
-	erode_from_area(mlm, 0.1);
+	erode_from_area(mlm, 0.5);
 	mlm.get_field(0).export_as_pgm("TerrainHydroErode.pgm", true);
 	mlm.get_field(0).export_as_obj("TerrainHydroErode.obj");
 
