@@ -6,12 +6,12 @@
  * @{
  */
 /**
- * @brief Compute Hydraulic area from slope for a Multi Layer Map
+ * @brief Compute Hydraulic area from an heightmap
  *
- * @param layers          the Multi Layer Map to erode
+ * @param heightMap       the source for the computation
  * @return ScalarField    the computed area
  */
-ScalarField get_area(MultiLayerMap& layers);
+ScalarField get_area(const ScalarField& heightmap);
 
-void erode_from_area(MultiLayerMap& layers);
+void erode_from_area(MultiLayerMap& layers, double k);
 /** @}*/

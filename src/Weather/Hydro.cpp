@@ -1,27 +1,28 @@
 #include <Weather/Hydro.hpp>
 #include <Utils.hpp>
 
-void one_way(ScalarField& heightMap, ScalarField& area, std::vector<std::pair<double, Eigen::Vector2i>>& field)
+void one_way(const ScalarField& heightmap, ScalarField& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
 	for(int i = 0; i < field.size(); ++i)
 	{
 		// coordinates of the ith highest cell
 		int x = field[i].second.x();
 		int y = field[i].second.y();
-
 		// neighbors informations
 		double values[8];
 		Eigen::Vector2i positions[8];
 		double slopes[8];
 
-		int neigh_nb = heightMap.neighbors_info_filter(field[i].second, values, positions, slopes);
-
+		int neigh_nb = heightmap.neighbors_info_filter(field[i].second, values, positions, slopes);
 		int lowest_neigh = 0;
 
 		// get the lowest neighbor
 		for(int j = 0; j < neigh_nb; ++j)
 		{
-			if(slopes[j] < slopes[lowest_neigh]) lowest_neigh = j;
+			if(slopes[j] < slopes[lowest_neigh])
+			{
+				lowest_neigh = j;
+			}
 		}
 
 		// add value of the ith highest cell to the lowest neighbor
@@ -29,21 +30,19 @@ void one_way(ScalarField& heightMap, ScalarField& area, std::vector<std::pair<do
 	}
 }
 
-void repartition(ScalarField& heightMap, ScalarField& area, std::vector<std::pair<double, Eigen::Vector2i>>& field)
+void repartition(const ScalarField& heightmap, ScalarField& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
 	for(int i = 0; i < field.size(); ++i)
 	{
 		// coordinates of the ith highest cell
 		int x = field[i].second.x();
 		int y = field[i].second.y();
-
 		// neighbors informations
 		double values[8];
 		Eigen::Vector2i positions[8];
 		double slopes[8];
 		double proportions[8];
-
-		int neigh_nb = heightMap.neighbors_info_filter(field[i].second, values, positions, slopes);
+		int neigh_nb = heightmap.neighbors_info_filter(field[i].second, values, positions, slopes);
 		proportion(neigh_nb, slopes, proportions);
 
 		// add to each neighbor the proportion of the ith highest cell value
@@ -54,26 +53,31 @@ void repartition(ScalarField& heightMap, ScalarField& area, std::vector<std::pai
 	}
 }
 
-ScalarField get_area(MultiLayerMap& layers)
+ScalarField get_area(const ScalarField& heightmap)
 {
-	ScalarField heightMap = layers.generate_field();
-	ScalarField area = heightMap;
+	ScalarField area = heightmap;
 	area.set_all(1.0);
-
-	std::vector<std::pair<double, Eigen::Vector2i>> field = heightMap.export_to_list();
+	std::vector<std::pair<double, Eigen::Vector2i>> field = heightmap.export_to_list();
 	std::sort(field.begin(), field.end(), [](const std::pair<double, Eigen::Vector2i>& a, const std::pair<double, Eigen::Vector2i>& b)
 	{
 		return a.first > b.first;
 	});
-
-	// one_way(heightMap, area, field);
-	repartition(heightMap, area, field);
-
+	one_way(heightmap, area, field);
+	// repartition(heightmap, area, field);
 	return area;
 }
 
-void erode_from_area(MultiLayerMap& layers)
+void erode_from_area(MultiLayerMap& layers, double k)
 {
-	ScalarField area = get_area(layers);
+	ScalarField heightmap = layers.generate_field();
+	ScalarField area = get_area(heightmap);
+	for(int j = 0; j < area.grid_height(); ++j)
+	{
+		for(int i = 0; i < area.grid_width(); i++)
+		{
+			area.set_value(i, j, k * sqrt(area.value(i, j))); // normalisé
+		}
+	}
+
 	layers.get_field(0) -= area;
 }

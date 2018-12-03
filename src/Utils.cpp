@@ -1,19 +1,47 @@
 #include <Utils.hpp>
 
-double proportion(const int n, double* values, double* proportions){
+void proportion(const int n, double* values, double* proportions){
 
 	double sum = 0;
-	double max_value = values[0];
-	for(int ivalue = 0; ivalue != n; ++ivalue){
-		sum += values[ivalue];
 
-		if(values[ivalue] > max_value){
-			max_value = values[ivalue];
-		}
+	for(int ivalue = 0; ivalue < n; ++ivalue){
+		sum += values[ivalue];
 	}
 
 	for(int ivalue = 0; ivalue < n; ++ivalue){
-		proportions[ivalue] = values[ivalue] / sum;
+		if(sum != 0.){
+			proportions[ivalue] = values[ivalue] / sum;
+		}else{
+			proportions[ivalue] = 0.;
+		}
 	}
+
+}
+
+double max_array(int n, double* values){
+
+	double max = values[0];
+
+	for(int ivalue = 1; ivalue < n; ++ivalue){
+		if(values[ivalue] > max){
+			max = values[ivalue];
+		}
+	}
+
+	return max;
+
+}
+
+double min_array(int n, double* values){
+
+	double max = values[0];
+
+	for(int ivalue = 1; ivalue < n; ++ivalue){
+		if(values[ivalue] < max){
+			max = values[ivalue];
+		}
+	}
+
+	return max;
 
 }

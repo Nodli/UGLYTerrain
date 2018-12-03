@@ -78,9 +78,9 @@ Eigen::Vector3d ScalarField::normal(const int i, const int j) const
 {
 	Eigen::Vector3d result;
 	Eigen::Vector2d grad = gradient(i, j);
-	result[0] = grad[0];
-	result[1] = grad[1];
-	result[2] = -1;
+	result[0] = -grad[0];
+	result[1] = -grad[1];
+	result[2] = 1;
 	result.normalize();
 	return result;
 }
@@ -90,14 +90,14 @@ void ScalarField::set_value(const int i, const int j, double value)
 	at(i, j) = value;
 }
 
-void ScalarField::set_all(const double value){
+void ScalarField::set_all(const double value)
+{
 	std::fill(_values.begin(), _values.end(), value);
 }
 
 int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const
 {
 	int nb = neighbors(i, j, p);
-
 	double ij_value = value(i, j);
 
 	for(int k = 0; k < nb; ++k)
@@ -109,29 +109,33 @@ int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Ve
 	return nb;
 }
 
-int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter, const bool sup) const{
-
+int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter, const bool sup) const
+{
 	int nb = neighbors(i, j, p);
 	int threshold_nb = 0;
-
 	double ij_value = value(i, j);
 
-	for(int ineigh = 0; ineigh < nb; ++ineigh){
-
+	for(int ineigh = 0; ineigh < nb; ++ineigh)
+	{
 		// values are computed in place but will be overridden / not considered if threshold_nb is not incremented
-		v[threshold_nb] = value(p[ineigh]);
-		s[threshold_nb] = (v[ineigh] - ij_value) / def_nei_dist[ineigh];
+		p[threshold_nb] = p[ineigh];
+		v[threshold_nb] = value(p[threshold_nb]);
+		s[threshold_nb] = (v[threshold_nb] - ij_value) / def_nei_dist[ineigh];
 
-		if(sup){
-			if(s[threshold_nb] >= s_filter){
-				++threshold_nb;
-			}
-		}else{
-			if(s[threshold_nb] <= s_filter){
+		if(sup)
+		{
+			if(s[threshold_nb] >= s_filter)
+			{
 				++threshold_nb;
 			}
 		}
-
+		else
+		{
+			if(s[threshold_nb] <= s_filter)
+			{
+				++threshold_nb;
+			}
+		}
 	}
 
 	return threshold_nb;
