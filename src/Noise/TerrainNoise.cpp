@@ -1,11 +1,14 @@
 #include "Noise/TerrainNoise.hpp"
+FastNoise noise;
+//noise.SetNoiseType(FastNoise::Perlin);
 
 double TerrainNoise::get_noise(int i, int j)
 {
 	double value = 0.0;
 	double freq = _base_freq;
 	double ampl = _amplitude;
-
+	noise.SetFrequency(_base_freq/2.0);
+	double noi = (0.5 + 0.5*noise.GetNoise(i, j));
 	for(int k = 0; k < _octaves; k++)
 	{
 		_base_noise.SetFrequency(freq);
@@ -18,7 +21,7 @@ double TerrainNoise::get_noise(int i, int j)
 
 		if(k > 0)
 		{
-			value += (1 - (1 - ((value + _amplitude) / 10.0)) * kf) * ampl * v;
+			value += (1 - (1 - ((value + _amplitude) / (2.0*_amplitude))) * kf) * ampl * v;
 			//sf.at(i, j) += ((sf.at(i, j) + 5) / 10.0) * ampl * v;
 		}
 		else
@@ -29,5 +32,5 @@ double TerrainNoise::get_noise(int i, int j)
 		ampl /= 2.0;
 	}
 
-	return value;
+	return (value+2*_amplitude);//*noi;
 }
