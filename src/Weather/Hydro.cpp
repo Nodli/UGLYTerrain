@@ -30,7 +30,7 @@ void one_way(const ScalarField& heightmap, ScalarField& area, const std::vector<
 	}
 }
 
-void repartition(const ScalarField& heightmap, ScalarField& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
+void distribution(const ScalarField& heightmap, ScalarField& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
 	for(int i = 0; i < field.size(); ++i)
 	{
@@ -53,7 +53,7 @@ void repartition(const ScalarField& heightmap, ScalarField& area, const std::vec
 	}
 }
 
-ScalarField get_area(const ScalarField& heightmap)
+ScalarField get_area(const ScalarField& heightmap, bool distribute)
 {
 	ScalarField area = heightmap;
 	area.set_all(1.0);
@@ -62,21 +62,25 @@ ScalarField get_area(const ScalarField& heightmap)
 	{
 		return a.first > b.first;
 	});
-	// one_way(heightmap, area, field);
-	repartition(heightmap, area, field);
+
+	if(distribute)	distribution(heightmap, area, field);
+	else 						one_way(heightmap, area, field);
+	
 	return area;
 }
 
-void erode_from_area(MultiLayerMap& layers, double k)
+void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 {
 	ScalarField heightmap = layers.generate_field();
-	ScalarField area = get_area(heightmap);
+	ScalarField area = get_area(heightmap, distribution);
 	area.normalize();
+
 	for(int j = 0; j < area.grid_height(); ++j)
 	{
 		for(int i = 0; i < area.grid_width(); i++)
 		{
-			area.set_value(i, j, k * sqrt(area.value(i, j)));
+			// weighted by slope: less effect on plains
+			area.set_value(i, j, layers.get_field(0).slope(i, j) * k * sqrt(area.value(i, j)));
 		}
 	}
 
