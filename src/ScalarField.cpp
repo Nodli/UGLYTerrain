@@ -85,6 +85,18 @@ Eigen::Vector3d ScalarField::normal(const int i, const int j) const
 	return result;
 }
 
+std::vector<std::pair<double, Eigen::Vector2i>> ScalarField::sort_by_height() const
+{
+	std::vector<std::pair<double, Eigen::Vector2i>> sorted_indices = export_to_list();
+
+	std::sort(sorted_indices.begin(), sorted_indices.end(), [](const std::pair<double, Eigen::Vector2i>& a, const std::pair<double, Eigen::Vector2i>& b)
+	{
+		return a.first > b.first;
+	});
+
+	return sorted_indices;
+}
+
 void ScalarField::set_value(const int i, const int j, double value)
 {
 	at(i, j) = value;

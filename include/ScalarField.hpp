@@ -170,6 +170,8 @@ public:
 		return _values.at(index(i, j));
 	}
 
+	std::vector<std::pair<double, Eigen::Vector2i>> sort_by_height() const;
+
 	/**
 	 * @brief Get all the information of a neigborhood
 	 *

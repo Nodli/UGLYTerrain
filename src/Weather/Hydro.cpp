@@ -57,11 +57,8 @@ ScalarField get_area(const ScalarField& heightmap, bool distribute)
 {
 	ScalarField area = heightmap;
 	area.set_all(1.0);
-	std::vector<std::pair<double, Eigen::Vector2i>> field = heightmap.export_to_list();
-	std::sort(field.begin(), field.end(), [](const std::pair<double, Eigen::Vector2i>& a, const std::pair<double, Eigen::Vector2i>& b)
-	{
-		return a.first > b.first;
-	});
+
+	std::vector<std::pair<double, Eigen::Vector2i>> field = heightmap.sort_by_height();
 
 	if(distribute)	distribution(heightmap, area, field);
 	else 						one_way(heightmap, area, field);
