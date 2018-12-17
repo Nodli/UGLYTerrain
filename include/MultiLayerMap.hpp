@@ -73,6 +73,14 @@ public:
 	ScalarField generate_field() const;
 
 	/**
+	 * @brief Get the sum of all values at one point.
+	 * This is done by summing all the Scalar Fields together
+	 *
+	 * @return double	      	the double sum of all the values in the Multi Layer Map
+	 */
+	double get_sum(const int i, const int j) const;
+
+	/**
 	 * @brief Set the value of a field at a given position
 	 *
 	 * @param field_index       the index of the field to modify

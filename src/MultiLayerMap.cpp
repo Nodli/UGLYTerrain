@@ -62,3 +62,18 @@ ScalarField MultiLayerMap::generate_field() const
 
 	return std::move(result);
 }
+
+double MultiLayerMap::get_sum(const int i, const int j) const
+{
+	if(i < 0 || i >= _grid_width || j < 0 || j >= _grid_height)
+	{
+		return 0;
+	}
+
+	double res;
+	for(int f = 0; f < _fields.size(); ++f)
+	{
+		res += _fields[f].value(i, j);
+	}
+	return res;
+}

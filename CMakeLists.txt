@@ -30,6 +30,7 @@ set(sources
     "src/Noise/TerrainNoise.cpp"
     "src/Weather/Erosion.cpp"
     "src/Weather/Hydro.cpp"
+    "src/Weather/Biome.cpp"
     "src/Utils.cpp")
 
 set(test_sources
