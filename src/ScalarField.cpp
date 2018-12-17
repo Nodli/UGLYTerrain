@@ -153,14 +153,35 @@ int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Ei
 	return threshold_nb;
 }
 
-void ScalarField::normalize()
+double ScalarField::get_sum()
+{
+	double sum = 0;
+
+	for(int j = 0; j < grid_height(); ++j)
+	{
+		for(int i = 0; i < grid_width(); i++)
+		{
+			sum += value(i, j);
+		}
+	}
+
+	return sum;
+}
+
+double ScalarField::get_range()
 {
 	double valMin = get_min();
 	double valMax = get_max();
-	double range = valMax - valMin;
+	return valMax - valMin;
+}
+
+void ScalarField::normalize()
+{
+	double range = get_range();
+	double min = get_min();
 
 	for(int i = 0; i < _values.size(); i++)
-		_values[i] /= range;
+		_values[i] = (_values[i] - min) / range;
 }
 
 void ScalarField::copy_values(const ScalarField& sf)
@@ -263,6 +284,22 @@ ScalarField& ScalarField::operator*=(const ScalarField& sf)
 ScalarField operator*(ScalarField lsf, const ScalarField& rsf)
 {
 	lsf *= rsf;
+	return lsf;
+}
+
+ScalarField& ScalarField::operator*=(const double& d)
+{
+	for(int i = 0; i < this->_values.size(); ++i)
+	{
+		this->_values[i] *= d;
+	}
+
+	return *this;
+}
+
+ScalarField operator*(ScalarField lsf, const double& rd)
+{
+	lsf *= rd;
 	return lsf;
 }
 

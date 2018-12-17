@@ -1,5 +1,6 @@
 #include <Weather/Hydro.hpp>
 #include <Utils.hpp>
+#include <iostream>
 
 void one_way(const ScalarField& heightmap, ScalarField& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
@@ -69,17 +70,73 @@ ScalarField get_area(const ScalarField& heightmap, bool distribute)
 void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 {
 	ScalarField heightmap = layers.generate_field();
-	ScalarField area = get_area(heightmap, distribution);
-	area.normalize();
+	ScalarField area = get_area(heightmap, distribute);
+	ScalarField eroded_quantity(area);
+	ScalarField sed_quantity(area);
+	ScalarField slope = heightmap.get_slope_map();
+	slope.normalize();
 
 	for(int j = 0; j < area.grid_height(); ++j)
 	{
 		for(int i = 0; i < area.grid_width(); i++)
 		{
 			// weighted by slope: less effect on plains
-			area.set_value(i, j, layers.get_field(0).slope(i, j) * k * sqrt(area.value(i, j)));
+			// sqrt(slope * sqrt(area))
+			eroded_quantity.set_value(i, j, sqrt(slope.value(i, j) * sqrt(area.value(i, j))));
 		}
 	}
 
-	layers.get_field(0) -= area;
+	eroded_quantity.normalize();
+	eroded_quantity *= k;
+	double eroded_quantity_sum = eroded_quantity.get_sum();
+
+	layers.get_field(0) -= eroded_quantity;
+
+	// add sed
+	for(int j = 0; j < area.grid_height(); ++j)
+	{
+		for(int i = 0; i < area.grid_width(); i++)
+		{
+			// sqrt(area) / sqrt(1+slope*slope)
+			sed_quantity.set_value(i, j, sqrt(area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
+		}
+	}
+
+	sed_quantity.normalize();
+	sed_quantity = sed_quantity * eroded_quantity_sum * (1.0/sed_quantity.cell_number());
+
+	layers.get_field(1) += sed_quantity;
+}
+
+void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_per_drop, double water_loss, double initial_speed)
+{
+	std::uniform_int_distribution<> dis_width(0, layers.grid_width() - 1);
+	std::uniform_int_distribution<> dis_height(0, layers.grid_width() - 1);
+
+	for(int i = 0; i < n; i++)
+	{
+		int x = dis_width(gen);
+		int y = dis_height(gen);
+
+		double qty_sed = 0.0;
+		double qty_water = water_per_drop;
+		double speed = initial_speed;
+
+		while(qty_water > 0.0)
+		{
+			// update qty_sed TODO
+			double delta_sed = 0.0;	// to mind: can't have abs(delta_sed) > qty_sed, qty_sed always > 0
+			layers.get_field(0).at(x, y) -= delta_sed;
+			qty_sed += delta_sed;
+
+			// update speed
+
+			// compute new x, y
+
+			// update qty_water
+			qty_water -= water_loss;
+		}
+
+		layers.get_field(0).at(x, y) += qty_sed;
+	}
 }

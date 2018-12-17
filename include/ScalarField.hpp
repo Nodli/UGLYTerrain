@@ -170,6 +170,11 @@ public:
 		return _values.at(index(i, j));
 	}
 
+	/**
+	 * @brief Get indices of values sorted by height
+	 *
+	 * @return vector      the indices of values sorted by height
+	 */
 	std::vector<std::pair<double, Eigen::Vector2i>> sort_by_height() const;
 
 	/**
@@ -237,6 +242,20 @@ public:
 	 * @param value     the value to set the field to
 	 */
 	void set_all(const double value);
+
+	/**
+	 * @brief Get sum of values in field
+	 * 
+	 * @return double		the sum of all values
+	 */
+	double get_sum();
+
+	/**
+	 * @brief Get range of values in field
+	 * 
+	 * @return double		the range
+	 */
+	double get_range();
 
 	/**
 	 * @brief Normalize the values of the field
@@ -315,6 +334,21 @@ public:
 	 * @return ScalarField, result of the multiplication, by value
 	 */
 	friend ScalarField operator*(ScalarField lsf, const ScalarField& rsf);
+	/**
+	 * @brief Multiplication assignment operator
+	 *
+	 * @param d            	the double to multiply
+	 * @return ScalarField& a reference to this Scalar Field
+	 */
+	ScalarField& operator*=(const double& d);
+	/**
+	 * @brief Multiplication operator
+	 *
+	 * @param lsf            the Scalar field to multiply on the left
+	 * @param rd           	 the double to multiply on the right
+	 * @return ScalarField, result of the multiplication, by value
+	 */
+	friend ScalarField operator*(ScalarField lsf, const double& rd);
 
 	/**
 	 * @brief Export the Scalar Field as a obj
