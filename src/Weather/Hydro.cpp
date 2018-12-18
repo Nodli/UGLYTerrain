@@ -103,7 +103,8 @@ void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 	}
 
 	sed_quantity.normalize();
-	sed_quantity = sed_quantity * eroded_quantity_sum * (1.0/sed_quantity.cell_number());
+	double sed_quantity_sum = sed_quantity.get_sum();
+	sed_quantity = sed_quantity * (1/sed_quantity_sum) * eroded_quantity_sum;
 
 	layers.get_field(1) += sed_quantity;
 }
