@@ -5,7 +5,7 @@ double MultiLayerMap::value(const int i, const int j) const
 {
 	double result = 0;
 
-	for(int l; l < get_layer_number(); ++l)
+	for(int l = 0; l < get_layer_number(); ++l)
 	{
 		result += _layers[l].value(i, j);
 	}

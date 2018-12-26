@@ -2,7 +2,7 @@
 #include <Utils.hpp>
 #include <iostream>
 
-void one_way(const SimpleLayerMap& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
+void one_way(const DoubleField& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
 	for(int i = 0; i < field.size(); ++i)
 	{
@@ -31,7 +31,7 @@ void one_way(const SimpleLayerMap& heightmap, SimpleLayerMap& area, const std::v
 	}
 }
 
-void distribution(const SimpleLayerMap& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
+void distribution(const DoubleField& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
 	for(int i = 0; i < field.size(); ++i)
 	{
@@ -54,9 +54,9 @@ void distribution(const SimpleLayerMap& heightmap, SimpleLayerMap& area, const s
 	}
 }
 
-SimpleLayerMap get_area(const SimpleLayerMap& heightmap, bool distribute)
+SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute)
 {
-	SimpleLayerMap area = heightmap;
+	SimpleLayerMap area = SimpleLayerMap(static_cast<Grid2d>(heightmap));
 	area.set_all(1.0);
 
 	std::vector<std::pair<double, Eigen::Vector2i>> field = heightmap.sort_by_height();
@@ -69,11 +69,10 @@ SimpleLayerMap get_area(const SimpleLayerMap& heightmap, bool distribute)
 
 void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 {
-	SimpleLayerMap heightmap = layers.generate_field();
-	SimpleLayerMap area = get_area(heightmap, distribute);
+	SimpleLayerMap area = get_area(layers, distribute);
 	SimpleLayerMap eroded_quantity(area);
 	SimpleLayerMap sed_quantity(area);
-	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(heightmap);
+	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(layers);
 	slope.normalize();
 
 	for(int j = 0; j < area.grid_height(); ++j)

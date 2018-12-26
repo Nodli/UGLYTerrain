@@ -14,7 +14,7 @@
  * @param distribute      weither or not the area of a point should be distributed on the neighbors
  * @return SimpleLayerMap    the computed area
  */
-SimpleLayerMap get_area(const SimpleLayerMap& heightmap, bool distribute = true);
+SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute = true);
 
 /**
  * @brief Erode from Hydraulic area
