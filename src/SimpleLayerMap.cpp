@@ -1,9 +1,9 @@
-#include <ScalarField.hpp>
+#include <SimpleLayerMap.hpp>
 #include <algorithm>
 
-ScalarField ScalarField::generate_slope_map(const DoubleField& field)
+SimpleLayerMap SimpleLayerMap::generate_slope_map(const DoubleField& field)
 {
-	ScalarField sf(static_cast<Grid2d>(field));
+	SimpleLayerMap sf(static_cast<Grid2d>(field));
 
 	for(int j = 0; j < field.grid_height(); ++j)
 	{
@@ -16,17 +16,17 @@ ScalarField ScalarField::generate_slope_map(const DoubleField& field)
 	return sf;	
 }
 
-void ScalarField::set_value(const int i, const int j, double value)
+void SimpleLayerMap::set_value(const int i, const int j, double value)
 {
 	at(i, j) = value;
 }
 
-void ScalarField::set_all(const double value)
+void SimpleLayerMap::set_all(const double value)
 {
 	std::fill(_values.begin(), _values.end(), value);
 }
 
-void ScalarField::normalize()
+void SimpleLayerMap::normalize()
 {
 	double range = get_range();
 	double min = get_min();
@@ -35,7 +35,7 @@ void ScalarField::normalize()
 		_values[i] = (_values[i] - min) / range;
 }
 
-void ScalarField::copy_values(const ScalarField& sf)
+void SimpleLayerMap::copy_values(const SimpleLayerMap& sf)
 {
 	if(_grid_height == sf._grid_height && _grid_width == sf._grid_width)
 	{
@@ -43,11 +43,11 @@ void ScalarField::copy_values(const ScalarField& sf)
 	}
 	else
 	{
-		throw std::invalid_argument("Wrong ScalarField size");
+		throw std::invalid_argument("Wrong SimpleLayerMap size");
 	}
 }
 
-void ScalarField::copy_values(ScalarField&& sf)
+void SimpleLayerMap::copy_values(SimpleLayerMap&& sf)
 {
 	if(_grid_height == sf._grid_height && _grid_width == sf._grid_width)
 	{
@@ -55,11 +55,11 @@ void ScalarField::copy_values(ScalarField&& sf)
 	}
 	else
 	{
-		throw std::invalid_argument("Wrong ScalarField size");
+		throw std::invalid_argument("Wrong SimpleLayerMap size");
 	}
 }
 
-ScalarField& ScalarField::operator=(const ScalarField& sf)
+SimpleLayerMap& SimpleLayerMap::operator=(const SimpleLayerMap& sf)
 {
 	if(this != &sf)
 	{
@@ -70,7 +70,7 @@ ScalarField& ScalarField::operator=(const ScalarField& sf)
 	return *this;
 }
 
-ScalarField& ScalarField::operator=(ScalarField&& sf)
+SimpleLayerMap& SimpleLayerMap::operator=(SimpleLayerMap&& sf)
 {
 	if(this != &sf)
 	{
@@ -81,7 +81,7 @@ ScalarField& ScalarField::operator=(ScalarField&& sf)
 	return *this;
 }
 
-ScalarField& ScalarField::operator+=(const ScalarField& sf)
+SimpleLayerMap& SimpleLayerMap::operator+=(const SimpleLayerMap& sf)
 {
 	if(this->_values.size() == sf._values.size())
 	{
@@ -94,13 +94,13 @@ ScalarField& ScalarField::operator+=(const ScalarField& sf)
 	return *this;
 }
 
-ScalarField operator+(ScalarField lsf, const ScalarField& rsf)
+SimpleLayerMap operator+(SimpleLayerMap lsf, const SimpleLayerMap& rsf)
 {
 	lsf += rsf;
 	return lsf;
 }
 
-ScalarField& ScalarField::operator-=(const ScalarField& sf)
+SimpleLayerMap& SimpleLayerMap::operator-=(const SimpleLayerMap& sf)
 {
 	if(this->_values.size() == sf._values.size())
 	{
@@ -113,13 +113,13 @@ ScalarField& ScalarField::operator-=(const ScalarField& sf)
 	return *this;
 }
 
-ScalarField operator-(ScalarField lsf, const ScalarField& rsf)
+SimpleLayerMap operator-(SimpleLayerMap lsf, const SimpleLayerMap& rsf)
 {
 	lsf -= rsf;
 	return lsf;
 }
 
-ScalarField& ScalarField::operator*=(const ScalarField& sf)
+SimpleLayerMap& SimpleLayerMap::operator*=(const SimpleLayerMap& sf)
 {
 	if(this->_values.size() == sf._values.size())
 	{
@@ -132,13 +132,13 @@ ScalarField& ScalarField::operator*=(const ScalarField& sf)
 	return *this;
 }
 
-ScalarField operator*(ScalarField lsf, const ScalarField& rsf)
+SimpleLayerMap operator*(SimpleLayerMap lsf, const SimpleLayerMap& rsf)
 {
 	lsf *= rsf;
 	return lsf;
 }
 
-ScalarField& ScalarField::operator*=(const double& d)
+SimpleLayerMap& SimpleLayerMap::operator*=(const double& d)
 {
 	for(int i = 0; i < this->_values.size(); ++i)
 	{
@@ -148,7 +148,7 @@ ScalarField& ScalarField::operator*=(const double& d)
 	return *this;
 }
 
-ScalarField operator*(ScalarField lsf, const double& rd)
+SimpleLayerMap operator*(SimpleLayerMap lsf, const double& rd)
 {
 	lsf *= rd;
 	return lsf;

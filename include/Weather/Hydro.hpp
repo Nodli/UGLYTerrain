@@ -12,9 +12,9 @@
  *
  * @param heightMap       the source for the computation
  * @param distribute      weither or not the area of a point should be distributed on the neighbors
- * @return ScalarField    the computed area
+ * @return SimpleLayerMap    the computed area
  */
-ScalarField get_area(const ScalarField& heightmap, bool distribute = true);
+SimpleLayerMap get_area(const SimpleLayerMap& heightmap, bool distribute = true);
 
 /**
  * @brief Erode from Hydraulic area

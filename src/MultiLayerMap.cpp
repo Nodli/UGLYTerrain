@@ -1,7 +1,7 @@
 #include <MultiLayerMap.hpp>
-ScalarField& MultiLayerMap::new_field()
+SimpleLayerMap& MultiLayerMap::new_field()
 {
-	add_field(ScalarField(_grid_width, _grid_height, _a, _b));
+	add_field(SimpleLayerMap(_grid_width, _grid_height, _a, _b));
 	return _fields.back();
 }
 
@@ -43,9 +43,9 @@ MultiLayerMap& MultiLayerMap::operator=(MultiLayerMap &&mlm)
 	return *this;
 }
 
-ScalarField MultiLayerMap::generate_field() const
+SimpleLayerMap MultiLayerMap::generate_field() const
 {
-	ScalarField result(*this);
+	SimpleLayerMap result(*this);
 
 	for(int i = 0; i < _grid_width; ++i)
 	{

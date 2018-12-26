@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ScalarField.hpp>
+#include <SimpleLayerMap.hpp>
 
 /**
  * @brief Defines a layered field
@@ -47,9 +47,9 @@ public:
 	 * @brief Get the a field of the Multi Layer Map
 	 *
 	 * @param field_index           the index of the field in the map
-	 * @return const ScalarField&   a reference to the field
+	 * @return const SimpleLayerMap&   a reference to the field
 	 */
-	const ScalarField& get_field(const int field_index) const
+	const SimpleLayerMap& get_field(const int field_index) const
 	{
 		return _fields.at(field_index);
 	}
@@ -57,9 +57,9 @@ public:
 	 * @brief Get the a field of the Multi Layer Map
 	 *
 	 * @param field_index           the index of the field in the map
-	 * @return const ScalarField&   a modifiable reference to the field
+	 * @return const SimpleLayerMap&   a modifiable reference to the field
 	 */
-	ScalarField& get_field(const int field_index)
+	SimpleLayerMap& get_field(const int field_index)
 	{
 		return _fields.at(field_index);
 	}
@@ -68,9 +68,9 @@ public:
 	 * @brief Generate an agregation of the Multi Layer Map.
 	 * This is done by summing all the Scalar Fields together
 	 *
-	 * @return ScalarField      the Scalar Field sum of all the field in the Multi Layer Map
+	 * @return SimpleLayerMap      the Scalar Field sum of all the field in the Multi Layer Map
 	 */
-	ScalarField generate_field() const;
+	SimpleLayerMap generate_field() const;
 
 	/**
 	 * @brief Set the value of a field at a given position
@@ -90,7 +90,7 @@ public:
 	 * @param field_index       the index of the field to modify
 	 * @param field             the field from which to copy the values
 	 */
-	void set_field(int field_index, const ScalarField& field)
+	void set_field(int field_index, const SimpleLayerMap& field)
 	{
 		_fields.at(field_index).copy_values(field);
 	}
@@ -100,7 +100,7 @@ public:
 	 * @param field_index       the index of the field to modify
 	 * @param field             the field from which to copy the values
 	 */
-	void set_field(int field_index, ScalarField&& field)
+	void set_field(int field_index, SimpleLayerMap&& field)
 	{
 		_fields.at(field_index).copy_values(std::move(field));
 	}
@@ -110,7 +110,7 @@ public:
 	 *
 	 * @param field             the field to copy into the Multi Layer Map
 	 */
-	void add_field(const ScalarField& field)
+	void add_field(const SimpleLayerMap& field)
 	{
 		_fields.push_back(field);
 	}
@@ -119,7 +119,7 @@ public:
 	 *
 	 * @param field             the field to copy into the Multi Layer Map
 	 */
-	void add_field(ScalarField&& field)
+	void add_field(SimpleLayerMap&& field)
 	{
 		_fields.push_back(std::move(field));
 	}
@@ -127,9 +127,9 @@ public:
 	/**
 	 * @brief Add a new layer to the map
 	 *
-	 * @return ScalarField&     a reference to the newly created layer
+	 * @return SimpleLayerMap&     a reference to the newly created layer
 	 */
-	ScalarField& new_field();
+	SimpleLayerMap& new_field();
 
 	/**
 	 * @brief Reshape the MultiLayerMap to a new size and position
@@ -164,5 +164,5 @@ public:
 	MultiLayerMap& operator=(MultiLayerMap&& mlm);
 
 protected:
-	std::vector<ScalarField> _fields; /**< Array of Scalar Fields*/
+	std::vector<SimpleLayerMap> _fields; /**< Array of Scalar Fields*/
 };
