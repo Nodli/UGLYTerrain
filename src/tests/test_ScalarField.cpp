@@ -15,7 +15,7 @@ TEST_CASE("Test ScalarField functionment", "[ScalarField]")
 	REQUIRE(sf.value(0, 0) == 0);
 	REQUIRE(sf.value(1, 1) == 1);
 	REQUIRE(sf.value(0, 1) == 0.5);
-	REQUIRE(sf.value(0.5, 0.5) == 0.5);
+	REQUIRE(sf.value_inter(0.5, 0.5) == 0.5);
 }
 
 TEST_CASE("Test ScalarField equality", "[ScalarField]")
@@ -28,38 +28,38 @@ TEST_CASE("Test ScalarField equality", "[ScalarField]")
 	SECTION("Copy constructor is working")
 	{
 		ScalarField sf2(sf);
-		REQUIRE(sf2.value(0.5, 0.5) == 0.5);
+		REQUIRE(sf2.value_inter(0.5, 0.5) == 0.5);
 	}
 	SECTION("Move constructor is working")
 	{
 		ScalarField sf2(std::move(sf));
-		REQUIRE(sf2.value(0.5, 0.5) == 0.5);
+		REQUIRE(sf2.value_inter(0.5, 0.5) == 0.5);
 	}
 	SECTION("Affectation is working")
 	{
 		ScalarField sf2(8, 8, {1, 1}, {5, 5});
 		sf2 = sf;
 		REQUIRE(sf2.cell_number() == sf.cell_number());
-		REQUIRE(sf2.value(0.5, 0.5) == 0.5);
+		REQUIRE(sf2.value_inter(0.5, 0.5) == 0.5);
 	}
 	SECTION("Move is working")
 	{
 		ScalarField sf2(8, 8, {1, 1}, {5, 5});
 		sf2 = std::move(sf);
 		REQUIRE(sf2.cell_number() == sf.cell_number());
-		REQUIRE(sf2.value(0.5, 0.5) == 0.5);
+		REQUIRE(sf2.value_inter(0.5, 0.5) == 0.5);
 	}
 	SECTION("Value copy is working")
 	{
 		ScalarField sf2(2, 2, {0, 0}, {2, 2});
 		sf2.copy_values(sf);
-		REQUIRE(sf2.value(1.0, 1.0) == 0.5);
+		REQUIRE(sf2.value_inter(1.0, 1.0) == 0.5);
 	}
 	SECTION("Value Moving is working")
 	{
 		ScalarField sf2(2, 2, {0, 0}, {2, 2});
 		sf2.copy_values(std::move(sf));
-		REQUIRE(sf2.value(1.0, 1.0) == 0.5);
+		REQUIRE(sf2.value_inter(1.0, 1.0) == 0.5);
 	}
 	SECTION("Value copy will throw is not the right size")
 	{
@@ -143,6 +143,6 @@ TEST_CASE("Test if pgm exporter and slope_map getter works", "[ScalardField]")
 
 	sf.export_as_obj("Test_pgm.obj");
 	sf.export_as_pgm("Test_pgm.pgm");
-	sf.get_slope_map().export_as_pgm("Test_pgm_slope.pgm");
-	sf.get_slope_map().export_as_obj("Test_pgm_slope.obj");
+	ScalarField::generate_slope_map(sf).export_as_pgm("Test_pgm_slope.pgm");
+	ScalarField::generate_slope_map(sf).export_as_obj("Test_pgm_slope.obj");
 }

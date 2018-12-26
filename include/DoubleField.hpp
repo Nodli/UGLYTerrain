@@ -97,7 +97,7 @@ public:
 	 * @param x, y      the position of a point on the plane
 	 * @return double   the interpolated value of the field at that position
 	 */
-	double value(const double x, const double y) const;
+	double value_inter(const double x, const double y) const;
 
 	/**
 	 * @brief Get the min value of the field

@@ -73,7 +73,7 @@ void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 	ScalarField area = get_area(heightmap, distribute);
 	ScalarField eroded_quantity(area);
 	ScalarField sed_quantity(area);
-	ScalarField slope = heightmap.get_slope_map();
+	ScalarField slope = ScalarField::generate_slope_map(heightmap);
 	slope.normalize();
 
 	for(int j = 0; j < area.grid_height(); ++j)

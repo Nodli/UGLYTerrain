@@ -26,7 +26,7 @@ int main()
 
 	sf.export_as_obj("Terrain.obj");
 	sf.export_as_pgm("Terrain.pgm", true);
-	sf.get_slope_map().export_as_pgm("Slope.pgm", true);
+	ScalarField::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
 	/*erode_and_transport(mlm, 0.1, 1);
 	mlm.get_field(0).export_as_pgm("TerrainBedrock.pgm", true);
 	mlm.get_field(0).export_as_obj("TerrainBedrock.obj");

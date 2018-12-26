@@ -88,7 +88,7 @@ void export_tab(const ScalarField& sf, const std::string& name)
 
 		if(ImGui::Button("Export slope as pgm"))
 		{
-			sf.get_slope_map().export_as_pgm(name + "_slope_" + ".pgm");
+			ScalarField::generate_slope_map(sf).export_as_pgm(name + "_slope_" + ".pgm");
 		}
 
 		if(ImGui::Button("Export hydro as pgm"))

@@ -12,7 +12,7 @@ DoubleField::read_only_iterator DoubleField::end() const
 	return DoubleField::read_only_iterator(this, cell_number());
 }
 
-double DoubleField::value(const double x, const double y) const
+double DoubleField::value_inter(const double x, const double y) const
 {
 	Eigen::Vector2i ij = grid_position(x, y);
 	Eigen::Vector2d pij = position(ij(0), ij(1));
