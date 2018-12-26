@@ -26,6 +26,7 @@ set(sources
     "src/Box2d.cpp"
     "src/Grid2d.cpp"
     "src/ScalarField.cpp"
+    "src/DoubleField.cpp"
     "src/MultiLayerMap.cpp"
     "src/Noise/TerrainNoise.cpp"
     "src/Weather/Erosion.cpp"
