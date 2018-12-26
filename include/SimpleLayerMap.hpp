@@ -11,12 +11,12 @@
  */
 class SimpleLayerMap : public DoubleField
 {
-public: 
+public:
 	/**
 	 * @brief Generate a layer map of the slope from a field
-	 * 
-	 * @param field 			the source field to use
-	 * @return SimpleLayerMap 	the resulting layer 
+	 *
+	 * @param field             the source field to use
+	 * @return SimpleLayerMap   the resulting layer
 	 */
 	static SimpleLayerMap generate_slope_map(const DoubleField& field);
 public:
@@ -89,7 +89,7 @@ public:
 	 * @param value     the value to which set the field
 	 */
 	void set_value(const int i, const int j, double value);
-	
+
 	/**
 	 * @brief Gets acess to a cell of the field
 	 *
@@ -199,7 +199,7 @@ public:
 	/**
 	 * @brief Multiplication assignment operator
 	 *
-	 * @param d            	the double to multiply
+	 * @param d             the double to multiply
 	 * @return SimpleLayerMap& a reference to this Scalar Field
 	 */
 	SimpleLayerMap& operator*=(const double& d);
@@ -207,7 +207,7 @@ public:
 	 * @brief Multiplication operator
 	 *
 	 * @param lsf            the Scalar field to multiply on the left
-	 * @param rd           	 the double to multiply on the right
+	 * @param rd             the double to multiply on the right
 	 * @return SimpleLayerMap, result of the multiplication, by value
 	 */
 	friend SimpleLayerMap operator*(SimpleLayerMap lsf, const double& rd);

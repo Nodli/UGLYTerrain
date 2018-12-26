@@ -13,7 +13,7 @@ SimpleLayerMap SimpleLayerMap::generate_slope_map(const DoubleField& field)
 		}
 	}
 
-	return sf;	
+	return sf;
 }
 
 void SimpleLayerMap::set_value(const int i, const int j, double value)
@@ -32,7 +32,9 @@ void SimpleLayerMap::normalize()
 	double min = get_min();
 
 	for(int i = 0; i < _values.size(); i++)
+	{
 		_values[i] = (_values[i] - min) / range;
+	}
 }
 
 void SimpleLayerMap::copy_values(const SimpleLayerMap& sf)
