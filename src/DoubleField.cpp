@@ -123,21 +123,37 @@ std::vector<std::pair<double, Eigen::Vector2i>> DoubleField::sort_by_height() co
 	return sorted_indices;
 }
 
-int DoubleField::neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const
+int DoubleField::neighbors_info(const int i, const int j, double* v, Eigen::Vector2i* p, double* s) const
 {
-	int nb = neighbors(i, j, p);
+	Eigen::Vector2i* positions;
+	if(p == nullptr){
+		positions = new Eigen::Vector2i[8]; // temp allocation because values need to be used for v[k]
+	}else{
+		positions = p;
+	}
+
+	int nb = neighbors(i, j, positions);
 	double ij_value = value(i, j);
 
 	for(int k = 0; k < nb; ++k)
 	{
-		v[k] = value(p[k]);
-		s[k] = (v[k] - ij_value) / def_nei_dist[k];
+		if(v != nullptr){
+			v[k] = value(positions[k]);
+		}
+
+		if(s != nullptr){
+			s[k] = (v[k] - ij_value) / def_nei_dist[k];
+		}
+	}
+
+	if(p == nullptr){
+		delete positions;
 	}
 
 	return nb;
 }
 
-int DoubleField::neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter, const bool sup) const
+int DoubleField::neighbors_info_filter(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter, const bool sup) const
 {
 	int nb = neighbors(i, j, p);
 	int threshold_nb = 0;

@@ -1,4 +1,5 @@
 #include <Grid2d.hpp>
+#include <cassert>
 
 const int Grid2d::def_nei[8][2] = {{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 const double Grid2d::def_nei_dist[] = {sqrt(2.), 1., sqrt(2.), 1., 1., sqrt(2.), 1., sqrt(2.)};
@@ -25,8 +26,10 @@ Grid2d::Grid2d(const int width, const int height, const Eigen::Vector2d a, const
 	_cell_size = Eigen::Vector2d(this->width() / (_grid_width - 1), this->height() / (_grid_height - 1));
 }
 
-int Grid2d::neighbors(const int i, const int j, Eigen::Vector2i p[8]) const
+int Grid2d::neighbors(const int i, const int j, Eigen::Vector2i* p) const
 {
+	assert(p != nullptr);
+
 	int nb = 0;
 
 	for(int k = 0; k < 8; ++k)

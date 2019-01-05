@@ -171,12 +171,13 @@ public:
 	 * @brief Get all the information of a neigborhood
 	 *
 	 * @param pos       the position of the cell on the grid
-	 * @param v         the value of the neighbors
-	 * @param p         the positions of the neighbors
-	 * @param s         the slopes of the neighbors
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @return int      the number of neigbors
+
 	 */
-	int neighbors_info(const Eigen::Vector2i pos, double v[8], Eigen::Vector2i p[8], double s[8]) const
+	int neighbors_info(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s) const
 	{
 		return neighbors_info(pos(0), pos(1), v, p, s);
 	}
@@ -185,25 +186,25 @@ public:
 	 * @brief Get all the information of a neigborhood
 	 *
 	 * @param i, j      the position of the cell on the grid
-	 * @param v         the value of the neighbors
-	 * @param p         the positions of the neighbors
-	 * @param s         the slopes of the neighbors
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @return int      the number of neigbors
 	 */
-	int neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const;
+	int neighbors_info(const int i, const int j, double* v, Eigen::Vector2i* p, double* s) const;
 
 	/**
 	 * @brief Get the information of a neigborhood if the slope is superior to a threshold value
 	 *
 	 * @param pos       the position of the cell on the grid
-	 * @param v         the value of the neighbors
-	 * @param p         the positions of the neighbors
-	 * @param s         the slopes of the neighbors
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @param s_filter  the minimal slope value to be considered as a neighbor
 	 * @param sup       1 if s > s_filter and 0 if s < s_filter using signed values
 	 * @return int      the number of neigbors
 	 */
-	int neighbors_info_filter(const Eigen::Vector2i pos, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const
+	int neighbors_info_filter(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const
 	{
 		return neighbors_info_filter(pos(0), pos(1), v, p, s, s_filter, sup);
 	}
@@ -212,13 +213,13 @@ public:
 	 * @brief Get all the information of a neigborhood
 	 *
 	 * @param i, j      the position of the cell on the grid
-	 * @param v         the value of the neighbors
-	 * @param p         the positions of the neighbors
-	 * @param s         the slopes of the neighbors
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @param s_filter  the minimal slope value to be considered as a neighbor
 	 * @return int      the number of neigbors
 	 */
-	int neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const;
+	int neighbors_info_filter(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const;
 
 
 	/**
