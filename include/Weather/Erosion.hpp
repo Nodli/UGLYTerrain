@@ -6,16 +6,19 @@
  * @{
  */
 
-/**
- * @brief Erodes a Multi Layer Map using a slope value
- *
- * @param layers    the Multi Layer Map to erode
- * @param k         the erosion factor
- */
-void erode_slope_constant(MultiLayerMap& layers, const double k);
+void erode_using_median_slope(MultiLayerMap& layers, const double k);
+void erode_using_mean_slope(MultiLayerMap& layers, const double k);
 
 /**
- * @brief Function controling erosion based on a slope value
+ * @brief Erodes a Multi Layer Map by a constant value
+ *
+ * @param layers    the Multi Layer Map to erode
+ * @param k         the erosion value 
+ */
+void erode_constant(MultiLayerMap& layers, const double k);
+
+/**
+ * @brief Function controling erosion based on a slope value for erode_slope_controled
  *
  * @param slope     the slope value at the point
  * @return value of erosion

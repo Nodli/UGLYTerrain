@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <cassert>
 
 #include <queue>
 #include <iostream>
@@ -9,47 +10,79 @@
 #include <BooleanField.hpp>
 #include <Utils.hpp>
 
-void erode_constant(MultiLayerMap& layers, const double k){
+void erode_using_median_slope(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
 
-	for(int j = 0; j < layers.grid_height(); ++j)
-	{
-		for(int i = 0; i < layers.grid_width(); ++i)
-		{
-
-			// removing from bedrock
-			layers.get_field(0).at(i, j) -= k;
-
-			// adding to sediments
-			if(layers.get_layer_number() > 1){
-				layers.get_field(1).at(i, j) += k;
-			}
-
-		}
+	// creating the sediment layer if necessary
+	if (layers.get_layer_number() == 1){
+		layers.new_layer();
 	}
 
+	Eigen::Vector2i positions[8];
+	double values[8];
+	double slopes[8];
+
+	for(int h = 0; h < layers.grid_height(); ++h){
+		for(int w = 0; w < layers.grid_width(); ++w){
+			// getting neighbor slope
+			int neighbors = layers.neighbors_info(w, h, values, positions, slopes);
+
+			// computing the median slope
+			abs_array(neighbors, slopes);
+			double median_slope = median_array(neighbors, slopes);
+
+			// applying erosion
+			layers.get_field(0).at(w, h) -= k * median_slope;
+			layers.get_field(1).at(w, h) += k * median_slope;
+		}
+	}
 }
 
+void erode_using_mean_slope(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
 
-void erode_slope_constant(MultiLayerMap& layers, const double k)
-{
-	SimpleLayerMap terrain = layers.generate_field();
+	// creating the sediment layer if necessary
+	if (layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
 
-	for(int j = 0; j < layers.grid_height(); ++j)
-	{
-		for(int i = 0; i < layers.grid_width(); ++i)
-		{
-			double delta_value = k * terrain.slope(i, j);
+	Eigen::Vector2i positions[8];
+	double values[8];
+	double slopes[8];
 
-			// removing from bedrock
-			layers.get_field(0).at(i, j) -= delta_value;
+	for(int h = 0; h < layers.grid_height(); ++h){
+		for(int w = 0; w < layers.grid_width(); ++w){
+			// getting neighbor slope
+			int neighbors = layers.neighbors_info(w, h, values, positions, slopes);
 
-			// adding to sediments
-			if(layers.get_layer_number() > 1){
-				layers.get_field(1).at(i, j) += delta_value;
-			}
+			// computing the median slope
+			abs_array(neighbors, slopes);
+			double mean_slope = mean_array(neighbors, slopes);
 
+			// applying erosion
+			layers.get_field(0).at(w, h) -= k * mean_slope;
+			layers.get_field(1).at(w, h) += k * mean_slope;
 		}
 	}
+}
+
+void erode_constant(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
+
+	// creating the sediment layer if necessary
+	if (layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
+
+	for(int h = 0; h < layers.grid_height(); ++h)
+	{
+		for(int w = 0; w < layers.grid_width(); ++w)
+		{
+			layers.get_field(0).at(w, h) -= k; // berock
+			layers.get_field(1).at(w, h) += k; // sediments
+		}
+	}
+
 }
 
 float erosion_control_function(const double slope){
@@ -66,17 +99,19 @@ float erosion_control_function(const double slope){
 }
 
 void erode_slope_controled(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
+
+	// creating the sediment layer if necessary
+	if (layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
 
 	for(int j = 0; j < layers.grid_height(); ++j){
 		for(int i = 0; i < layers.grid_width(); ++i){
-
 			double delta_value = k * erosion_control_function(layers.get_field(0).slope(i, j));
 
 			layers.get_field(0).at(i, j) -= delta_value;
-
-			if(layers.get_layer_number() > 1){
-				layers.get_field(1).at(i, j) += delta_value;
-			}
+			layers.get_field(1).at(i, j) += delta_value;
 		}
 	}
 
@@ -87,7 +122,7 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 	// creating erosion layer if needed
 	if(layers.get_layer_number() == 1)
 	{
-		layers.new_field();
+		layers.new_layer();
 	}
 
 	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle / 180. * 3.14);
