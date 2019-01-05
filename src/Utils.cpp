@@ -64,7 +64,7 @@ double median_array(int n, double* values){
 	}
 }	
 
-double abs_array(int n, double* values){
+void abs_array(int n, double* values){
 	for(int i = 0; i != n; ++i){
 		values[i] = std::abs(values[i]);
 	}
@@ -77,4 +77,10 @@ double mean_array(int n, double* values){
 	}
 
 	return sum / n;	
+}
+
+void opp_array(int n, double* values){
+	for(int i = 0; i != n; ++i){
+		values[i] = - values[i];
+	}
 }
