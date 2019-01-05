@@ -1,6 +1,6 @@
 #include <Grid2d.hpp>
 
-const int Grid2d::def_nei[][2] = {{-1, -1}, {0, -1}, {1, -1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+const int Grid2d::def_nei[8][2] = {{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 const double Grid2d::def_nei_dist[] = {sqrt(2.), 1., sqrt(2.), 1., 1., sqrt(2.), 1., sqrt(2.)};
 
 Grid2d::Grid2d(const Grid2d &g)

@@ -9,6 +9,26 @@
 #include <BooleanField.hpp>
 #include <Utils.hpp>
 
+void erode_constant(MultiLayerMap& layers, const double k){
+
+	for(int j = 0; j < layers.grid_height(); ++j)
+	{
+		for(int i = 0; i < layers.grid_width(); ++i)
+		{
+
+			// removing from bedrock
+			layers.get_field(0).at(i, j) -= k;
+
+			// adding to sediments
+			if(layers.get_layer_number() > 1){
+				layers.get_field(1).at(i, j) += k;
+			}
+
+		}
+	}
+
+}
+
 
 void erode_slope_constant(MultiLayerMap& layers, const double k)
 {
@@ -70,7 +90,7 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 		layers.new_field();
 	}
 
-	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle / 180. * 3.14) / layers.cell_size().y();
+	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle / 180. * 3.14);
 	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
 
 	double values[8];
@@ -84,7 +104,7 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 		std::cout << "iteration: " << s << std::endl;
 
 		// conversion bedrock -> sediments
-		erode_slope_constant(layers, k);
+		erode_constant(layers, k);
 
 		ScalarField terrain = layers.generate_field();
 
@@ -97,15 +117,21 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 				coord_vector.push_back({i, j});
 			}
 		}
-		std::random_shuffle(coord_vector.begin(), coord_vector.end());
+		// std::random_shuffle(coord_vector.begin(), coord_vector.end());
 
 		std::queue<Eigen::Vector2i> unstable_coord;
 		for(int i = 0; i != coord_vector.size(); ++i){
 			unstable_coord.push(coord_vector[i]);
 		}
 
-
+		int iter = 0;
 		while(!unstable_coord.empty()){
+
+			// if(iter > 100000)
+				// break;
+
+			std::cout << "iter: " << iter << " size: " << unstable_coord.size() << " ";
+
 			const Eigen::Vector2i& unstable_cell = unstable_coord.front();
 
 			// neighbor values
@@ -114,40 +140,51 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 			proportion(neighbors, slopes, slopes_proportions);
 
 			// stabilization
-			double max_slope = min_array(neighbors, slopes);
-
-			// double available_to_transport = 0.;
-			// if(max_slope < slope_stability_threshold){ // values are negative | more matter than allowed by the threshold
-				// available_to_transport = - (layers.get_field(1).at(unstable_cell) + (max_slope - slope_stability_threshold)); // slope difference is negative
-			// }
+			double max_slope = max_array(neighbors, slopes);
 
 			double available_to_transport = layers.get_field(1).at(unstable_cell);
 
-			if(unstable_cell.x() == 38 && unstable_cell.y() == 21){
-				std::cout << "available_to_transport: " << available_to_transport << std::endl;
+			bool stable_after_transport = true;
+			if(available_to_transport > 0.01){
+				available_to_transport /= 10.;
+				stable_after_transport = false;
 			}
+
+			std::cout << "neighbors: " << neighbors << " ";
+			for(int i = 0; i != neighbors; ++i){
+				std::cout << positions[i].x() << " " << positions[i].y() << "  ";
+			}
+			std::cout << std::endl;
 
 			for(int ineigh = 0; ineigh != neighbors; ++ineigh){
 				double neighbor_quantity = available_to_transport * slopes_proportions[ineigh];
 
-				if(positions[ineigh].x() == 38 && positions[ineigh].y() == 21){
-					std::cout << "adding: " << neighbor_quantity << std::endl;
-				}
-
 				layers.get_field(1).at(positions[ineigh]) += neighbor_quantity;
+				terrain.at(positions[ineigh]) += neighbor_quantity;
 
-				// add neighbor to queue if it became unstable
+				// add neighbor to queue because they could be unstable now
 				if(!unstable.at(positions[ineigh])){
 					unstable.at(positions[ineigh]) = true;
 					unstable_coord.push(positions[ineigh]);
 				}
 
-				layers.get_field(1).at(unstable_cell) -= neighbor_quantity;
+			}
+
+			if(neighbors > 0){
+				layers.get_field(1).at(unstable_cell) -= available_to_transport;
+				terrain.at(unstable_cell) -= available_to_transport;
 			}
 
 			// unstable_cell becomes stable
-			unstable.at(unstable_cell) = false;
-			unstable_coord.pop();
+			if(stable_after_transport){
+				unstable.at(unstable_cell) = false;
+				unstable_coord.pop();
+			}else{
+				unstable_coord.push(unstable_cell);
+				unstable_coord.pop();
+			}
+
+			++iter;
 		}
 
 	}

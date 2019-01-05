@@ -92,6 +92,10 @@ public:
 	 */
 	void set_field(int field_index, const ScalarField& field)
 	{
+		while((field_index + 1) > _fields.size()){
+			new_field();
+		}
+
 		_fields.at(field_index).copy_values(field);
 	}
 	/**

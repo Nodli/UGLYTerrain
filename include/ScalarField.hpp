@@ -209,7 +209,7 @@ public:
 	 */
 	int neighbors_info_filter(const Eigen::Vector2i pos, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const
 	{
-		return neighbors_info_filter(pos(0), pos(1), v, p, s);
+		return neighbors_info_filter(pos(0), pos(1), v, p, s, s_filter, sup);
 	}
 	/**
 	 * @brief Get all the information of a neigborhood

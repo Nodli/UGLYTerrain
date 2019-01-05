@@ -34,3 +34,20 @@ double TerrainNoise::get_noise(int i, int j)
 
 	return (value+2*_amplitude);//*noi;
 }
+
+ScalarField terrain_debug(int size, double amplitude){
+
+	ScalarField terrain(size, size, {0, 0}, {1, 1});
+
+	for(int h = 0; h < size; ++h){
+		for(int w = 0; w < size; ++w){
+			if(w < (size / 2)){
+				terrain.set_value(w, h, amplitude);
+			}else{
+				terrain.set_value(w, h, -amplitude);
+			}
+		}
+	}
+
+	return terrain;
+}

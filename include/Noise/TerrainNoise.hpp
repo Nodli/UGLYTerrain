@@ -1,4 +1,5 @@
 #include <FastNoise/FastNoise.hpp>
+#include <ScalarField.hpp>
 
 /**
  * @brief Fractal ridged noise generator
@@ -39,3 +40,5 @@ public:
 	double _base_freq;          /**< initial frequency of the noise*/
 	int _octaves;               /**< number of iteration of the noise*/
 };
+
+ScalarField terrain_debug(int size, double amplitude);

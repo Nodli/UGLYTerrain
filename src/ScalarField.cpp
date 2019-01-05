@@ -1,5 +1,6 @@
 #include <ScalarField.hpp>
 #include <algorithm>
+#include <iostream>
 
 double ScalarField::value(const double x, const double y) const
 {
@@ -136,14 +137,14 @@ int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Ei
 
 		if(sup)
 		{
-			if(s[threshold_nb] >= s_filter)
+			if(s[threshold_nb] > s_filter)
 			{
 				++threshold_nb;
 			}
 		}
 		else
 		{
-			if(s[threshold_nb] <= s_filter)
+			if(s[threshold_nb] < s_filter)
 			{
 				++threshold_nb;
 			}
