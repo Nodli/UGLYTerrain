@@ -149,7 +149,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		{
 			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
 			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
-			mlm.new_field();
+			mlm.new_layer();
 
 			for(int j = 0; j < params.sizeHeight; ++j)
 			{
@@ -174,7 +174,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 			if(ImGui::Button("Erode constant"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
-				erode_slope_constant(mlm, erosion_factor);
+				erode_constant(mlm, erosion_factor);
 			}
 
 			if(ImGui::Button("Erode controlled"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -193,7 +193,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
-			mlm.new_field();
+			mlm.new_layer();
 
 			for(int j = 0; j < params.sizeHeight; ++j)
 			{
