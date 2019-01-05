@@ -10,6 +10,25 @@
 #include <BooleanField.hpp>
 #include <Utils.hpp>
 
+void erode_constant(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
+
+	// creating the sediment layer if necessary
+	if (layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
+
+	for(int h = 0; h < layers.grid_height(); ++h)
+	{
+		for(int w = 0; w < layers.grid_width(); ++w)
+		{
+			layers.get_field(0).at(w, h) -= k; // berock
+			layers.get_field(1).at(w, h) += k; // sediments
+		}
+	}
+
+}
+
 void erode_using_median_slope(MultiLayerMap& layers, const double k){
 	assert(layers.get_layer_number() > 0);
 
@@ -66,25 +85,6 @@ void erode_using_mean_slope(MultiLayerMap& layers, const double k){
 	}
 }
 
-void erode_constant(MultiLayerMap& layers, const double k){
-	assert(layers.get_layer_number() > 0);
-
-	// creating the sediment layer if necessary
-	if (layers.get_layer_number() == 1){
-		layers.new_layer();
-	}
-
-	for(int h = 0; h < layers.grid_height(); ++h)
-	{
-		for(int w = 0; w < layers.grid_width(); ++w)
-		{
-			layers.get_field(0).at(w, h) -= k; // berock
-			layers.get_field(1).at(w, h) += k; // sediments
-		}
-	}
-
-}
-
 float erosion_control_function(const double slope){
 
 	// max slope to consider
@@ -115,6 +115,106 @@ void erode_slope_controled(MultiLayerMap& layers, const double k){
 		}
 	}
 
+}
+
+void transport(MultiLayerMap& layers, const double rest_angle)
+{
+	assert(layers.get_layer_number() > 0);
+
+	// the difference in height between two adjacent cells under which the pile is considered stable
+	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle / 180. * 3.14);
+
+	// temp storage of neighborhood
+	double values[8];
+	Eigen::Vector2i positions[8];
+	double slopes[8];
+
+	// generating the base terrain layer on which slopes will be computed
+	SimpleLayerMap terrain = layers.generate_field();
+
+	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
+
+	// queue all cells of the grid as they could be unstable
+	// @DEBUG: using a temp vector to randomize the order
+	std::vector<Eigen::Vector2i> coord_vector;
+	for(int i = 0; i < terrain.grid_height(); ++i){
+		for(int j = 0; j < terrain.grid_width(); ++j){
+			coord_vector.push_back({i, j});
+		}
+	}
+	std::random_shuffle(coord_vector.begin(), coord_vector.end());
+	std::queue<Eigen::Vector2i> unstable_coord;
+	for(int i = 0; i != coord_vector.size(); ++i){
+		unstable_coord.push(coord_vector[i]);
+	}
+
+	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
+	std::cout << "starting stabilization" << std::endl;
+
+	while(!unstable_coord.empty()){
+		std::cout << "queue size: " << unstable_coord.size() << std::endl;
+
+		// pick the next unstable cell
+		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
+
+		int counter = 0;
+
+		int neighbors;
+		bool available_sediments = true;
+		do{
+			//computing neighborhood parameters
+			neighbors = terrain.neighbors_info_filter(unstable_cell, values, positions, slopes,
+								  - slope_stability_threshold, false);
+
+			if(neighbors > 0){
+				opp_array(neighbors, slopes); // values are all negative here
+
+				// stabilization
+				double min_neighborhood_slope = max_array(neighbors, slopes);
+				double sediments_at_unstable_cell = layers.get_field(1).at(unstable_cell);
+				std::cout << unstable_cell << " " << sediments_at_unstable_cell << std::endl;
+
+				// minimal amount of sediments missing to stabilize unstable_cell
+				// with regard to one of its neighbor
+				// sub. in this order because there must be min_neighborhood_slope > slope_stability_threshold
+				double min_stability_difference = min_neighborhood_slope - slope_stability_threshold;
+
+				// minimal amount of sediments to transport to all neighbors to stabilize unstable_cell
+				// with regard to the neighbor that gave min_neighborhood_slope
+				// @DEBUG: not sure, does the matter need to be ponderated by the 8-connexity distance or this is considered done when ponderating the slope
+				double min_stability_all_neighbors = min_stability_difference * neighbors;
+				double amount_to_transport_all_neighbors = min_stability_difference * neighbors;
+				if(amount_to_transport_all_neighbors > sediments_at_unstable_cell){
+					amount_to_transport_all_neighbors = sediments_at_unstable_cell;
+					available_sediments = false;
+				}
+				double amount_to_transport = amount_to_transport_all_neighbors / neighbors;
+
+				// transporting some sediments to stabilize with regard to one neighbor
+				for(int neigh = 0; neigh != neighbors; ++neigh){
+					// updating the sediment layer
+					layers.get_field(1).at(unstable_cell) -= amount_to_transport;
+					layers.get_field(1).at(positions[neigh]) += amount_to_transport;
+
+					// updating terrain
+					terrain.at(unstable_cell) -= amount_to_transport;
+					terrain.at(positions[neigh]) += amount_to_transport;
+
+					// adding neighbor to queue as if it may have become unstable
+					if(stability_map.at(positions[neigh])){
+						stability_map.at(positions[neigh]) = false;
+						unstable_coord.push(positions[neigh]);
+					}
+				}
+			}
+		// neighbors > 1 because if neighbors == 1 then unstable_cell has been stabilized regarding this neighbor during this iteration
+		}while(neighbors > 1 && available_sediments);
+
+		// unstable_cell is now stable either because the slope difference is not big enough anymore
+		// or because there is no more sediments to transport from unstable_cell
+		stability_map.at(unstable_cell) = true;
+		unstable_coord.pop();
+	}
 }
 
 void erode_and_transport(MultiLayerMap& layers, const double k, const int iteration_max, const double rest_angle)
