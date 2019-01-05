@@ -1,5 +1,5 @@
 #include <FastNoise/FastNoise.hpp>
-#include <ScalarField.hpp>
+#include <SimpleLayerMap.hpp>
 
 /**
  * @brief Fractal ridged noise generator
@@ -41,4 +41,4 @@ public:
 	int _octaves;               /**< number of iteration of the noise*/
 };
 
-ScalarField terrain_debug(int size, double amplitude);
+SimpleLayerMap stair_layer(int width, int height, double amplitude);
