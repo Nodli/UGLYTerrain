@@ -1,8 +1,19 @@
-#include <ScalarField.hpp>
+#include <DoubleField.hpp>
 #include <algorithm>
 #include <iostream>
 
-double ScalarField::value(const double x, const double y) const
+
+DoubleField::read_only_iterator DoubleField::begin() const
+{
+	return DoubleField::read_only_iterator(this, 0);
+}
+
+DoubleField::read_only_iterator DoubleField::end() const
+{
+	return DoubleField::read_only_iterator(this, cell_number());
+}
+
+double DoubleField::value_inter(const double x, const double y) const
 {
 	Eigen::Vector2i ij = grid_position(x, y);
 	Eigen::Vector2d pij = position(ij(0), ij(1));
@@ -13,33 +24,49 @@ double ScalarField::value(const double x, const double y) const
 	return (1 - u) * (1 - v) * value(ij(0), ij(1)) + (1 - u) * v * value(ij(0), ij(1) + 1) + u * (1 - v) * value(ij(0) + 1, ij(1)) + u * v * value(ij(0) + 1, ij(1) + 1);
 }
 
-
-ScalarField ScalarField::get_slope_map() const
+double DoubleField::get_min() const
 {
-	ScalarField sf(static_cast<Grid2d>(*this));
+	return *std::min_element(begin(), end());
+}
 
-	for(int j = 0; j < _grid_height; ++j)
+double DoubleField::get_max() const
+{
+	return *std::max_element(begin(), end());
+}
+
+double DoubleField::get_range() const
+{
+	double valMin = get_min();
+	double valMax = get_max();
+	return valMax - valMin;
+}
+
+double DoubleField::get_sum() const
+{
+	double sum = 0;
+
+	for(int j = 0; j < grid_height(); ++j)
 	{
-		for(int i = 0; i < _grid_width; ++i)
+		for(int i = 0; i < grid_width(); i++)
 		{
-			sf.at(i, j) = slope(i, j);
+			sum += value(i, j);
 		}
 	}
 
-	return std::move(sf);
+	return sum;
 }
 
-double ScalarField::slope(const Eigen::Vector2i p) const
+double DoubleField::slope(const Eigen::Vector2i p) const
 {
 	return slope(p(0), p(1));
 }
-double ScalarField::slope(const int i, const int j) const
+double DoubleField::slope(const int i, const int j) const
 {
 	Eigen::Vector2d grad = gradient(i, j);
 	return sqrt(grad.dot(grad));
 }
 
-Eigen::Vector2d ScalarField::gradient(const int i, const int j) const
+Eigen::Vector2d DoubleField::gradient(const int i, const int j) const
 {
 	Eigen::Vector2d grad;
 	double delta_x = width() / _grid_width;
@@ -75,7 +102,7 @@ Eigen::Vector2d ScalarField::gradient(const int i, const int j) const
 	return scale * grad;
 }
 
-Eigen::Vector3d ScalarField::normal(const int i, const int j) const
+Eigen::Vector3d DoubleField::normal(const int i, const int j) const
 {
 	Eigen::Vector3d result;
 	Eigen::Vector2d grad = gradient(i, j);
@@ -86,29 +113,17 @@ Eigen::Vector3d ScalarField::normal(const int i, const int j) const
 	return result;
 }
 
-std::vector<std::pair<double, Eigen::Vector2i>> ScalarField::sort_by_height() const
+std::vector<std::pair<double, Eigen::Vector2i>> DoubleField::sort_by_height() const
 {
 	std::vector<std::pair<double, Eigen::Vector2i>> sorted_indices = export_to_list();
-
 	std::sort(sorted_indices.begin(), sorted_indices.end(), [](const std::pair<double, Eigen::Vector2i>& a, const std::pair<double, Eigen::Vector2i>& b)
 	{
 		return a.first > b.first;
 	});
-
 	return sorted_indices;
 }
 
-void ScalarField::set_value(const int i, const int j, double value)
-{
-	at(i, j) = value;
-}
-
-void ScalarField::set_all(const double value)
-{
-	std::fill(_values.begin(), _values.end(), value);
-}
-
-int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const
+int DoubleField::neighbors_info(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8]) const
 {
 	int nb = neighbors(i, j, p);
 	double ij_value = value(i, j);
@@ -122,7 +137,7 @@ int ScalarField::neighbors_info(const int i, const int j, double v[8], Eigen::Ve
 	return nb;
 }
 
-int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter, const bool sup) const
+int DoubleField::neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter, const bool sup) const
 {
 	int nb = neighbors(i, j, p);
 	int threshold_nb = 0;
@@ -154,120 +169,28 @@ int ScalarField::neighbors_info_filter(const int i, const int j, double v[8], Ei
 	return threshold_nb;
 }
 
-void ScalarField::normalize()
-{
-	double valMin = get_min();
-	double valMax = get_max();
-	double range = valMax - valMin;
 
-	for(int i = 0; i < _values.size(); i++)
-		_values[i] /= range;
-}
-
-void ScalarField::copy_values(const ScalarField& sf)
-{
-	if(_grid_height == sf._grid_height && _grid_width == sf._grid_width)
-	{
-		_values = sf._values;
-	}
-	else
-	{
-		throw std::invalid_argument("Wrong ScalarField size");
-	}
-}
-
-void ScalarField::copy_values(ScalarField&& sf)
-{
-	if(_grid_height == sf._grid_height && _grid_width == sf._grid_width)
-	{
-		_values = std::move(sf._values);
-	}
-	else
-	{
-		throw std::invalid_argument("Wrong ScalarField size");
-	}
-}
-
-ScalarField& ScalarField::operator=(const ScalarField& sf)
+DoubleField& DoubleField::operator=(const DoubleField& sf)
 {
 	if(this != &sf)
 	{
 		Grid2d::operator=(sf);
-		this->_values = sf._values;
 	}
 
 	return *this;
 }
 
-ScalarField& ScalarField::operator=(ScalarField&& sf)
+DoubleField& DoubleField::operator=(DoubleField&& sf)
 {
 	if(this != &sf)
 	{
 		Grid2d::operator=(sf);
-		this->_values = std::move(sf._values);
 	}
 
 	return *this;
 }
 
-ScalarField& ScalarField::operator+=(const ScalarField& sf)
-{
-	if(this->_values.size() == sf._values.size())
-	{
-		for(int i = 0; i < this->_values.size(); ++i)
-		{
-			this->_values[i] += sf._values[i];
-		}
-	}
-
-	return *this;
-}
-
-ScalarField operator+(ScalarField lsf, const ScalarField& rsf)
-{
-	lsf += rsf;
-	return lsf;
-}
-
-ScalarField& ScalarField::operator-=(const ScalarField& sf)
-{
-	if(this->_values.size() == sf._values.size())
-	{
-		for(int i = 0; i < this->_values.size(); ++i)
-		{
-			this->_values[i] -= sf._values[i];
-		}
-	}
-
-	return *this;
-}
-
-ScalarField operator-(ScalarField lsf, const ScalarField& rsf)
-{
-	lsf -= rsf;
-	return lsf;
-}
-
-ScalarField& ScalarField::operator*=(const ScalarField& sf)
-{
-	if(this->_values.size() == sf._values.size())
-	{
-		for(int i = 0; i < this->_values.size(); ++i)
-		{
-			this->_values[i] *= sf._values[i];
-		}
-	}
-
-	return *this;
-}
-
-ScalarField operator*(ScalarField lsf, const ScalarField& rsf)
-{
-	lsf *= rsf;
-	return lsf;
-}
-
-void ScalarField::export_as_obj(const std::string filename, const std::string name) const
+void DoubleField::export_as_obj(const std::string filename, const std::string name) const
 {
 	// Open the output file
 	std::ofstream output(filename, std::ofstream::out);
@@ -323,7 +246,7 @@ void ScalarField::export_as_obj(const std::string filename, const std::string na
 }
 
 
-void ScalarField::export_as_pgm(const std::string filename, bool minMax, double rangeMin, double rangeMax) const
+void DoubleField::export_as_pgm(const std::string filename, bool minMax, double rangeMin, double rangeMax) const
 {
 	int maxVal = 255;
 	std::ofstream output(filename, std::ofstream::out);
@@ -333,8 +256,8 @@ void ScalarField::export_as_pgm(const std::string filename, bool minMax, double 
 
 	if(minMax)
 	{
-		rangeMax = *max_element(_values.begin(), _values.end());
-		rangeMin = *min_element(_values.begin(), _values.end());
+		rangeMax = get_max();
+		rangeMin = get_min();
 	}
 
 	float range = rangeMax - rangeMin;
@@ -351,7 +274,7 @@ void ScalarField::export_as_pgm(const std::string filename, bool minMax, double 
 }
 
 
-std::vector<std::pair<double, Eigen::Vector2i>> ScalarField::export_to_list() const
+std::vector<std::pair<double, Eigen::Vector2i>> DoubleField::export_to_list() const
 {
 	std::vector<std::pair<double, Eigen::Vector2i>> field;
 
@@ -363,5 +286,40 @@ std::vector<std::pair<double, Eigen::Vector2i>> ScalarField::export_to_list() co
 		}
 	}
 
-	return std::move(field);
+	return field;
+}
+
+double DoubleField::read_only_iterator::operator*() const
+{
+	return _parent->value(_parent->posi_from_index(_position));
+}
+
+DoubleField::read_only_iterator& DoubleField::read_only_iterator::operator++()
+{
+	_position++;
+	return *this;
+}
+
+DoubleField::read_only_iterator DoubleField::read_only_iterator::operator++(int i)
+{
+	read_only_iterator roi = *this;
+	_position++;
+	return roi;
+}
+
+bool DoubleField::read_only_iterator::operator==(const read_only_iterator& roi) const
+{
+	return _parent == roi._parent && _position == roi._position;
+}
+
+bool DoubleField::read_only_iterator::operator!=(const read_only_iterator& roi) const
+{
+	return !(*this == roi);
+}
+
+DoubleField::read_only_iterator& DoubleField::read_only_iterator::operator=(const read_only_iterator& roi)
+{
+	_parent = roi._parent;
+	_position = roi._position;
+	return *this;
 }

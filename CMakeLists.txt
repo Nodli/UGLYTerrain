@@ -25,7 +25,8 @@ set(fnoise_sources
 set(sources
     "src/Box2d.cpp"
     "src/Grid2d.cpp"
-    "src/ScalarField.cpp"
+    "src/DoubleField.cpp"
+    "src/SimpleLayerMap.cpp"
     "src/MultiLayerMap.cpp"
     "src/Noise/TerrainNoise.cpp"
     "src/Weather/Erosion.cpp"
@@ -35,7 +36,7 @@ set(sources
 set(test_sources
     "src/tests/test_Box2d.cpp"
     "src/tests/test_Grid2d.cpp"
-    "src/tests/test_ScalarField.cpp")
+    "src/tests/test_SimpleLayerMap.cpp")
 
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)

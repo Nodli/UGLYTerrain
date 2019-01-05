@@ -1,7 +1,8 @@
 #include <Weather/Hydro.hpp>
 #include <Utils.hpp>
+#include <iostream>
 
-void one_way(const ScalarField& heightmap, ScalarField& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
+void one_way(const DoubleField& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
 	for(int i = 0; i < field.size(); ++i)
 	{
@@ -30,7 +31,7 @@ void one_way(const ScalarField& heightmap, ScalarField& area, const std::vector<
 	}
 }
 
-void distribution(const ScalarField& heightmap, ScalarField& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
+void distribution(const DoubleField& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
 {
 	for(int i = 0; i < field.size(); ++i)
 	{
@@ -53,9 +54,9 @@ void distribution(const ScalarField& heightmap, ScalarField& area, const std::ve
 	}
 }
 
-ScalarField get_area(const ScalarField& heightmap, bool distribute)
+SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute)
 {
-	ScalarField area = heightmap;
+	SimpleLayerMap area = SimpleLayerMap(static_cast<Grid2d>(heightmap));
 	area.set_all(1.0);
 
 	std::vector<std::pair<double, Eigen::Vector2i>> field = heightmap.sort_by_height();
@@ -68,18 +69,74 @@ ScalarField get_area(const ScalarField& heightmap, bool distribute)
 
 void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 {
-	ScalarField heightmap = layers.generate_field();
-	ScalarField area = get_area(heightmap, distribution);
-	area.normalize();
+	SimpleLayerMap area = get_area(layers, distribute);
+	SimpleLayerMap eroded_quantity(area);
+	SimpleLayerMap sed_quantity(area);
+	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(layers);
+	slope.normalize();
 
 	for(int j = 0; j < area.grid_height(); ++j)
 	{
 		for(int i = 0; i < area.grid_width(); i++)
 		{
 			// weighted by slope: less effect on plains
-			area.set_value(i, j, layers.get_field(0).slope(i, j) * k * sqrt(area.value(i, j)));
+			// sqrt(slope * sqrt(area))
+			eroded_quantity.set_value(i, j, sqrt(slope.value(i, j) * sqrt(area.value(i, j))));
 		}
 	}
 
-	layers.get_field(0) -= area;
+	eroded_quantity.normalize();
+	eroded_quantity *= k;
+	double eroded_quantity_sum = eroded_quantity.get_sum();
+
+	layers.get_field(0) -= eroded_quantity;
+
+	// add sed
+	for(int j = 0; j < area.grid_height(); ++j)
+	{
+		for(int i = 0; i < area.grid_width(); i++)
+		{
+			// sqrt(area) / sqrt(1+slope*slope)
+			sed_quantity.set_value(i, j, sqrt(area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
+		}
+	}
+
+	sed_quantity.normalize();
+	double sed_quantity_sum = sed_quantity.get_sum();
+	sed_quantity = sed_quantity * (1/sed_quantity_sum) * eroded_quantity_sum;
+
+	layers.get_field(1) += sed_quantity;
+}
+
+void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_per_drop, double water_loss, double initial_speed)
+{
+	std::uniform_int_distribution<> dis_width(0, layers.grid_width() - 1);
+	std::uniform_int_distribution<> dis_height(0, layers.grid_width() - 1);
+
+	for(int i = 0; i < n; i++)
+	{
+		int x = dis_width(gen);
+		int y = dis_height(gen);
+
+		double qty_sed = 0.0;
+		double qty_water = water_per_drop;
+		double speed = initial_speed;
+
+		while(qty_water > 0.0)
+		{
+			// update qty_sed TODO
+			double delta_sed = 0.0;	// to mind: can't have abs(delta_sed) > qty_sed, qty_sed always > 0
+			layers.get_field(0).at(x, y) -= delta_sed;
+			qty_sed += delta_sed;
+
+			// update speed
+
+			// compute new x, y
+
+			// update qty_water
+			qty_water -= water_loss;
+		}
+
+		layers.get_field(0).at(x, y) += qty_sed;
+	}
 }

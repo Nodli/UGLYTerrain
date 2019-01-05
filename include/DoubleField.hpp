@@ -1,85 +1,85 @@
 #pragma once
 
 #include <Grid2d.hpp>
-
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 /**
  * @brief Defines a field of values spread across a grid on the plane
  *
  */
-class ScalarField : public Grid2d
+class DoubleField : public Grid2d
 {
 public:
-	ScalarField() = delete;
+	class read_only_iterator;
 	/**
-	 * @brief Construct a new Scalar Field object from an other Scalar Field
-	 *
-	 * @param hf        the Scalar field to copy
+	 * @brief Return a read only iterator to the first element of the field
+	 * 
+	 * @return read_only_iterator 	an iterator to the first element of the field
 	 */
-	ScalarField(const ScalarField& hf)
-		: Grid2d(hf), _values(hf._values) {}
+	read_only_iterator begin() const;
+
 	/**
-	 * @brief Construct a new Scalar Field object from an other Scalar Field
-	 *
-	 * @param hf        the Scalar Field to copy
+	 * @brief Return a read only iterator to the last element of the field
+	 * 
+	 * @return read_only_iterator 	an iterator to the last element of the field
 	 */
-	ScalarField(ScalarField&& hf)
-		: Grid2d(std::move(hf)), _values(std::move(hf._values)) {}
+	read_only_iterator end() const;
+
+public:
+	DoubleField() = delete;
 	/**
-	 * @brief Construct a new empty Scalar Field object from a grid
+	 * @brief Construct a new Field object from an other Field
 	 *
-	 * @param g         the initial grid of the Scalar Field
+	 * @param hf        the field to copy
 	 */
-	ScalarField(const Grid2d &g)
-		: Grid2d(g)
-	{
-		_values.resize(g.cell_number());
-	}
+
+	DoubleField(const DoubleField& hf)
+		: Grid2d(hf) {}
 	/**
-	 * @brief Construct a new Scalar Field object from a box
+	 * @brief Construct a new Field object from an other Field
+	 *
+	 * @param hf        the Field to copy
+	 */
+	DoubleField(DoubleField&& hf)
+		: Grid2d(std::move(hf)) {}
+
+	/**
+	 * @brief Construct a new empty Field object from a grid
+	 *
+	 * @param g         the initial grid of the Field
+	 */
+	DoubleField(const Grid2d &g)
+		: Grid2d(g) {}
+	/**
+	 * @brief Construct a new Field object from a box
 	 *
 	 * @param b         the box in wich to create the grid
 	 * @param width     the number of cells along the width of the grid
 	 * @param height    the number of cells along the height of the grid
 	 */
-	ScalarField(const Box2d &b, const int width, const int height)
-		: Grid2d(b, width, height)
-	{
-		_values.resize(width * height);
-	}
+	DoubleField(const Box2d &b, const int width, const int height)
+		: Grid2d(b, width, height) {}
 	/**
-	 * @brief Construct a new Scalar Field object
+	 * @brief Construct a new Field object
 	 *
 	 * @param width     the number of cells along the width of the grid
 	 * @param height    the number of cells along the height of the grid
 	 * @param a         the first point of the grid
 	 * @param b         the second point of the grid
 	 */
-	ScalarField(const int width, const int height, const Eigen::Vector2d a = {0, 0}, const Eigen::Vector2d b = {1, 1})
-		: Grid2d(width, height, a, b)
-	{
-		_values.resize(width * height);
-	}
+	DoubleField(const int width, const int height, const Eigen::Vector2d a = {0, 0}, const Eigen::Vector2d b = {1, 1})
+		: Grid2d(width, height, a, b) {}
 
-	/**
-	 * @brief Get the interpolated value of the field at a given position on the plane
-	 *
-	 * @param x, y      the position of a point on the plane
-	 * @return double   the interpolated value of the field at that position
-	 */
-	double value(const double x, const double y) const;
 	/**
 	 * @brief Get the value of the field at a given cell
 	 *
 	 * @param i, j      the position of the cell on the grid
 	 * @return double   the exact value of the field in that cell
 	 */
-	double value(const int i, const int j) const
-	{
-		return _values.at(index(i, j));
-	}
+	virtual double value(const int i, const int j) const = 0;
+
 	/**
 	 * @brief Get the value of the field at a given cell
 	 *
@@ -92,24 +92,41 @@ public:
 	}
 
 	/**
+	 * @brief Get the interpolated value of the field at a given position on the plane
+	 *
+	 * @param x, y      the position of a point on the plane
+	 * @return double   the interpolated value of the field at that position
+	 */
+	double value_inter(const double x, const double y) const;
+
+	/**
 	 * @brief Get the min value of the field
 	 *
 	 * @return double   the min value
 	 */
-	double get_min() const
-	{
-		return *min_element(_values.begin(), _values.end());
-	}
+	double get_min() const;
+
 	/**
 	 * @brief Get the max value of the field
 	 *
 	 * @return double   the max value
 	 */
-	double get_max() const
-	{
-		return *max_element(_values.begin(), _values.end());
-	}
+	double get_max() const;
 
+	/**
+	 * @brief Get range of values in field
+	 *
+	 * @return double       the range
+	 */
+	double get_range() const;
+
+	/**
+	 * @brief Get sum of values in field
+	 *
+	 * @return double       the sum of all values
+	 */
+	double get_sum() const;
+	
 	/**
 	 * @brief Calculate the slope of the field at a given cell.
 	 * The slope is calculated to be the norm of the gradient
@@ -118,6 +135,7 @@ public:
 	 * @return double   the value of the slope at that cell
 	 */
 	double slope(const Eigen::Vector2i p) const;
+
 	/**
 	 * @brief Calculate the slope of the field at a given cell.
 	 * The slope is calculated to be the norm of the gradient
@@ -126,13 +144,6 @@ public:
 	 * @return double   the value of the slope at that cell
 	 */
 	double slope(const int i, const int j) const;
-
-	/**
-	 * @brief Generate a Scalar Field containing the slope information
-	 *
-	 * @return ScalarField  the field of slopes.
-	 */
-	ScalarField get_slope_map() const;
 
 	/**
 	 * @brief Calculate the gradient of the field at a given cell
@@ -150,26 +161,10 @@ public:
 	Eigen::Vector3d normal(const int i, const int j) const;
 
 	/**
-	 * @brief Gets acess to a cell of the field
+	 * @brief Get indices of values sorted by height
 	 *
-	 * @param i, j      the position of the cell on the grid
-	 * @return double&  a reference to the value of that cell
+	 * @return vector      the indices of values sorted by height
 	 */
-	double& at(const Eigen::Vector2i p)
-	{
-		return at(p(0), p(1));
-	}
-	/**
-	 * @brief Gets acess to a cell of the field
-	 *
-	 * @param i, j      the position of the cell on the grid
-	 * @return double&  a reference to the value of that cell
-	 */
-	double& at(const int i, const int j)
-	{
-		return _values.at(index(i, j));
-	}
-
 	std::vector<std::pair<double, Eigen::Vector2i>> sort_by_height() const;
 
 	/**
@@ -185,6 +180,7 @@ public:
 	{
 		return neighbors_info(pos(0), pos(1), v, p, s);
 	}
+
 	/**
 	 * @brief Get all the information of a neigborhood
 	 *
@@ -211,6 +207,7 @@ public:
 	{
 		return neighbors_info_filter(pos(0), pos(1), v, p, s, s_filter, sup);
 	}
+
 	/**
 	 * @brief Get all the information of a neigborhood
 	 *
@@ -223,101 +220,26 @@ public:
 	 */
 	int neighbors_info_filter(const int i, const int j, double v[8], Eigen::Vector2i p[8], double s[8], const double s_filter = 0., const bool sup = false) const;
 
-	/**
-	 * @brief Set the value of a cell of the field
-	 *
-	 * @param i, j      the position of the cell on the grid
-	 * @param value     the value to which set the field
-	 */
-	void set_value(const int i, const int j, double value);
-
-	/**
-	 * @brief Set the value all cells in the field
-	 *
-	 * @param value     the value to set the field to
-	 */
-	void set_all(const double value);
-
-	/**
-	 * @brief Normalize the values of the field
-	 */
-	void normalize();
-
-	/**
-	 * @brief Copies the values from an other field
-	 *
-	 * @param sf        the scalar field to copy the values from
-	 */
-	void copy_values(const ScalarField& sf);
-	/**
-	 * @brief steels the values from an other field
-	 *
-	 * @param sf        the scalar field to steal the values from
-	 */
-	void copy_values(ScalarField&& sf);
 
 	/**
 	 * @brief Affectation operator
 	 *
-	 * @param sf            the Scalar Field to affect
-	 * @return ScalarField& a reference to this Scalar Field
+	 * @param sf            the Field to affect
+	 * @return DoubleField& a reference to this Field
 	 */
-	ScalarField& operator=(const ScalarField& sf);
+	DoubleField& operator=(const DoubleField& sf);
+
 	/**
 	 * @brief Affectation operator
 	 *
-	 * @param sf            the Scalar field to affect
-	 * @return ScalarField& a reference to this Scalar Field
+	 * @param sf            the field to affect
+	 * @return DoubleField& a reference to this Field
 	 */
-	ScalarField& operator=(ScalarField&& sf);
-	/**
-	 * @brief Addition assignment operator
-	 *
-	 * @param sf            the Scalar field to add
-	 * @return ScalarField& a reference to this Scalar Field
-	 */
-	ScalarField& operator+=(const ScalarField& sf);
-	/**
-	 * @brief Addition operator
-	 *
-	 * @param lsf            the Scalar field to add on the left
-	 * @param rsf            the Scalar field to add on the right
-	 * @return ScalarField, result of the addition, by value
-	 */
-	friend ScalarField operator+(ScalarField lsf, const ScalarField& rsf);
-	/**
-	 * @brief Substraction assignment operator
-	 *
-	 * @param sf            the Scalar field to substract
-	 * @return ScalarField& a reference to this Scalar Field
-	 */
-	ScalarField& operator-=(const ScalarField& sf);
-	/**
-	 * @brief Substraction operator
-	 *
-	 * @param lsf            the Scalar field to substract on the left
-	 * @param rsf            the Scalar field to substract on the right
-	 * @return ScalarField, result of the substraction, by value
-	 */
-	friend ScalarField operator-(ScalarField lsf, const ScalarField& rsf);
-	/**
-	 * @brief Multiplication assignment operator
-	 *
-	 * @param sf            the Scalar field to multiply
-	 * @return ScalarField& a reference to this Scalar Field
-	 */
-	ScalarField& operator*=(const ScalarField& sf);
-	/**
-	 * @brief Multiplication operator
-	 *
-	 * @param lsf            the Scalar field to multiply on the left
-	 * @param rsf            the Scalar field to multiply on the right
-	 * @return ScalarField, result of the multiplication, by value
-	 */
-	friend ScalarField operator*(ScalarField lsf, const ScalarField& rsf);
+	DoubleField& operator=(DoubleField&& sf);
+
 
 	/**
-	 * @brief Export the Scalar Field as a obj
+	 * @brief Export the Field as a obj
 	 *
 	 * @param filename      the name of the file
 	 * @param name          the name of the object in the file
@@ -325,7 +247,7 @@ public:
 	void export_as_obj(const std::string filename, std::string name = "") const;
 
 	/**
-	 * @brief Export the Scalar Field as a pgm
+	 * @brief Export the Field as a pgm
 	 *
 	 * @param filename      the name of the file
 	 * @param minMan        tells of the values should be ranged automatically
@@ -335,7 +257,7 @@ public:
 	void export_as_pgm(const std::string filename, bool minMan = true, double rangeMin = 0, double rangeMax = 1) const;
 
 	/**
-	 * @brief export the ScalarField as a list of pairs <value/position>
+	 * @brief export the Field as a list of pairs <value/position>
 	 *
 	 * @return std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the Scalar Field
 	 */
@@ -355,11 +277,100 @@ protected:
 
 		if(index >= cell_number())
 		{
-			throw std::invalid_argument("wrong access to a value in the ScalarField");
+			throw std::invalid_argument("wrong access to a value in the Field");
 		}
 
 		return index;
 	}
 
-	std::vector<double> _values;    /**< array containing all the values of the field*/
+	/**
+	 * @brief Gets the position of an index
+	 * 
+	 * @param index 			the index of the cell
+	 * @return Eigen::Vector2i 	the position of the cell on the grid
+	 */
+	Eigen::Vector2i posi_from_index(const int index) const
+	{
+		if(index >= cell_number())
+		{
+			throw std::invalid_argument("wrong access to a value in the Field");
+		}
+
+		return Eigen::Vector2i(index%_grid_width, index/_grid_width);
+	}
+};
+
+/**
+ * @brief Class iterator for the double_field.
+ * This only allows the reading of the values.
+ * 
+ */
+class DoubleField::read_only_iterator
+{
+public:
+	/**
+	 * @brief Construct a new read only iterator object
+	 * 
+	 * @param parent 		The parent DoubleField
+	 * @param position 		The position in the doublefield
+	 */
+	read_only_iterator(const DoubleField* parent, const int position) :
+		_parent(parent), _position(position) {}
+	/**
+	 * @brief Copy a read only iterator object
+	 * 
+	 * @param roi 			The iterator to copy		
+	 */
+	read_only_iterator(const read_only_iterator& roi) :
+		_parent(roi._parent), _position(roi._position) {}
+	
+	/**
+	 * @brief Get the value pointed by the iterator
+	 * 
+	 * @return double 		The value pointed by the iterator
+	 */
+	double operator*() const;
+
+	/**
+	 * @brief Equality operator between two iterators
+	 * 
+	 * @param roi 		the iterator to be compared to
+	 * @return true 	if the two iterators are equal
+	 * @return false 	if the two iterators are not equal
+	 */
+	bool operator==(const read_only_iterator& roi) const;
+
+	/**
+	 * @brief Inequality operator
+	 * 
+	 * @param roi 		the iterator to be compared to
+	 * @return true 	if the two iterators are not equal
+	 * @return false 	if the two iterators are equal
+	 */
+	bool operator!=(const read_only_iterator& roi) const;
+
+	/**
+	 * @brief Incremental operator, points to the next value in the field
+	 * 
+	 * @return read_only_iterator& 
+	 */
+	read_only_iterator& operator++();
+	/**
+	 * @brief Incremental operator, points to the next value in the field
+	 * 
+	 * @param i 
+	 * @return read_only_iterator 
+	 */
+	read_only_iterator operator++(int i);
+	/**
+	 * @brief Affectation operator
+	 * 
+	 * @param roi 		The iterator to copy
+	 * @return read_only_iterator& 
+	 */
+	read_only_iterator& operator=(const read_only_iterator& roi);
+
+private:
+	const DoubleField * _parent;
+	int _position;
 };

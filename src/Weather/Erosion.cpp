@@ -32,7 +32,7 @@ void erode_constant(MultiLayerMap& layers, const double k){
 
 void erode_slope_constant(MultiLayerMap& layers, const double k)
 {
-	ScalarField terrain = layers.generate_field();
+	SimpleLayerMap terrain = layers.generate_field();
 
 	for(int j = 0; j < layers.grid_height(); ++j)
 	{
@@ -106,7 +106,7 @@ void erode_and_transport(MultiLayerMap& layers, const double k, const int iterat
 		// conversion bedrock -> sediments
 		erode_constant(layers, k);
 
-		ScalarField terrain = layers.generate_field();
+		SimpleLayerMap terrain = layers.generate_field();
 
 		// all cells are considered unstable at initialization
 		BooleanField unstable(layers.grid_width(), layers.grid_height(), true);
