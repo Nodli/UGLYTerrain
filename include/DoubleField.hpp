@@ -15,14 +15,14 @@ public:
 	class read_only_iterator;
 	/**
 	 * @brief Return a read only iterator to the first element of the field
-	 * 
+	 *
 	 * @return read_only_iterator 	an iterator to the first element of the field
 	 */
 	read_only_iterator begin() const;
 
 	/**
 	 * @brief Return a read only iterator to the last element of the field
-	 * 
+	 *
 	 * @return read_only_iterator 	an iterator to the last element of the field
 	 */
 	read_only_iterator end() const;
@@ -126,7 +126,7 @@ public:
 	 * @return double       the sum of all values
 	 */
 	double get_sum() const;
-	
+
 	/**
 	 * @brief Calculate the slope of the field at a given cell.
 	 * The slope is calculated to be the norm of the gradient
@@ -194,14 +194,15 @@ public:
 	int neighbors_info(const int i, const int j, double* v, Eigen::Vector2i* p, double* s) const;
 
 	/**
-	 * @brief Get the information of a neigborhood if the slope is superior to a threshold value
+	 * @brief Get the information of a neigborhood if the slope is superior / inferior to a threshold value
 	 *
 	 * @param pos       the position of the cell on the grid
 	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 *		    values are signed and the slope vector is oriented from pos towards its neighbors
 	 * @param s_filter  the minimal slope value to be considered as a neighbor
-	 * @param sup       1 if s > s_filter and 0 if s < s_filter using signed values
+	 * @param sup       1 to filter slopes such as s > s_filter and 0 such as s < s_filter using signed values
 	 * @return int      the number of neigbors
 	 */
 	int neighbors_info_filter(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const
@@ -216,7 +217,9 @@ public:
 	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
 	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 *		    values are signed and the slope vector is oriented from pos towards its neighbors
 	 * @param s_filter  the minimal slope value to be considered as a neighbor
+	 * @param sup       1 to filter slopes such as s > s_filter and 0 such as s < s_filter using signed values
 	 * @return int      the number of neigbors
 	 */
 	int neighbors_info_filter(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const;
@@ -286,7 +289,7 @@ protected:
 
 	/**
 	 * @brief Gets the position of an index
-	 * 
+	 *
 	 * @param index 			the index of the cell
 	 * @return Eigen::Vector2i 	the position of the cell on the grid
 	 */
@@ -304,14 +307,14 @@ protected:
 /**
  * @brief Class iterator for the double_field.
  * This only allows the reading of the values.
- * 
+ *
  */
 class DoubleField::read_only_iterator
 {
 public:
 	/**
 	 * @brief Construct a new read only iterator object
-	 * 
+	 *
 	 * @param parent 		The parent DoubleField
 	 * @param position 		The position in the doublefield
 	 */
@@ -319,22 +322,22 @@ public:
 		_parent(parent), _position(position) {}
 	/**
 	 * @brief Copy a read only iterator object
-	 * 
-	 * @param roi 			The iterator to copy		
+	 *
+	 * @param roi 			The iterator to copy
 	 */
 	read_only_iterator(const read_only_iterator& roi) :
 		_parent(roi._parent), _position(roi._position) {}
-	
+
 	/**
 	 * @brief Get the value pointed by the iterator
-	 * 
+	 *
 	 * @return double 		The value pointed by the iterator
 	 */
 	double operator*() const;
 
 	/**
 	 * @brief Equality operator between two iterators
-	 * 
+	 *
 	 * @param roi 		the iterator to be compared to
 	 * @return true 	if the two iterators are equal
 	 * @return false 	if the two iterators are not equal
@@ -343,7 +346,7 @@ public:
 
 	/**
 	 * @brief Inequality operator
-	 * 
+	 *
 	 * @param roi 		the iterator to be compared to
 	 * @return true 	if the two iterators are not equal
 	 * @return false 	if the two iterators are equal
@@ -352,22 +355,22 @@ public:
 
 	/**
 	 * @brief Incremental operator, points to the next value in the field
-	 * 
-	 * @return read_only_iterator& 
+	 *
+	 * @return read_only_iterator&
 	 */
 	read_only_iterator& operator++();
 	/**
 	 * @brief Incremental operator, points to the next value in the field
-	 * 
-	 * @param i 
-	 * @return read_only_iterator 
+	 *
+	 * @param i
+	 * @return read_only_iterator
 	 */
 	read_only_iterator operator++(int i);
 	/**
 	 * @brief Affectation operator
-	 * 
+	 *
 	 * @param roi 		The iterator to copy
-	 * @return read_only_iterator& 
+	 * @return read_only_iterator&
 	 */
 	read_only_iterator& operator=(const read_only_iterator& roi);
 
