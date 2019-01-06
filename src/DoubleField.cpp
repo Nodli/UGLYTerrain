@@ -258,6 +258,7 @@ void DoubleField::export_as_obj(const std::string filename, const std::string na
 		}
 	}
 
+	output << std::flush;
 	output.close();
 }
 
