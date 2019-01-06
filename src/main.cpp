@@ -58,22 +58,30 @@ int main()
 	sf.export_as_pgm("Terrain.pgm", true);
 	//SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
 
-	const int erosion_transport_iterations = 100;
+	const int erosion_transport_iterations = 1000;
+	const int period_save = 100;
 	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
 		std::string folder_name = "ErosionTransport" + std::to_string(istep);
 		std::string sys_cmd = "mkdir " + folder_name;
-		system(sys_cmd.c_str());
+		if(istep % period_save == 0){
+			system(sys_cmd.c_str());
+		}
+
 		// Thermal erosion
 		erode_using_median_slope(mlm, 0.01);
-		mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
-		mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");
-		mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalErosionTerrain.obj");
+		if(istep % period_save == 0){
+			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
+			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");
+			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalErosionTerrain.obj");
+		}
 
 		// Thermal transport
 		transport(mlm, 20);
-		mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
-		mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
-		mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalTransportTerrain.obj");
+		if(istep % period_save == 0){
+			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
+			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
+			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalTransportTerrain.obj");
+		}
 	}
 
 	/*
