@@ -151,8 +151,14 @@ void transport(MultiLayerMap& layers, const double rest_angle)
 	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
 	std::cout << "starting stabilization" << std::endl;
 
-	while(!unstable_coord.empty()){
-		std::cout << "queue size: " << unstable_coord.size() << std::endl;
+	unsigned int iteration = 0;
+	while(!unstable_coord.empty() && iteration < 100000){
+		++iteration;
+		if(iteration == 100000){
+			std::cout << "STOPPED PREMATURELY" << std::endl;
+		}
+
+		//std::cout << std::endl << "queue size: " << unstable_coord.size() << std::endl;
 
 		// pick the next unstable cell
 		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
@@ -172,7 +178,7 @@ void transport(MultiLayerMap& layers, const double rest_angle)
 				// stabilization
 				double min_neighborhood_slope = max_array(neighbors, slopes);
 				double sediments_at_unstable_cell = layers.get_field(1).at(unstable_cell);
-				std::cout << unstable_cell << " " << sediments_at_unstable_cell << std::endl;
+				//std::cout << "unstable_cell | sediments: " << unstable_cell.x() << " " << unstable_cell.y() << "  " << sediments_at_unstable_cell << std::endl;
 
 				// minimal amount of sediments missing to stabilize unstable_cell
 				// with regard to one of its neighbor
@@ -189,6 +195,7 @@ void transport(MultiLayerMap& layers, const double rest_angle)
 					available_sediments = false;
 				}
 				double amount_to_transport = amount_to_transport_all_neighbors / neighbors;
+				//std::cout << "amount to transport " << amount_to_transport << std::endl;
 
 				// transporting some sediments to stabilize with regard to one neighbor
 				for(int neigh = 0; neigh != neighbors; ++neigh){
