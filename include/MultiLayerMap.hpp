@@ -22,6 +22,10 @@ public:
 	 * @param map       the Multi Layer Map to copy
 	 */
 	MultiLayerMap(MultiLayerMap&& map) : DoubleField(std::move(map)), _layers(std::move(map._layers)) {}
+	
+	MultiLayerMap(const Grid2d& d) : DoubleField(d) 
+	{
+	}
 	/**
 	 * @brief Construct a new Multi Layer Map object from scratch
 	 *

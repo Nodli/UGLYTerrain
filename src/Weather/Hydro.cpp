@@ -73,7 +73,7 @@ SimpleLayerMap get_water_indexes(const DoubleField& heightmap)
 	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(heightmap).normalize();
 	SimpleLayerMap water_index = SimpleLayerMap(static_cast<Grid2d>(heightmap));
 
-	double k = 1.0;
+	double k = 4.0;
 
 	for(int j = 0; j < area.grid_height(); ++j)
 	{
