@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <MultiLayerMap.hpp>
 
 /** \addtogroup Hydro
@@ -11,9 +12,9 @@
  *
  * @param heightMap       the source for the computation
  * @param distribute      weither or not the area of a point should be distributed on the neighbors
- * @return ScalarField    the computed area
+ * @return SimpleLayerMap    the computed area
  */
-ScalarField get_area(const ScalarField& heightmap, bool distribute = true);
+SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute = true);
 
 /**
  * @brief Erode from Hydraulic area
@@ -23,4 +24,15 @@ ScalarField get_area(const ScalarField& heightmap, bool distribute = true);
  * @param distribute    weither or not the area of a point should be distributed on the neighbors
  */
 void erode_from_area(MultiLayerMap& layers, double k, bool distribute = true);
+
+/**
+ * @brief Erode and transport from hydraulic area, drop by drop
+ *
+ * @param layers          the source for heightmap and hydraulic area computation
+ * @param n               number of water drops
+ * @param water_per_drop  initial quantity of water in a drop
+ * @param water_loss      water quantity loss per iteration
+ * @param initial_speed   initial speed of drops
+ */
+void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_per_drop, double water_loss, double initial_speed);
 /** @}*/

@@ -72,7 +72,7 @@ void set_up_imgui(GLFWwindow* window)
 	ImGui::StyleColorsDark();
 }
 
-void export_tab(const ScalarField& sf, const std::string& name)
+void export_tab(const SimpleLayerMap& sf, const std::string& name)
 {
 	if(ImGui::CollapsingHeader("Exports"))
 	{
@@ -88,7 +88,7 @@ void export_tab(const ScalarField& sf, const std::string& name)
 
 		if(ImGui::Button("Export slope as pgm"))
 		{
-			sf.get_slope_map().export_as_pgm(name + "_slope_" + ".pgm");
+			SimpleLayerMap::generate_slope_map(sf).export_as_pgm(name + "_slope_" + ".pgm");
 		}
 
 		if(ImGui::Button("Export hydro as pgm"))
@@ -147,7 +147,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 		if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
-			//ScalarField sf(sizeWidth, sizeHeight, posMin, posMax);
+			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
 			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
 			mlm.new_field();
 
