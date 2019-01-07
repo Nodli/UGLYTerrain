@@ -120,8 +120,10 @@ public:
 
 	/**
 	 * @brief Normalize the values of the field
+	 *
+	 * @return SimpleLayerMap&	A reference to this SimpleLayerMap
 	 */
-	void normalize();
+	SimpleLayerMap& normalize();
 
 	/**
 	 * @brief Copies the values from an other field

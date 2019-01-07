@@ -22,6 +22,10 @@ public:
 	 * @param map       the Multi Layer Map to copy
 	 */
 	MultiLayerMap(MultiLayerMap&& map) : DoubleField(std::move(map)), _layers(std::move(map._layers)) {}
+	
+	MultiLayerMap(const Grid2d& d) : DoubleField(d) 
+	{
+	}
 	/**
 	 * @brief Construct a new Multi Layer Map object from scratch
 	 *
@@ -79,6 +83,14 @@ public:
 	 * @return SimpleLayerMap      the Scalar Field sum of all the field in the Multi Layer Map
 	 */
 	SimpleLayerMap generate_field() const;
+
+	/**
+	 * @brief Get the sum of all values at one point.
+	 * This is done by summing all the Scalar Fields together
+	 *
+	 * @return double	      	the double sum of all the values in the Multi Layer Map
+	 */
+	double get_sum(const int i, const int j) const;
 
 	/**
 	 * @brief Set the value of a field at a given position

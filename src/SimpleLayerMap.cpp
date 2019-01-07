@@ -26,7 +26,7 @@ void SimpleLayerMap::set_all(const double value)
 	std::fill(_values.begin(), _values.end(), value);
 }
 
-void SimpleLayerMap::normalize()
+SimpleLayerMap& SimpleLayerMap::normalize()
 {
 	double range = get_range();
 	double min = get_min();
@@ -35,6 +35,8 @@ void SimpleLayerMap::normalize()
 	{
 		_values[i] = (_values[i] - min) / range;
 	}
+
+	return *this;
 }
 
 void SimpleLayerMap::copy_values(const SimpleLayerMap& sf)

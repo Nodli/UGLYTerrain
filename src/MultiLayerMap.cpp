@@ -76,3 +76,18 @@ SimpleLayerMap MultiLayerMap::generate_field() const
 
 	return std::move(result);
 }
+
+double MultiLayerMap::get_sum(const int i, const int j) const
+{
+	if(i < 0 || i >= _grid_width || j < 0 || j >= _grid_height)
+	{
+		return 0;
+	}
+
+	double res;
+	for(int f = 0; f < _layers.size(); ++f)
+	{
+		res += _layers[f].value(i, j);
+	}
+	return res;
+}
