@@ -82,6 +82,7 @@ public:
 
 	/**
 	 * @brief Get the value of the field at a given cell
+	 *	  DOES NOT WORK - WE DON'T KNOW WHY
 	 *
 	 * @param p         the position of the cell on the grid
 	 * @return double   the exact value of the field in that cell

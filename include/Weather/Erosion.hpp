@@ -23,12 +23,30 @@ void erode_constant(MultiLayerMap& layers, const double k);
 void erode_using_median_slope(MultiLayerMap& layers, const double k);
 
 /**
+ * @brief Erodes a Multi Layer Map using the median double slope value among neighbors
+ * 	  The double slope is computed as the difference of opposite values with regard to each cell
+ *
+ * @param layers    the Multi Layer Map to erode
+ * @param k         the erosion value 
+ */
+void erode_using_median_double_slope(MultiLayerMap& layers, const double k);
+
+/**
  * @brief Erodes a Multi Layer Map using the mean slope value among neighbors
  *
  * @param layers    the Multi Layer Map to erode
  * @param k         the erosion value 
  */
 void erode_using_mean_slope(MultiLayerMap& layers, const double k);
+
+/**
+ * @brief Erodes a Multi Layer Map using the mean slope value among neighbors
+ * 	  The double slope is computed as the difference of opposite values with regard to each cell
+ *
+ * @param layers    the Multi Layer Map to erode
+ * @param k         the erosion value 
+ */
+void erode_using_mean_double_slope(MultiLayerMap& layers, const double k);
 
 /**
  * @brief Function controling erosion based on a slope value for erode_slope_controled
