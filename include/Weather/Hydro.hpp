@@ -10,11 +10,19 @@
 /**
  * @brief Compute Hydraulic area from an heightmap
  *
- * @param heightMap       the source for the computation
- * @param distribute      weither or not the area of a point should be distributed on the neighbors
- * @return SimpleLayerMap    the computed area
+ * @param heightMap         the source for the computation
+ * @param distribute        weither or not the area of a point should be distributed on the neighbors
+ * @return SimpleLayerMap   the computed area
  */
 SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute = true);
+
+/**
+ * @brief Get the water indexes of an heightmap
+ * 
+ * @param heightmap         the map to get the index from
+ * @return SimpleLayerMap   the map of the computed water index
+ */
+SimpleLayerMap get_water_indexes(const DoubleField& heightmap);
 
 /**
  * @brief Erode from Hydraulic area

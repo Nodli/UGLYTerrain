@@ -67,6 +67,25 @@ SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute)
 	return area;
 }
 
+SimpleLayerMap get_water_indexes(const DoubleField& heightmap)
+{
+	SimpleLayerMap area = get_area(heightmap, true);
+	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(heightmap).normalize();
+	SimpleLayerMap water_index = SimpleLayerMap(static_cast<Grid2d>(heightmap));
+
+	double k = 1.0;
+
+	for(int j = 0; j < area.grid_height(); ++j)
+	{
+		for(int i = 0; i < area.grid_width(); i++)
+		{
+			water_index.set_value(i, j, sqrt(area.value(i, j))/(1+k*heightmap.slope(i, j)));
+		}
+	}
+
+	return water_index;
+}
+
 void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 {
 	SimpleLayerMap area = get_area(layers, distribute);

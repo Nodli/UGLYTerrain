@@ -32,9 +32,9 @@ void Weather_info(const MultiLayerMap& m, const int i, const int j, double& temp
 }
 
 
-ScalarField Expo(const MultiLayerMap& m)
+SimpleLayerMap Expo(const MultiLayerMap& m)
 {
-    ScalarField res = m.generate_field();
+    SimpleLayerMap res(static_cast<Grid2d>(m));
     int nb_dir = 100;
     int nb_step = 15;
     double total = nb_dir*3.1415/2.0;

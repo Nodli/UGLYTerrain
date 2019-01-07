@@ -27,7 +27,9 @@ int main()
 
 	sf.export_as_obj("Terrain.obj");
 	sf.export_as_pgm("Terrain.pgm", true);
-	Expo(mlm).export_as_pgm("expo.pgm", true);
+	get_area(mlm).export_as_pgm("1_hydro.pgm", true);
+	get_water_indexes(mlm).export_as_pgm("2_water.pgm", true);
+	Expo(mlm).export_as_pgm("3_expo.pgm", true);
 	SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
 	/*erode_and_transport(mlm, 0.1, 1);
 	mlm.get_field(0).export_as_pgm("TerrainBedrock.pgm", true);
