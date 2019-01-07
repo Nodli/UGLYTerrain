@@ -166,25 +166,16 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		if(ImGui::TreeNode("Erosion"))
 		{
 			static double erosion_factor = 0.1;
-			static double iterations = 1.0;
+			static int iterations = 1;
 			static double rest_angle = 45;
 			ImGui::InputDouble("Erosion Factor", &erosion_factor);
-			ImGui::InputDouble("Iterations", &iterations);
+			ImGui::InputInt("Iterations", &iterations);
 			ImGui::InputDouble("Rest angle", &rest_angle);
-
-			if(ImGui::Button("Erode constant"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
-			{
-				erode_constant(mlm, erosion_factor);
-			}
-
-			if(ImGui::Button("Erode controlled"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
-			{
-				erode_slope_controled(mlm, erosion_factor);
-			}
 
 			if(ImGui::Button("Erode and transport"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
-				erode_and_transport(mlm, erosion_factor, iterations, rest_angle);
+				erode_using_median_slope(mlm, erosion_factor);
+				transport_8connex(mlm, rest_angle);
 			}
 
 			ImGui::TreePop();
