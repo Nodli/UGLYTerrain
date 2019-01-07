@@ -149,7 +149,7 @@ public:
 	 *
 	 * @return SimpleLayerMap&     a reference to the newly created layer
 	 */
-	SimpleLayerMap& new_field();
+	SimpleLayerMap& new_layer();
 
 	/**
 	 * @brief Reshape the MultiLayerMap to a new size and position

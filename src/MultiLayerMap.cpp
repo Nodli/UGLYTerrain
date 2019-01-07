@@ -13,7 +13,7 @@ double MultiLayerMap::value(const int i, const int j) const
 	return result;
 }
 
-SimpleLayerMap& MultiLayerMap::new_field()
+SimpleLayerMap& MultiLayerMap::new_layer()
 {
 	add_field(SimpleLayerMap(_grid_width, _grid_height, _a, _b));
 	return _layers.back();

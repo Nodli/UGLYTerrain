@@ -83,10 +83,10 @@ public:
 	 * @brief Get the positions of the neiboring cells
 	 *
 	 * @param i, j      the position of the cell
-	 * @param p         the positions of the neighbors to fill
+	 * @param p         the positions of the neighbors to fill (a pointer to an array of size at least 8 / nullptr)
 	 * @return int      the number of neighbors
 	 */
-	int neighbors(const int i, const int j, Eigen::Vector2i p[8]) const;
+	int neighbors(const int i, const int j, Eigen::Vector2i* p) const;
 
 	/**
 	 * @brief Gets the position of a cell.

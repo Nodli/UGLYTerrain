@@ -1,4 +1,5 @@
 #include "Noise/TerrainNoise.hpp"
+
 FastNoise noise;
 //noise.SetNoiseType(FastNoise::Perlin);
 
@@ -33,4 +34,21 @@ double TerrainNoise::get_noise(int i, int j)
 	}
 
 	return (value+2*_amplitude);//*noi;
+}
+
+SimpleLayerMap stair_layer(int width, int height, double amplitude){
+
+	SimpleLayerMap stair(width, height, {0, 0}, {1, 1});
+
+	for(int h = 0; h < height; ++h){
+		for(int w = 0; w < width; ++w){
+			if(w < (width / 2)){
+				stair.set_value(w, h, amplitude / 2.);
+			}else{
+				stair.set_value(w, h, - amplitude / 2.);
+			}
+		}
+	}
+
+	return stair;
 }
