@@ -8,48 +8,6 @@
 #include <Weather/Hydro.hpp>
 #include <Weather/Biome.hpp>
 
-
-void test_thermal_erosion_transport_stair(unsigned int iterations = 1){
-	const int size = 10;
-
-	// setup a test MultiLayerMap with a stair terrain
-	MultiLayerMap mlm(size, size);
-	SimpleLayerMap& height = mlm.new_layer();
-	height = stair_layer(size, size, 1.);
-
-	mlm.get_field(0).export_as_obj("InitialTerrain.obj");
-
-	const int erosion_transport_iterations = 26;
-	const int period_save = 1;
-	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
-		std::string folder_name = "ErosionTransport" + std::to_string(istep);
-		std::string sys_cmd = "mkdir " + folder_name;
-		if(istep % period_save == 0){
-			system(sys_cmd.c_str());
-		}
-
-		std::cout << "===== STARTING ITERATION =====" << std::endl;
-		// testing erosion without transport
-		//erode_using_median_slope(mlm, 0.1);
-		//erode_using_mean_slope(mlm, 0.1);
-		//erode_using_median_double_slope(mlm, 0.1);
-		erode_using_mean_double_slope(mlm, 0.1);
-		if(istep % period_save == 0){
-			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
-			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");
-			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalErosionTerrain.obj");
-		}
-
-		// transport on the previously eroded terrain
-		transport_8connex(mlm, 25.);
-		if(istep % period_save == 0){
-			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
-			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
-			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalTransportTerrain.obj");
-		}
-	}
-}
-
 void test_thermal_erosion_transport_stair(unsigned int iterations = 1){
 	const int size = 10;
 
