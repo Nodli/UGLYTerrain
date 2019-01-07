@@ -41,10 +41,10 @@ int main()
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	int size = 30;
+	int size = 100;
 	MultiLayerMap mlm(size, size, { -5, -5}, {5, 5});
 	SimpleLayerMap &sf = mlm.new_layer();
-	TerrainNoise t_noise(2.5, 1.0 / 10.0, 8);
+	TerrainNoise t_noise(2.5, 1.0 / 100.0, 8);
 
 	for(int j = 0; j < size; ++j)
 	{
@@ -57,7 +57,7 @@ int main()
 	sf.export_as_obj("Terrain.obj");
 	sf.export_as_pgm("Terrain.pgm", true);
 	//SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
-
+/*
 	const int erosion_transport_iterations = 1000;
 	const int period_save = 100;
 	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
@@ -83,35 +83,37 @@ int main()
 			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalTransportTerrain.obj");
 		}
 	}
+*/
 
-	/*
 	// Hydraulic erosion, area visualization
+	mlm.new_layer();
 	SimpleLayerMap area = get_area(mlm.generate_field());
 	area.export_as_pgm("DistributedHydraulicArea.pgm", true);
 	area = get_area(mlm.generate_field(), false);
 	area.export_as_pgm("OneWayHydraulicArea.pgm", true);
 
 	// Hydraulic erosion, terrain visualization
-	SimpleLayerMap sediments = mlm.new_layer();
-	sediments.set_all(0.0);
-
 	MultiLayerMap mlmBis(mlm);
 	MultiLayerMap mlmTer(mlm);
+
 	// distributed
 	erode_from_area(mlm, 0.2);
+
 	mlm.get_field(0).export_as_pgm("TerrainDistributedHydroErode.pgm", true);
 	mlm.get_field(0).export_as_obj("TerrainDistributedHydroErode.obj");
 	mlm.generate_field().export_as_obj("TerrainDistributedHydroErodeAndTransport.obj");
+
 	// one way
 	erode_from_area(mlmBis, 0.2, false);
 	mlmBis.get_field(0).export_as_pgm("TerrainOneWayHydroErode.pgm", true);
 	mlmBis.get_field(0).export_as_obj("TerrainOneWayHydroErode.obj");
 	mlmBis.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
+
 	// water drop
-	water_drop_transport(mlmTer, gen, 10, 1.0, 0.1, 1.0);
+	water_drop_transport(mlmTer, gen, 1000, 0.01, 0.1);
 	mlmTer.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmTer.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
-	*/
+
 
 	return 0;
 }
