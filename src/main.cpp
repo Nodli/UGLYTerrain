@@ -8,7 +8,7 @@
 #include <Weather/Hydro.hpp>
 
 void test_thermal_erosion_transport_stair(unsigned int iterations = 1){
-	const int size = 40;
+	const int size = 10;
 
 	// setup a test MultiLayerMap with a stair terrain
 	MultiLayerMap mlm(size, size);
@@ -17,37 +17,48 @@ void test_thermal_erosion_transport_stair(unsigned int iterations = 1){
 
 	mlm.get_field(0).export_as_obj("InitialTerrain.obj");
 
-	for(int i = 0; i != iterations; ++i){
-		std::cout << "EROSION + TRANSPORT" << std::endl;
+	const int erosion_transport_iterations = 26;
+	const int period_save = 1;
+	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
+		std::string folder_name = "ErosionTransport" + std::to_string(istep);
+		std::string sys_cmd = "mkdir " + folder_name;
+		if(istep % period_save == 0){
+			system(sys_cmd.c_str());
+		}
+
+		std::cout << "===== STARTING ITERATION =====" << std::endl;
 		// testing erosion without transport
 		//erode_using_median_slope(mlm, 0.1);
 		//erode_using_mean_slope(mlm, 0.1);
 		//erode_using_median_double_slope(mlm, 0.1);
 		erode_using_mean_double_slope(mlm, 0.1);
-		mlm.get_field(0).export_as_obj("ErodedTerrainBedrock.obj");
-		mlm.get_field(1).export_as_obj("ErodedTerrainSediments.obj");
-		mlm.generate_field().export_as_obj("ErodedTerrain.obj");
+		if(istep % period_save == 0){
+			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
+			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");
+			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalErosionTerrain.obj");
+		}
 
-		// testing transport on the previously eroded terrain
-		transport(mlm, 25.);
-		mlm.get_field(0).export_as_obj("ErodedTransportedTerrainBedrock.obj");
-		mlm.get_field(1).export_as_obj("ErodedTransportedTerrainSediments.obj");
-		mlm.generate_field().export_as_obj("ErodedTransportedTerrain.obj");
+		// transport on the previously eroded terrain
+		transport_8connex(mlm, 25.);
+		if(istep % period_save == 0){
+			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
+			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
+			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalTransportTerrain.obj");
+		}
 	}
 }
 
 int main()
 {
-	test_thermal_erosion_transport_stair(1);
+	//test_thermal_erosion_transport_stair(1);
 
-	/*
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	int size = 30;
+	int size = 100;
 	MultiLayerMap mlm(size, size, { -5, -5}, {5, 5});
 	SimpleLayerMap &sf = mlm.new_layer();
-	TerrainNoise t_noise(2.5, 1.0 / 10.0, 8);
+	TerrainNoise t_noise(2.5, 1.0 / 100.0, 8);
 
 	for(int j = 0; j < size; ++j)
 	{
@@ -57,12 +68,12 @@ int main()
 		}
 	}
 
-	sf.export_as_obj("Terrain.obj");
-	sf.export_as_pgm("Terrain.pgm", true);
+	sf.export_as_obj("InitialTerrain.obj");
+	sf.export_as_pgm("IintialTerrain.pgm", true);
 	//SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
 
-	const int erosion_transport_iterations = 1000;
-	const int period_save = 100;
+	const int erosion_transport_iterations = 101;
+	const int period_save = 10;
 	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
 		std::string folder_name = "ErosionTransport" + std::to_string(istep);
 		std::string sys_cmd = "mkdir " + folder_name;
@@ -71,15 +82,14 @@ int main()
 		}
 
 		// Thermal erosion
-		erode_using_median_slope(mlm, 0.01);
+		erode_using_median_slope(mlm, 0.1);
 		if(istep % period_save == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");
 			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalErosionTerrain.obj");
 		}
-
 		// Thermal transport
-		transport(mlm, 20);
+		transport_8connex(mlm, 20);
 		if(istep % period_save == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
@@ -87,6 +97,7 @@ int main()
 		}
 	}
 
+	/*
 	// Hydraulic erosion, area visualization
 	SimpleLayerMap area = get_area(mlm.generate_field());
 	area.export_as_pgm("DistributedHydraulicArea.pgm", true);
