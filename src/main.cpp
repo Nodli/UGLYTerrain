@@ -21,7 +21,9 @@ void test_thermal_erosion_transport_stair(unsigned int iterations = 1){
 		std::cout << "EROSION + TRANSPORT" << std::endl;
 		// testing erosion without transport
 		//erode_using_median_slope(mlm, 0.1);
-		erode_using_mean_slope(mlm, 0.1);
+		//erode_using_mean_slope(mlm, 0.1);
+		//erode_using_median_double_slope(mlm, 0.1);
+		erode_using_mean_double_slope(mlm, 0.1);
 		mlm.get_field(0).export_as_obj("ErodedTerrainBedrock.obj");
 		mlm.get_field(1).export_as_obj("ErodedTerrainSediments.obj");
 		mlm.generate_field().export_as_obj("ErodedTerrain.obj");
@@ -36,8 +38,9 @@ void test_thermal_erosion_transport_stair(unsigned int iterations = 1){
 
 int main()
 {
-	//test_thermal_erosion_transport_stair(1);
+	test_thermal_erosion_transport_stair(1);
 
+	/*
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
@@ -84,7 +87,6 @@ int main()
 		}
 	}
 
-	/*
 	// Hydraulic erosion, area visualization
 	SimpleLayerMap area = get_area(mlm.generate_field());
 	area.export_as_pgm("DistributedHydraulicArea.pgm", true);

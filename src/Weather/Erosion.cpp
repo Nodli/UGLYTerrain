@@ -57,6 +57,57 @@ void erode_using_median_slope(MultiLayerMap& layers, const double k){
 	}
 }
 
+void erode_using_median_double_slope(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
+
+	// creating the sediment layer if necessary
+	if (layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
+
+	// 8-connexity double slopes
+	// up slope, up-right slope, mid-slope, bottom-right slope
+	double slopes[4];
+
+	for(int h = 0; h < layers.grid_height(); ++h){
+		for(int w = 0; w < layers.grid_width(); ++w){
+			Eigen::Vector2i midpoint = {w, h};
+
+			Eigen::Vector2i A;
+			Eigen::Vector2i B;
+
+			// up slope
+			A.x() = w;
+			A.y() = (h - 1 > 0) ? (h - 1) : (h);
+			B.x() = w;
+			B.y() = (h + 1 < layers.grid_height() - 1) ? (h + 1) : (h);
+			slopes[0] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / 2.;
+
+			// up-right slope
+			A.x() = (w + 1 < layers.grid_width() - 1) ? (w + 1) : (w);
+			B.x() = (w - 1 > 0) ? (w - 1) : (w);
+			slopes[1] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / (2. * std::sqrt(2));
+
+			// mid-slope
+			A.y() = h;
+			B.y() = h;
+			slopes[2] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / 2.;
+
+			// bottom-right slope
+			A.y() = (h - 1 > 0) ? (h - 1) : (h);
+			B.y() = (h + 1 < layers.grid_height() - 1) ? (h + 1) : (h);
+			slopes[3] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / (2. * std::sqrt(2));
+
+			// computing the median slope
+			double median_slope = median_array(4, slopes);
+
+			// applying erosion
+			layers.get_field(0).at(w, h) -= k * median_slope;
+			layers.get_field(1).at(w, h) += k * median_slope;
+		}
+	}
+}
+
 void erode_using_mean_slope(MultiLayerMap& layers, const double k){
 	assert(layers.get_layer_number() > 0);
 
@@ -77,6 +128,57 @@ void erode_using_mean_slope(MultiLayerMap& layers, const double k){
 			// computing the median slope
 			abs_array(neighbors, slopes);
 			double mean_slope = mean_array(neighbors, slopes);
+
+			// applying erosion
+			layers.get_field(0).at(w, h) -= k * mean_slope;
+			layers.get_field(1).at(w, h) += k * mean_slope;
+		}
+	}
+}
+
+void erode_using_mean_double_slope(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
+
+	// creating the sediment layer if necessary
+	if (layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
+
+	// 8-connexity double slopes
+	// up slope, up-right slope, mid-slope, bottom-right slope
+	double slopes[4];
+
+	for(int h = 0; h < layers.grid_height(); ++h){
+		for(int w = 0; w < layers.grid_width(); ++w){
+			Eigen::Vector2i midpoint = {w, h};
+
+			Eigen::Vector2i A;
+			Eigen::Vector2i B;
+
+			// up slope
+			A.x() = w;
+			A.y() = (h - 1 > 0) ? (h - 1) : (h);
+			B.x() = w;
+			B.y() = (h + 1 < layers.grid_height() - 1) ? (h + 1) : (h);
+			slopes[0] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / 2.;
+
+			// up-right slope
+			A.x() = (w + 1 < layers.grid_width() - 1) ? (w + 1) : (w);
+			B.x() = (w - 1 > 0) ? (w - 1) : (w);
+			slopes[1] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / (2. * std::sqrt(2));
+
+			// mid-slope
+			A.y() = h;
+			B.y() = h;
+			slopes[2] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / 2.;
+
+			// bottom-right slope
+			A.y() = (h - 1 > 0) ? (h - 1) : (h);
+			B.y() = (h + 1 < layers.grid_height() - 1) ? (h + 1) : (h);
+			slopes[3] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / (2. * std::sqrt(2));
+
+			// computing the median slope
+			double mean_slope = mean_array(4, slopes);
 
 			// applying erosion
 			layers.get_field(0).at(w, h) -= k * mean_slope;
