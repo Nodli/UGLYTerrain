@@ -36,6 +36,16 @@ double TerrainNoise::get_noise(int i, int j)
 	return (value+2*_amplitude);//*noi;
 }
 
+double TerrainNoise::get_noise2(int i, int j)
+{
+	noise.SetFrequency(_base_freq/2.0);
+	double noi = (0.5 + 0.5*noise.GetNoise(i, j));
+
+	double val = get_noise(i, j);
+
+	return val*noi;
+}
+
 SimpleLayerMap stair_layer(int width, int height, double amplitude){
 
 	SimpleLayerMap stair(width, height, {0, 0}, {1, 1});

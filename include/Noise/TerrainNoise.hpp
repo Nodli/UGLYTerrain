@@ -34,6 +34,14 @@ public:
 	 */
 	double get_noise(int i, int j);
 
+	/**
+	 * @brief Get the value of the noise to a given point
+	 *
+	 * @param i, j      position to generate the value
+	 * @return double   the value of the noise
+	 */
+	double get_noise2(int i, int j);
+
 	FastNoise _base_noise;      /**< base noise generator*/
 	FastNoise _ridge_noise;     /**< noise generator used to generate ridges*/
 	double _amplitude;          /**< initial amplitude of the noise*/

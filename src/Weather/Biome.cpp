@@ -37,16 +37,16 @@ void Weather_info(const MultiLayerMap& m, const int i, const int j, double& temp
 }
 
 
-SimpleLayerMap get_light_exposure(const MultiLayerMap& m, const int nb_steps, const int nb_samples)
+SimpleLayerMap get_light_exposure(const DoubleField& df, const int nb_steps, const int nb_samples)
 {
-	SimpleLayerMap res(static_cast<Grid2d>(m));
+	SimpleLayerMap res(static_cast<Grid2d>(df));
 	double total = nb_samples * 3.1415 / 2.0;
 
 	for(int j = 0; j < res.grid_height(); ++j)
 	{
 		for(int i = 0; i < res.grid_width(); ++i)
 		{
-			double val = m.get_sum(i, j);
+			double val = df.value_safe(i, j);
 			double sum_exp = 0;
 
 			for(int d = 0; d < nb_samples; d++)
@@ -58,7 +58,7 @@ SimpleLayerMap get_light_exposure(const MultiLayerMap& m, const int nb_steps, co
 
 				for(int s = 0; s < nb_steps; ++s)
 				{
-					double v = m.get_sum(i + s * delta_pos(0), j + s * delta_pos(1)) - val;
+					double v = df.value_safe(i + s * delta_pos(0), j + s * delta_pos(1)) - val;
 
 					if(v > 0)
 					{

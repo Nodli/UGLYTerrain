@@ -32,6 +32,7 @@ set(sources
     "src/Weather/Erosion.cpp"
     "src/Weather/Hydro.cpp"
     "src/Weather/Biome.cpp"
+    "src/Vegetation/Vegetation.cpp"
     "src/Utils.cpp")
 
 set(test_sources

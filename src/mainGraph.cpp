@@ -2,7 +2,9 @@
 #include <MultiLayerMap.hpp>
 #include <Noise/TerrainNoise.hpp>
 #include <Weather/Erosion.hpp>
+#include <Weather/Biome.hpp>
 #include <Weather/Hydro.hpp>
+#include <Vegetation/Vegetation.hpp>
 
 #include <ImGui/imgui.h>
 #include <GL/glew.h>
@@ -91,9 +93,19 @@ void export_tab(const SimpleLayerMap& sf, const std::string& name)
 			SimpleLayerMap::generate_slope_map(sf).export_as_pgm(name + "_slope_" + ".pgm");
 		}
 
+		if(ImGui::Button("Export area as pgm"))
+		{
+			get_area(sf).export_as_pgm(name + "_area_" + ".pgm");
+		}
+
 		if(ImGui::Button("Export hydro as pgm"))
 		{
-			get_area(sf).export_as_pgm(name + "_hydro_" + ".pgm");
+			get_water_indexes(sf).export_as_pgm(name + "_hydro_" + ".pgm");
+		}
+
+		if(ImGui::Button("Export expo as pgm"))
+		{
+			get_light_exposure(sf).export_as_pgm(name + "_expo_" + ".pgm");
 		}
 	}
 }
@@ -106,21 +118,21 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 	if(ImGui::CollapsingHeader("Presets"))
 	{
-		if(ImGui::Button("To Default"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		if(ImGui::Button("Big Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
-			strcpy(params.saveName, "default");
+			strcpy(params.saveName, "big");
 			params.sizeWidth = 500;
 			params.sizeHeight = 500;
 			params.posMin = Eigen::Vector2d(-25, -25);
 			params.posMax = Eigen::Vector2d(25, 25);
-			params.t_noise._amplitude = 5.0;
-			params.t_noise._base_freq = 1.0 / 200.0;
+			params.t_noise._amplitude = 10.0;
+			params.t_noise._base_freq = 0.005;
 			params.t_noise._octaves = 8;
 		}
 
 		if(ImGui::Button("Quick Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
-			strcpy(params.saveName, "default");
+			strcpy(params.saveName, "quick");
 			params.sizeWidth = 100;
 			params.sizeHeight = 100;
 			params.posMin = Eigen::Vector2d(-5, -5);
@@ -145,7 +157,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		ImGui::InputDouble("Base frequency", &params.t_noise._base_freq);
 		ImGui::InputInt("Nb iterations", &params.t_noise._octaves);
 
-		if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		if(ImGui::Button("Generate 1"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
 			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
@@ -156,6 +168,21 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 				for(int i = 0; i < params.sizeWidth; i++)
 				{
 					mlm.get_field(0).at(i, j) = params.t_noise.get_noise(i, j);
+				}
+			}
+		}
+
+		if(ImGui::Button("Generate 2"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
+			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
+			mlm.new_layer();
+
+			for(int j = 0; j < params.sizeHeight; ++j)
+			{
+				for(int i = 0; i < params.sizeWidth; i++)
+				{
+					mlm.get_field(0).at(i, j) = params.t_noise.get_noise2(i, j);
 				}
 			}
 		}
@@ -172,9 +199,16 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			ImGui::InputInt("Iterations", &iterations);
 			ImGui::InputDouble("Rest angle", &rest_angle);
 
-			if(ImGui::Button("Erode and transport"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+			if(ImGui::Button("Erode median slope"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
 				erode_using_median_slope(mlm, erosion_factor);
+			}
+			if(ImGui::Button("Erode exposure"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+			{
+				erode_using_exposition(mlm, erosion_factor);
+			}
+			if(ImGui::Button("transport"))
+			{
 				transport(mlm, rest_angle);
 			}
 
@@ -194,6 +228,11 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 				}
 			}
 		}
+	}
+
+	if(ImGui::Button("Export density as ppm"))
+	{
+		generate_distribution(mlm);
 	}
 
 	export_tab(mlm.generate_field(), std::string(params.saveName));
