@@ -42,5 +42,5 @@ void erode_from_area(MultiLayerMap& layers, double k, bool distribute = true);
  * @param water_loss      water quantity loss per iteration
  * @param initial_speed   initial speed of drops
  */
-void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_per_drop, double water_loss, double initial_speed);
+void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k);
 /** @}*/

@@ -98,34 +98,37 @@ int main()
 		}
 	}
 
-	/*
+
+
 	// Hydraulic erosion, area visualization
+	mlm.new_layer();
 	SimpleLayerMap area = get_area(mlm.generate_field());
 	area.export_as_pgm("DistributedHydraulicArea.pgm", true);
 	area = get_area(mlm.generate_field(), false);
 	area.export_as_pgm("OneWayHydraulicArea.pgm", true);
 
 	// Hydraulic erosion, terrain visualization
-	SimpleLayerMap sediments = mlm.new_layer();
-	sediments.set_all(0.0);
-
 	MultiLayerMap mlmBis(mlm);
 	MultiLayerMap mlmTer(mlm);
+
 	// distributed
 	erode_from_area(mlm, 0.2);
+
 	mlm.get_field(0).export_as_pgm("TerrainDistributedHydroErode.pgm", true);
 	mlm.get_field(0).export_as_obj("TerrainDistributedHydroErode.obj");
 	mlm.generate_field().export_as_obj("TerrainDistributedHydroErodeAndTransport.obj");
+
 	// one way
 	erode_from_area(mlmBis, 0.2, false);
 	mlmBis.get_field(0).export_as_pgm("TerrainOneWayHydroErode.pgm", true);
 	mlmBis.get_field(0).export_as_obj("TerrainOneWayHydroErode.obj");
 	mlmBis.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
+
 	// water drop
-	water_drop_transport(mlmTer, gen, 10, 1.0, 0.1, 1.0);
+	water_drop_transport(mlmTer, gen, 1000, 0.01, 0.1);
 	mlmTer.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmTer.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
-	*/
+
 
 	return 0;
 }

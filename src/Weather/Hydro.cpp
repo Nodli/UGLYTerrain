@@ -127,10 +127,13 @@ void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 	layers.get_field(1) += sed_quantity;
 }
 
-void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_per_drop, double water_loss, double initial_speed)
+void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k)
 {
 	std::uniform_int_distribution<> dis_width(0, layers.grid_width() - 1);
 	std::uniform_int_distribution<> dis_height(0, layers.grid_width() - 1);
+	std::uniform_real_distribution<> dis_proportion(0, 1);
+	SimpleLayerMap heightmap = layers.generate_field();
+	heightmap.normalize();
 
 	for(int i = 0; i < n; i++)
 	{
@@ -138,19 +141,47 @@ void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, doubl
 		int y = dis_height(gen);
 
 		double qty_sed = 0.0;
-		double qty_water = water_per_drop;
-		double speed = initial_speed;
+		double qty_water = 1.0;
+
+		heightmap = layers.generate_field();
+		heightmap.normalize();
 
 		while(qty_water > 0.0)
 		{
-			// update qty_sed TODO
-			double delta_sed = 0.0;	// to mind: can't have abs(delta_sed) > qty_sed, qty_sed always > 0
-			layers.get_field(0).at(x, y) -= delta_sed;
-			qty_sed += delta_sed;
-
 			// update speed
+			double speed = heightmap.slope(x, y);
+
+			// update qty_sed
+			double arrache = std::min(2*speed, 1.0);								// between 0 and 1
+			double depose = 1.0 - std::min(std::sqrt(speed), 1.0);	// between 0 and 1
+			double delta_sed = arrache - depose;										// between -1 and 1
+			delta_sed *= k;
+
+			if(-delta_sed > qty_sed) delta_sed = -qty_sed;	// between -1 and 1
+			layers.get_field(0).at(x, y) -= delta_sed;
+			qty_sed += delta_sed;	// always > 0
 
 			// compute new x, y
+			double values[8];
+			Eigen::Vector2i positions[8];
+			double slopes[8];
+			double proportions[8];
+			int neigh_nb = heightmap.neighbors_info_filter(Eigen::Vector2i(x, y), values, positions, slopes);
+			proportion(neigh_nb, slopes, proportions);
+			double p = dis_proportion(gen);
+			double proportion_sum = 0.0;
+
+			if(neigh_nb == 0) qty_water = 0.0;
+			for(int j = 0; j < neigh_nb; j++)
+			{
+				if(proportion_sum <= p && proportion_sum + proportions[j] >= p)
+				{
+					x = positions[j].x();
+					y = positions[j].y();
+					break;
+				}
+				proportion_sum += proportions[j];
+			}
 
 			// update qty_water
 			qty_water -= water_loss;
