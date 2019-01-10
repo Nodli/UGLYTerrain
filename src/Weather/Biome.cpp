@@ -31,7 +31,6 @@ void Weather_info(const MultiLayerMap& m, const int i, const int j, double& temp
     }
 }
 
-
 SimpleLayerMap get_light_exposition(const MultiLayerMap& m)
 {
     SimpleLayerMap res(static_cast<Grid2d>(m));
