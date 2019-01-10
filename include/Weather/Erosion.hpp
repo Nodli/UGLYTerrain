@@ -49,6 +49,22 @@ void erode_using_mean_slope(MultiLayerMap& layers, const double k);
 void erode_using_mean_double_slope(MultiLayerMap& layers, const double k);
 
 /**
+ * @brief Erodes a Multi Layer Map using the exposure of each cell 
+ *
+ * @param layers    the Multi Layer Map to erode
+ * @param k         the erosion value
+ */
+void erode_using_exposition(MultiLayerMap& layers, const double k);
+
+/**
+ * @brief Erodes a Multi Layer Map using the exposure in a multi-material context 
+ *
+ * @param layers    the Multi Layer Map to erode
+ * @param k         the erosion value
+ */
+void erode_materials_constant(MultiLayerMap& layers, const double k);
+
+/**
  * @brief Transports the sediments towards the neighbors in 8-connexity from a Multi Layer Map until stable
  *
  * @param layers        	the Multi Layer Map containing sediments to transport

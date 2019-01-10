@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include <Weather/Erosion.hpp>
+#include <Weather/Biome.hpp>
 #include <BooleanField.hpp>
 #include <Utils.hpp>
 
@@ -187,6 +188,57 @@ void erode_using_mean_double_slope(MultiLayerMap& layers, const double k){
 	}
 }
 
+void erode_using_exposition(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
+
+	// creating the sediment layer if necessary
+	if(layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
+
+	SimpleLayerMap terrain_exposure = get_light_exposition(layers);
+	terrain_exposure.normalize();
+
+	// apply erosion on layers
+	for(int h = 0; h < layers.grid_height(); ++h){
+		for(int w = 0; w < layers.grid_width(); ++w){
+			layers.get_field(0).at(w, h) -= k * terrain_exposure.at(w, h);
+			layers.get_field(1).at(w, h) += k * terrain_exposure.at(w, h);
+		}
+	}
+}
+
+void erode_materials_constant(MultiLayerMap& layers, const double k){
+	assert(layers.get_layer_number() > 0);
+
+	// creating the sediment layer if necessary
+	if(layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
+
+	SimpleLayerMap terrain_exposure = get_light_exposition(layers);
+	terrain_exposure.normalize();
+
+	SimpleLayerMap terrain = layers.generate_field();
+
+	// apply erosion on layers
+	for(int h = 0; h < layers.grid_height(); ++h){
+		for(int w = 0; w < layers.grid_width(); ++w){
+
+			// modofy erosion factor based on material
+			double material_weighted_k;
+			if(terrain.at(w, h) > 0.75){
+				material_weighted_k = k;
+			}else{
+				material_weighted_k = k / 10.;
+			}
+
+			layers.get_field(0).at(w, h) -= material_weighted_k;
+			layers.get_field(1).at(w, h) += material_weighted_k;
+		}
+	}
+}
+
 void transport(MultiLayerMap& layers, const double rest_angle, const double quantity_tolerance)
 {
 	assert(layers.get_layer_number() > 0);
@@ -202,10 +254,8 @@ void transport(MultiLayerMap& layers, const double rest_angle, const double quan
 	// generating the base terrain layer on which slopes will be computed
 	SimpleLayerMap terrain = layers.generate_field();
 
-	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
 
-	// queue all cells of the grid as they could be unstable
-	// @DEBUG: using a temp vector to randomize the order
+	// temporary vector to shuffle grid cells
 	std::vector<Eigen::Vector2i> coord_vector;
 	for(int i = 0; i < terrain.grid_height(); ++i){
 		for(int j = 0; j < terrain.grid_width(); ++j){
@@ -213,10 +263,17 @@ void transport(MultiLayerMap& layers, const double rest_angle, const double quan
 		}
 	}
 	std::random_shuffle(coord_vector.begin(), coord_vector.end());
+
+	// queue all cells of the grid as they could be unstable
 	std::queue<Eigen::Vector2i> unstable_coord;
 	for(int i = 0; i != coord_vector.size(); ++i){
 		unstable_coord.push(coord_vector[i]);
 	}
+
+	coord_vector.clear();
+
+	// updating stability map with all cells unstable
+	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
 
 	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
 
@@ -249,7 +306,7 @@ void transport(MultiLayerMap& layers, const double rest_angle, const double quan
 				double sediments_at_unstable_cell = layers.get_field(1).at(unstable_cell);
 
 				// minimal amount of sediments missing to stabilize unstable_cell
-				// with regard to one of its neighbor
+				// with regard to the easiest neighbor (the highest among unstable neighbors)
 				// sub. in this order because there must be min_neighborhood_slope > slope_stability_threshold
 				double min_stability_difference = min_neighborhood_slope - slope_stability_threshold;
 
