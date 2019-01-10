@@ -52,3 +52,24 @@ SimpleLayerMap stair_layer(int width, int height, double amplitude){
 
 	return stair;
 }
+
+SimpleLayerMap double_stair_layer(int width, int height, double amplitude){
+
+	SimpleLayerMap double_stair(width, height, {0, 0}, {1, 1});
+
+	for(int h = 0; h < height; ++h){
+		for(int w = 0; w < width; ++w){
+			if((w < width / 2) && (h < height / 2)){
+				double_stair.set_value(w, h, amplitude / 2.);
+			}else if((w < width / 2)){
+				double_stair.set_value(w, h, 4. / 3. * amplitude - amplitude); // (2 * amplitude) * 2 / 3 - amplitude
+			}else if((h < height / 2)){
+				double_stair.set_value(w, h, - amplitude);
+			}else{
+				double_stair.set_value(w, h, 2. / 3. * amplitude - amplitude); // (2 * amplitude) * 1 / 3 - amplitude
+			}
+		}
+	}
+
+	return double_stair;
+}
