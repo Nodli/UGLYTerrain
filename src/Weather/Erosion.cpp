@@ -187,38 +187,6 @@ void erode_using_mean_double_slope(MultiLayerMap& layers, const double k){
 	}
 }
 
-float erosion_control_function(const double slope){
-
-	// max slope to consider
-	float max_slope_threshold = 40.;
-
-	// fall-off function taken from implicit function ray-marching
-	float slope_remap = slope / max_slope_threshold;
-	float temp_value = 1. - slope_remap * slope_remap;
-
-	return temp_value * temp_value * temp_value;
-
-}
-
-void erode_slope_controled(MultiLayerMap& layers, const double k){
-	assert(layers.get_layer_number() > 0);
-
-	// creating the sediment layer if necessary
-	if (layers.get_layer_number() == 1){
-		layers.new_layer();
-	}
-
-	for(int j = 0; j < layers.grid_height(); ++j){
-		for(int i = 0; i < layers.grid_width(); ++i){
-			double delta_value = k * erosion_control_function(layers.get_field(0).slope(i, j));
-
-			layers.get_field(0).at(i, j) -= delta_value;
-			layers.get_field(1).at(i, j) += delta_value;
-		}
-	}
-
-}
-
 void transport(MultiLayerMap& layers, const double rest_angle, const double quantity_tolerance)
 {
 	assert(layers.get_layer_number() > 0);

@@ -49,22 +49,6 @@ void erode_using_mean_slope(MultiLayerMap& layers, const double k);
 void erode_using_mean_double_slope(MultiLayerMap& layers, const double k);
 
 /**
- * @brief Function controling erosion based on a slope value for erode_slope_controled
- *
- * @param slope     the slope value at the point
- * @return value of erosion
- */
-float erosion_control_function(const double slope);
-
-/**
- * @brief Erodes a Multi Layer Map using erosion_control_function
- *
- * @param layers    the Multi Layer Map to erode
- * @param k			the erosion factor
- */
-void erode_slope_controled(MultiLayerMap& layers, const double k);
-
-/**
  * @brief Transports the sediments towards the neighbors in 8-connexity from a Multi Layer Map until stable
  *
  * @param layers        	the Multi Layer Map containing sediments to transport
