@@ -71,7 +71,7 @@ void erode_slope_controled(MultiLayerMap& layers, const double k);
  * @param rest_angle    	the angle over which sediments are stable
  * @param quantity_tolerance 	the quantity under which no transport occurs because the quantity is considered negligible
  */
-void transport_8connex(MultiLayerMap& layers, const double rest_angle = 45, const double quantity_tolerance = 0.000000000000001);
+void transport(MultiLayerMap& layers, const double rest_angle = 45, const double quantity_tolerance = 0.000000000000001);
 
 /**
  * @brief Transports the sediments towards the neighbors in 4-connexity from a Multi Layer Map until stable

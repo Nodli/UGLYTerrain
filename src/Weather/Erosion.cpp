@@ -219,7 +219,7 @@ void erode_slope_controled(MultiLayerMap& layers, const double k){
 
 }
 
-void transport_8connex(MultiLayerMap& layers, const double rest_angle, const double quantity_tolerance)
+void transport(MultiLayerMap& layers, const double rest_angle, const double quantity_tolerance)
 {
 	assert(layers.get_layer_number() > 0);
 
@@ -318,7 +318,6 @@ void transport_8connex(MultiLayerMap& layers, const double rest_angle, const dou
 					}
 				}
 			}
-		// neighbors > 1 because if neighbors == 1 then unstable_cell has been stabilized regarding this neighbor during this iteration
 		}while(neighbors > 0 && available_sediments);
 
 		// unstable_cell is now stable either because the slope difference is not big enough anymore
@@ -379,7 +378,7 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 			}
 
 			//computing neighborhood parameters
-			neighbors = terrain.neighbors_info_filter(unstable_cell, values, positions, slopes,
+			neighbors = terrain.neighbors_info_filter_4connex(unstable_cell, values, positions, slopes,
 								  - slope_stability_threshold, false);
 
 			if(neighbors > 0){
@@ -427,7 +426,6 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 					}
 				}
 			}
-		// neighbors > 1 because if neighbors == 1 then unstable_cell has been stabilized regarding this neighbor during this iteration
 		}while(neighbors > 0 && available_sediments);
 
 		// unstable_cell is now stable either because the slope difference is not big enough anymore

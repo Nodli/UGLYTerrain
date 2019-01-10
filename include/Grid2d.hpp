@@ -89,6 +89,15 @@ public:
 	int neighbors(const int i, const int j, Eigen::Vector2i* p) const;
 
 	/**
+	 * @brief Get the positions of the neiboring cells
+	 *
+	 * @param i, j      the position of the cell
+	 * @param p         the positions of the neighbors to fill (a pointer to an array of size at least 8 / nullptr)
+	 * @return int      the number of neighbors
+	 */
+	int neighbors_4connex(const int i, const int j, Eigen::Vector2i* p) const;
+
+	/**
 	 * @brief Gets the position of a cell.
 	 *
 	 * @param x         the position of the cell on the width
@@ -131,6 +140,7 @@ public:
 protected:
 	static const int def_nei[8][2];
 	static const double def_nei_dist[8];
+	static const int def_nei_4connex[4][2];
 	int _grid_width;            /**< the number of cells on the width of the grid*/
 	int _grid_height;           /**< the number of cells on the height of the grid*/
 	Eigen::Vector2d _cell_size; /**< the size of a cell on the plane*/

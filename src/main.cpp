@@ -40,7 +40,7 @@ void test_thermal_erosion_transport_stair(unsigned int iterations = 1){
 		}
 
 		// transport on the previously eroded terrain
-		transport_8connex(mlm, 25.);
+		transport(mlm, 25.);
 		if(istep % period_save == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
@@ -90,7 +90,7 @@ int main()
 			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalErosionTerrain.obj");
 		}
 		// Thermal transport
-		transport_8connex(mlm, 20);
+		transport_4connex(mlm, 20);
 		if(istep % period_save == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");

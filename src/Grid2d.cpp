@@ -2,7 +2,9 @@
 #include <cassert>
 
 const int Grid2d::def_nei[8][2] = {{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
-const double Grid2d::def_nei_dist[] = {sqrt(2.), 1., sqrt(2.), 1., 1., sqrt(2.), 1., sqrt(2.)};
+const double Grid2d::def_nei_dist[8] = {sqrt(2.), 1., sqrt(2.), 1., 1., sqrt(2.), 1., sqrt(2.)};
+
+const int Grid2d::def_nei_4connex[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
 Grid2d::Grid2d(const Grid2d &g)
 	: Box2d(g), _grid_width(g._grid_width), _grid_height(g._grid_height), _cell_size(g._cell_size)
@@ -36,6 +38,24 @@ int Grid2d::neighbors(const int i, const int j, Eigen::Vector2i* p) const
 	{
 		if(def_nei[k][0] + i >= 0 && def_nei[k][0] + i < _grid_width
 				&& def_nei[k][1] + j >= 0 && def_nei[k][1] + j < _grid_height)
+		{
+			p[nb++] = Eigen::Vector2i(def_nei[k][0] + i, def_nei[k][1] + j);
+		}
+	}
+
+	return nb;
+}
+
+int Grid2d::neighbors_4connex(const int i, const int j, Eigen::Vector2i* p) const
+{
+	assert(p != nullptr);
+
+	int nb = 0;
+
+	for(int k = 0; k < 4; ++k)
+	{
+		if(def_nei_4connex[k][0] + i >= 0 && def_nei_4connex[k][0] + i < _grid_width
+				&& def_nei_4connex[k][1] + j >= 0 && def_nei_4connex[k][1] + j < _grid_height)
 		{
 			p[nb++] = Eigen::Vector2i(def_nei[k][0] + i, def_nei[k][1] + j);
 		}
