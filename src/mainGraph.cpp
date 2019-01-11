@@ -18,6 +18,8 @@ struct Parameters
 {
 	TerrainNoise t_noise = TerrainNoise(5.0, 1.0 / 200.0, 8);
 	char saveName[256] = "default";
+	int seed1 = 0;
+	int seed2 = 4;
 	int sizeWidth = 500;
 	int sizeHeight = 500;
 	Eigen::Vector2d posMin;//(-25, -25);
@@ -128,6 +130,8 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.t_noise._amplitude = 10.0;
 			params.t_noise._base_freq = 0.005;
 			params.t_noise._octaves = 8;
+			params.seed1 = 0;
+			params.seed2 = 4;
 		}
 
 		if(ImGui::Button("Quick Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -140,6 +144,8 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.t_noise._amplitude = 2.5;
 			params.t_noise._base_freq = 1.0 / 100.0;
 			params.t_noise._octaves = 8;
+			params.seed1 = 0;
+			params.seed2 = 4;
 		}
 	}
 
@@ -147,6 +153,8 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 	{
 		ImGui::InputInt("Width", &params.sizeWidth);
 		ImGui::InputInt("Height", &params.sizeHeight);
+		ImGui::InputInt("Seed 1", &params.seed1);
+		ImGui::InputInt("Seed 2", &params.seed2);
 		ImGui::InputDouble("minX", &params.posMin(0));
 		ImGui::SameLine();
 		ImGui::InputDouble("minY", &params.posMin(1));
@@ -162,6 +170,8 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
 			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
 			mlm.new_layer();
+			params.t_noise._base_noise.SetSeed(params.seed1);
+			params.t_noise._ridge_noise.SetSeed(params.seed2);
 
 			for(int j = 0; j < params.sizeHeight; ++j)
 			{
@@ -177,6 +187,8 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
 			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
 			mlm.new_layer();
+			params.t_noise._base_noise.SetSeed(params.seed1);
+			params.t_noise._ridge_noise.SetSeed(params.seed2);
 
 			for(int j = 0; j < params.sizeHeight; ++j)
 			{
@@ -203,30 +215,18 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			{
 				erode_using_median_slope(mlm, erosion_factor);
 			}
+
 			if(ImGui::Button("Erode exposure"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
 				erode_using_exposition(mlm, erosion_factor);
 			}
+
 			if(ImGui::Button("transport"))
 			{
 				transport(mlm, rest_angle);
 			}
 
 			ImGui::TreePop();
-		}
-
-		if(ImGui::Button("Generate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
-		{
-			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
-			mlm.new_layer();
-
-			for(int j = 0; j < params.sizeHeight; ++j)
-			{
-				for(int i = 0; i < params.sizeWidth; i++)
-				{
-					mlm.get_field(0).at(i, j) = params.t_noise.get_noise(i, j);
-				}
-			}
 		}
 	}
 
