@@ -72,7 +72,7 @@ int main()
 	sf.export_as_obj("InitialTerrain.obj");
 	sf.export_as_pgm("IintialTerrain.pgm", true);
 	//SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
-
+/*
 	const int erosion_transport_iterations = 101;
 	const int period_save = 10;
 	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
@@ -99,7 +99,7 @@ int main()
 	}
 
 
-
+*/
 	// Hydraulic erosion, area visualization
 	mlm.new_layer();
 	SimpleLayerMap area = get_area(mlm.generate_field());
@@ -123,12 +123,12 @@ int main()
 	mlmBis.get_field(0).export_as_pgm("TerrainOneWayHydroErode.pgm", true);
 	mlmBis.get_field(0).export_as_obj("TerrainOneWayHydroErode.obj");
 	mlmBis.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
-
+/*
 	// water drop
-	water_drop_transport(mlmTer, gen, 1000, 0.01, 0.1);
+	water_drop_transport(mlmTer, gen, 1000, 0.01, 0.01);
 	mlmTer.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmTer.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
-
+*/
 
 	return 0;
 }

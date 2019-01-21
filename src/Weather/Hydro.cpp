@@ -115,8 +115,9 @@ void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 	{
 		for(int i = 0; i < area.grid_width(); i++)
 		{
-			// sqrt(area) / sqrt(1+slope*slope)
-			sed_quantity.set_value(i, j, sqrt(area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
+			// proposed: sqrt(area) / sqrt(1+slope*slope)
+			// implemented: log(area) / sqrt(1+slope*slope)
+			sed_quantity.set_value(i, j, log(area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
 		}
 	}
 
@@ -157,9 +158,10 @@ void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, doubl
 			double delta_sed = arrache - depose;										// between -1 and 1
 			delta_sed *= k;
 
-			if(-delta_sed > qty_sed) delta_sed = -qty_sed;	// between -1 and 1
+			if(-delta_sed > qty_sed)			delta_sed = -qty_sed;	// qty_sed >= 0
+			if(delta_sed + qty_sed > 1.0) delta_sed = 1.0 - qty_sed;	// qty_sed <= 1
 			layers.get_field(0).at(x, y) -= delta_sed;
-			qty_sed += delta_sed;	// always > 0
+			qty_sed += delta_sed;	// qty_sed between 0 and 1
 
 			// compute new x, y
 			double values[8];
