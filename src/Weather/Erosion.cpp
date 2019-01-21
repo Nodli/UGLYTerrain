@@ -82,7 +82,7 @@ void erode_using_median_double_slope(MultiLayerMap& layers, const double k){
 			A.y() = (h - 1 > 0) ? (h - 1) : (h);
 			B.x() = w;
 			B.y() = (h + 1 < layers.grid_height() - 1) ? (h + 1) : (h);
-			slopes[0] = std::abs(layers.value(B.x(), B.y()) - layers.value(A.x(), A.y())) / 2.;
+			slopes[0] = std::abs(layers.value(B) - layers.value(A.x(), A.y())) / 2.;
 
 			// up-right slope
 			A.x() = (w + 1 < layers.grid_width() - 1) ? (w + 1) : (w);

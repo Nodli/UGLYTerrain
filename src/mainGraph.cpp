@@ -147,6 +147,44 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.seed1 = 0;
 			params.seed2 = 4;
 		}
+
+		if(ImGui::Button("Quick Test with veget"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			strcpy(params.saveName, "quick");
+			params.sizeWidth = 100;
+			params.sizeHeight = 100;
+			params.posMin = Eigen::Vector2d(-5, -5);
+			params.posMax = Eigen::Vector2d(5, 5);
+			params.t_noise._amplitude = 2.5;
+			params.t_noise._base_freq = 1.0 / 100.0;
+			params.t_noise._octaves = 8;
+			params.seed1 = 0;
+			params.seed2 = 4;
+
+			std::cout << "generation" << std::endl; 
+			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
+			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
+			mlm.new_layer();
+			params.t_noise._base_noise.SetSeed(params.seed1);
+			params.t_noise._ridge_noise.SetSeed(params.seed2);
+
+			for(int j = 0; j < params.sizeHeight; ++j)
+			{
+				for(int i = 0; i < params.sizeWidth; i++)
+				{
+					mlm.get_field(0).at(i, j) = params.t_noise.get_noise(i, j);
+				}
+			}
+
+			std::cout << "erotion" << std::endl;
+
+			erode_using_exposition(mlm, 0.1);
+			transport(mlm, 20);
+
+			std::cout << "vegetation" << std::endl;
+
+			simulate(mlm);
+		}
 	}
 
 	if(ImGui::CollapsingHeader("Caracteristics"))
@@ -230,10 +268,10 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		}
 	}
 
-	if(ImGui::Button("Export density as ppm"))
-	{
-		generate_distribution(mlm);
-	}
+	// if(ImGui::Button("Export density as ppm"))
+	// {
+	// 	//generate_distribution(mlm);
+	// }
 
 	export_tab(mlm.generate_field(), std::string(params.saveName));
 	ImGui::End();

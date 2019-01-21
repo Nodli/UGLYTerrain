@@ -341,42 +341,6 @@ public:
 	 * @return std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the Scalar Field
 	 */
 	std::vector<std::pair<double, Eigen::Vector2i>> export_to_list() const;
-
-protected:
-	/**
-	 * @brief Gets the index on the array of values for a given position
-	 *
-	 * @param i, j      the position on the grid
-	 * @throw           invalid_argument if the position required is not on the grid
-	 * @return int      the index of that positition in the array of values
-	 */
-	int index(const int i, const int j) const
-	{
-		int index = _grid_width * j + i;
-
-		if(index >= cell_number())
-		{
-			throw std::invalid_argument("wrong access to a value in the Field");
-		}
-
-		return index;
-	}
-
-	/**
-	 * @brief Gets the position of an index
-	 *
-	 * @param index             the index of the cell
-	 * @return Eigen::Vector2i  the position of the cell on the grid
-	 */
-	Eigen::Vector2i posi_from_index(const int index) const
-	{
-		if(index >= cell_number())
-		{
-			throw std::invalid_argument("wrong access to a value in the Field");
-		}
-
-		return Eigen::Vector2i(index % _grid_width, index / _grid_width);
-	}
 };
 
 /**

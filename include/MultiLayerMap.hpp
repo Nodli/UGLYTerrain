@@ -9,6 +9,8 @@
 class MultiLayerMap : public DoubleField
 {
 public:
+	using DoubleField::value;
+
 	MultiLayerMap() = delete;
 	/**
 	 * @brief Construct a new Multi Layer Map object from an other one

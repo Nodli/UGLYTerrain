@@ -8,8 +8,6 @@ double TerrainNoise::get_noise(int i, int j)
 	double value = 0.0;
 	double freq = _base_freq;
 	double ampl = _amplitude;
-	noise.SetFrequency(_base_freq/2.0);
-	double noi = (0.5 + 0.5*noise.GetNoise(i, j));
 	for(int k = 0; k < _octaves; k++)
 	{
 		_base_noise.SetFrequency(freq);
@@ -38,6 +36,7 @@ double TerrainNoise::get_noise(int i, int j)
 
 double TerrainNoise::get_noise2(int i, int j)
 {
+	noise.SetSeed(_base_noise.GetSeed());
 	noise.SetFrequency(_base_freq/2.0);
 	double noi = (0.5 + 0.5*noise.GetNoise(i, j));
 
