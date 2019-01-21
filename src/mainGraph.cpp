@@ -176,10 +176,10 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 				}
 			}
 
-			std::cout << "erotion" << std::endl;
+			// std::cout << "erotion" << std::endl;
 
-			erode_using_exposition(mlm, 0.1);
-			transport(mlm, 20);
+			// erode_using_exposition(mlm, 0.1);
+			// transport(mlm, 20);
 
 			std::cout << "vegetation" << std::endl;
 
@@ -266,12 +266,24 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 			ImGui::TreePop();
 		}
+
+		if(ImGui::TreeNode("Vegetation"))
+		{
+			if(ImGui::Button("Export density as ppm"))
+			{
+				generate_distribution(mlm);
+			}
+			
+			if(ImGui::Button("Erode median slope"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+			{
+				simulate(mlm);
+			}
+
+			ImGui::TreePop();
+		}
 	}
 
-	// if(ImGui::Button("Export density as ppm"))
-	// {
-	// 	//generate_distribution(mlm);
-	// }
+	
 
 	export_tab(mlm.generate_field(), std::string(params.saveName));
 	ImGui::End();

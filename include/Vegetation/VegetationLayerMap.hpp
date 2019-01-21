@@ -50,7 +50,7 @@ public:
 	VegetationLayerMap(const Box2d &b, const int width, const int height)
 		: Grid2d(b, width, height)
 	{
-		_cells.resize(width * height);
+		_cells.resize(cell_number());
 	}
 	/**
 	 * @brief Construct a new Vegetation layer object
@@ -63,7 +63,7 @@ public:
 	VegetationLayerMap(const int width, const int height, const Eigen::Vector2d a = {0, 0}, const Eigen::Vector2d b = {1, 1})
 		: Grid2d(width, height, a, b)
 	{
-		_cells.resize(width * height);
+		_cells.resize(cell_number());
 	}
 
     std::vector<Plant>& at(int i, int j)

@@ -12,6 +12,7 @@
 class SimpleLayerMap : public DoubleField
 {
 public:
+	using DoubleField::value;
 	/**
 	 * @brief Generate a layer map of the slope from a field
 	 *

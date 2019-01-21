@@ -168,25 +168,29 @@ void generate_distribution(const MultiLayerMap& m)
 
 void save_simulation(VegetationLayerMap& distribution, int iter)
 {
-	std::string filename = "simulation_" + std::to_string(iter) + ".ppm";
+	std::string filename = "Simu_2/simulation_" + std::to_string(iter) + ".ppm";
 	std::ofstream output(filename, std::ofstream::out);
 	output << "P3" << std::endl;
 	output << distribution.grid_width() << " " << distribution.grid_height() << std::endl;
-	output << 255 << std::endl;
+	output << 20 << std::endl;
 
 	for(int j = distribution.grid_height() - 1; j >= 0; --j)
 	{
 		for(int i = 0; i < distribution.grid_width(); ++i)
 		{
-			output << distribution.at(i, j).size() << " " << 0 << " " << 0 << " ";
-			if(distribution.at(i, j).size() != 0)
-			std::cout << distribution.at(i, j).size() << " ";
+			int size = distribution.at(i, j).size();
+			//if(size > 0)
+			output << 25-size << " " << 25 << " " << 25-size << " ";
+			// else
+			// output << 25 << " " << 25 << " " << 25 << " ";
+			// if(distribution.at(i, j).size() != 0)
+			// std::cout << distribution.at(i, j).size() << " ";
 			// if(distrib.value(i, j) == 0)
 			// {
 			// 	output << 0 << " " << 0 << " " << 0 << " ";
 			// }
 		}
-		std::cout << std::endl;
+		//std::cout << std::endl;
 		output << std::endl;
 	}
 
@@ -210,13 +214,13 @@ void simulate(const MultiLayerMap& mlm)
 	bool nope = true;
 	Plant ref;
 	ref._age = 0;
-	ref._max_age = 70;
-	ref._reproduction_age = 20;
+	ref._max_age = 50;
+	ref._reproduction_age = 10;
 	ref._health = 1.0;
-	Plant p[3];
-	p[0] = ref;
-	p[1] = p[0];
-	p[2] = p[0];
+	// Plant p[3];
+	// p[0] = ref;
+	// p[1] = p[0];
+	// p[2] = p[0];
 
 	for(int i = 0; i < 100; ++i)
 	{
@@ -238,7 +242,7 @@ void simulate(const MultiLayerMap& mlm)
 
 	save_simulation(distribution, 0);
 	
-	for(int it = 1; it <= 200; ++it)
+	for(int it = 1; it <= 500; ++it)
 	{
 		for(int j = 0; j < distribution.grid_height(); ++j)
 		{
@@ -246,32 +250,41 @@ void simulate(const MultiLayerMap& mlm)
 			{
 				std::vector<Plant>& cell = distribution.at(i, j);
 
-				for(auto p = cell.begin(); p != cell.end(); ++p)
+				auto p = cell.begin();
+				//for(auto p = cell.begin(); p != cell.end(); ++p)
+				while(p != cell.end())
 				{
 					//Plant& pl = cell.at(p);
 					//Augmente l'âge
 					p->_age += 1;
 
-					if(p->_age > p->_max_age)
+					if(p->_age > p->_max_age*sqrt(p->_health)*2)
 					{
-						cell.erase(p);
+						p = cell.erase(p);
 					}
 					else if(p->_age > p->_reproduction_age)
 					{
 						Eigen::Vector2i pos[8];
-						int nb = distribution.neighbors(i, j, pos);
 						float rep = rdis(gen);
+						float chance = rdis(gen);
 
-						if(rep < 0.3)
+						if(rep < 1)
 						{
+							int nb = distribution.neighbors(i, j, pos);
 							float vn = rdis(gen);
 							int select_nei = vn * nb;
-							distribution.at(pos[select_nei].x(), pos[select_nei].y()).push_back(Plant());
+							auto& target = distribution.at(pos[select_nei].x(), pos[select_nei].y());
+							if(target.size() < 20 && chance < g_density.value(pos[select_nei])){
+								ref._health = g_density.value(pos[select_nei]);
+								target.push_back(ref);
+							}
 						}
+						p++;
 					}
 				}
 			}
 		}
+		if(it%10 == 0)
 		save_simulation(distribution, it);
 	}
 }

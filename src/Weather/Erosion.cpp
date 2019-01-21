@@ -279,8 +279,6 @@ void transport(MultiLayerMap& layers, const double rest_angle, const double quan
 	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
 
 	while(!unstable_coord.empty()){
-		std::cout << "queue size: " << unstable_coord.size() << std::endl;
-
 		// pick the next unstable cell
 		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
 
