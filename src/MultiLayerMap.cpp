@@ -91,3 +91,50 @@ double MultiLayerMap::get_sum(const int i, const int j) const
 	}
 	return res;
 }
+
+
+std::istream& operator>>(std::istream& is, MultiLayerMap& m)
+{
+	is >> m._a.x();
+	is >> m._a.y();
+	is >> m._b.x();
+	is >> m._b.y();
+	is >> m._grid_width;
+	is >> m._grid_height;
+	is >> m._cell_size.x();
+	is >> m._cell_size.y();
+	int nb_layers;
+	is >> nb_layers;
+	m._layers.resize(nb_layers, SimpleLayerMap(static_cast<Grid2d>(m)));
+
+	for(int i = 0; i < nb_layers; ++i)
+	{
+		for(int e = 0; e < m.cell_number(); ++e){
+			is >> m._layers[i].at(m.posi_from_index(e));
+		}
+	}
+
+	return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const MultiLayerMap& m)
+{
+	os << m._a.x() << " ";
+	os << m._a.y() << " ";
+	os << m._b.x() << " ";
+	os << m._b.y() << " ";
+	os << m._grid_width << " ";
+	os << m._grid_height << " ";
+	os << m._cell_size.x() << " ";
+	os << m._cell_size.y() << " ";
+	os << m._layers.size() << " ";
+
+	for(int i = 0; i < m._layers.size(); ++i)
+	{
+		for(int e = 0; e < m.cell_number(); ++e){
+			os << m._layers[i].value(m.posi_from_index(e)) << " ";
+		}
+	}
+
+	return os;
+}

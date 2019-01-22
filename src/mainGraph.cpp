@@ -160,8 +160,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.t_noise._octaves = 8;
 			params.seed1 = 0;
 			params.seed2 = 4;
-
-			std::cout << "generation" << std::endl; 
+			std::cout << "generation" << std::endl;
 			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
 			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
 			mlm.new_layer();
@@ -177,12 +176,9 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			}
 
 			// std::cout << "erotion" << std::endl;
-
 			// erode_using_exposition(mlm, 0.1);
 			// transport(mlm, 20);
-
 			std::cout << "vegetation" << std::endl;
-
 			simulate(mlm);
 		}
 	}
@@ -273,8 +269,8 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			{
 				generate_distribution(mlm);
 			}
-			
-			if(ImGui::Button("Erode median slope"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+
+			if(ImGui::Button("Simulate"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
 				simulate(mlm);
 			}
@@ -283,9 +279,22 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		}
 	}
 
-	
-
 	export_tab(mlm.generate_field(), std::string(params.saveName));
+
+	if(ImGui::Button("Save"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+	{
+		std::string filename = std::string(params.saveName) + ".mlm";
+		std::ofstream output(filename, std::ofstream::out);
+		output << mlm;
+	}
+
+	if(ImGui::Button("Import"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+	{
+		std::string filename = std::string(params.saveName) + ".mlm";
+		std::ifstream input(filename, std::ifstream::in);
+		input >> mlm;
+	}
+
 	ImGui::End();
 }
 

@@ -185,6 +185,12 @@ public:
 	 */
 	MultiLayerMap& operator=(MultiLayerMap&& mlm);
 
+	friend std::istream& operator>>(std::istream& is, MultiLayerMap& m);
+	friend std::ostream& operator<<(std::ostream& os, const MultiLayerMap& m);
+
 protected:
 	std::vector<SimpleLayerMap> _layers; /**< Array of simple layer map*/
 };
+
+std::istream& operator>>(std::istream& is, MultiLayerMap& m);
+std::ostream& operator<<(std::ostream& os, const MultiLayerMap& m);
