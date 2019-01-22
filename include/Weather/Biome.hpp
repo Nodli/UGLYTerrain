@@ -5,6 +5,17 @@
 
 void Weather_info(const MultiLayerMap& m, const int i, const int j, double& temp, double& hum, double& water, double& lux);
 
+struct BiomeInfo
+{
+    BiomeInfo(const MultiLayerMap& m);
+
+    SimpleLayerMap slope;
+    SimpleLayerMap exposure;
+    SimpleLayerMap water_index;
+    SimpleLayerMap height;
+    SimpleLayerMap sediments;
+};
+
 /**
  * @brief Get the light exposition of a field
  *

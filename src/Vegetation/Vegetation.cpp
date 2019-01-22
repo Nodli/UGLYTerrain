@@ -2,26 +2,6 @@
 
 #include <iostream>
 
-SimpleLayerMap grass_density(const MultiLayerMap& m)
-{
-	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(m).normalize();
-	//SimpleLayerMap exposition = get_light_exposure(m).normalize();
-	SimpleLayerMap water_index = get_water_indexes(m).normalize();
-	SimpleLayerMap height = m.generate_field().normalize();
-	SimpleLayerMap density(static_cast<Grid2d>(m));
-
-	for(int j = 0; j < density.grid_height(); ++j)
-	{
-		for(int i = 0; i < density.grid_width(); i++)
-		{
-			double value = sqrt(water_index.value(i, j)) * (1 - height.value(i, j));
-			density.set_value(i, j, value);
-		}
-	}
-
-	return density;
-}
-
 SimpleLayerMap bush_density(const MultiLayerMap& m)
 {
 	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(m).normalize();
@@ -64,11 +44,12 @@ SimpleLayerMap tree_density(const MultiLayerMap& m)
 
 void generate_distribution(const MultiLayerMap& m)
 {
+	BiomeInfo bi(m);
 	int maxVal = 255;
 	SimpleLayerMap distrib(static_cast<Grid2d>(m));
 	distrib.set_all(0.0);
 	MultiLayerMap distribs(static_cast<Grid2d>(m));
-	distribs.add_field(grass_density(m));
+	distribs.add_field(low_grass_density(bi));
 	distribs.add_field(bush_density(m));
 	distribs.add_field(tree_density(m));
 	std::random_device rd;
@@ -168,7 +149,7 @@ void generate_distribution(const MultiLayerMap& m)
 
 void save_simulation(VegetationLayerMap& distribution, int iter)
 {
-	std::string filename = "Simu_2/simulation_" + std::to_string(iter) + ".ppm";
+	std::string filename = "Simu_3/simulation_" + std::to_string(iter) + ".ppm";
 	std::ofstream output(filename, std::ofstream::out);
 	output << "P3" << std::endl;
 	output << distribution.grid_width() << " " << distribution.grid_height() << std::endl;
@@ -179,7 +160,9 @@ void save_simulation(VegetationLayerMap& distribution, int iter)
 		for(int i = 0; i < distribution.grid_width(); ++i)
 		{
 			int size = distribution.at(i, j).size();
-			//if(size > 0)
+			// if(size > 0)
+			// output << 0 << " " << 0 << " " << 0 << " ";
+			// else
 			output << 25-size << " " << 25 << " " << 25-size << " ";
 			// else
 			// output << 25 << " " << 25 << " " << 25 << " ";
@@ -199,30 +182,31 @@ void save_simulation(VegetationLayerMap& distribution, int iter)
 
 void simulate(const MultiLayerMap& mlm)
 {
-	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(mlm).normalize();
-	SimpleLayerMap exposition = get_light_exposure(mlm).normalize();
-	SimpleLayerMap water_index = get_water_indexes(mlm).normalize();
-	SimpleLayerMap height = SimpleLayerMap(mlm).normalize();
+	// SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(mlm).normalize();
+	// SimpleLayerMap exposition = get_light_exposure(mlm).normalize();
+	// SimpleLayerMap water_index = get_water_indexes(mlm).normalize();
+	// SimpleLayerMap height = SimpleLayerMap(mlm).normalize();
+	BiomeInfo bi(mlm);
 	VegetationLayerMap distribution(static_cast<Grid2d>(mlm));
-	SimpleLayerMap g_density = grass_density(mlm);
-	g_density.export_as_pgm("HOLOLOLOLO.pgm");
+	SimpleLayerMap g_density = strong_grass_density(mlm);
+	g_density.export_as_pgm("HOLOLOLOLO2.pgm");
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis_width(0, mlm.grid_width() - 1);
 	std::uniform_int_distribution<> dis_height(0, mlm.grid_width() - 1);
 	std::uniform_real_distribution<> rdis(0, 1);
 	bool nope = true;
-	Plant ref;
-	ref._age = 0;
-	ref._max_age = 50;
-	ref._reproduction_age = 10;
-	ref._health = 1.0;
+	Grass ref(50, 10, 1.0, &g_density);
+	// ref._age = 0;
+	// ref._max_age = 50;
+	// ref._reproduction_age = 10;
+	// ref._health = 1.0;
 	// Plant p[3];
 	// p[0] = ref;
 	// p[1] = p[0];
 	// p[2] = p[0];
 
-	for(int i = 0; i < 100; ++i)
+	for(int i = 0; i < 10; ++i)
 	{
 		nope = true;
 
@@ -233,7 +217,7 @@ void simulate(const MultiLayerMap& mlm)
 
 			if(rdis(gen) < g_density.value(x, y))
 			{
-				distribution.at(x, y).push_back(ref);
+				distribution.at(x, y).push_back(new Grass(ref));
 				nope = false;
 			}
 		}
@@ -248,39 +232,49 @@ void simulate(const MultiLayerMap& mlm)
 		{
 			for(int i = 0; i < distribution.grid_width(); i++)
 			{
-				std::vector<Plant>& cell = distribution.at(i, j);
+				std::vector<Plant*>& cell = distribution.at(i, j);
 
 				auto p = cell.begin();
 				//for(auto p = cell.begin(); p != cell.end(); ++p)
 				while(p != cell.end())
 				{
-					//Plant& pl = cell.at(p);
-					//Augmente l'âge
-					p->_age += 1;
-
-					if(p->_age > p->_max_age*sqrt(p->_health)*2)
+					(*p)->update(gen, rdis, distribution, i, j);
+					if((*p)->is_dead())
 					{
+						delete *p;
 						p = cell.erase(p);
 					}
-					else if(p->_age > p->_reproduction_age)
+					else
 					{
-						Eigen::Vector2i pos[8];
-						float rep = rdis(gen);
-						float chance = rdis(gen);
-
-						if(rep < 1)
-						{
-							int nb = distribution.neighbors(i, j, pos);
-							float vn = rdis(gen);
-							int select_nei = vn * nb;
-							auto& target = distribution.at(pos[select_nei].x(), pos[select_nei].y());
-							if(target.size() < 20 && chance < g_density.value(pos[select_nei])){
-								ref._health = g_density.value(pos[select_nei]);
-								target.push_back(ref);
-							}
-						}
 						p++;
 					}
+					//Plant& pl = cell.at(p);
+					//Augmente l'âge
+					// p->_age += 1;
+
+					// if(p->_age > p->_max_age*sqrt(p->_health)*2)
+					// {
+					// 	p = cell.erase(p);
+					// }
+					// else if(p->_age > p->_reproduction_age)
+					// {
+					// 	Eigen::Vector2i pos[8];
+					// 	float rep = rdis(gen);
+					// 	float chance = rdis(gen);
+
+					// 	if(rep < 1)
+					// 	{
+					// 		int nb = distribution.neighbors(i, j, pos);
+					// 		float vn = rdis(gen);
+					// 		int select_nei = vn * (nb-1);
+					// 		auto& target = distribution.at(pos[select_nei].x(), pos[select_nei].y());
+					// 		if(target.size() < 20 && chance < g_density.value(pos[select_nei])){
+					// 			ref._health = g_density.value(pos[select_nei]);
+					// 			target.push_back(ref);
+					// 		}
+					// 	}
+					// 	p++;
+					// }
 				}
 			}
 		}

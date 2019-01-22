@@ -1,41 +1,14 @@
 #include <Weather/Biome.hpp>
 
-void Weather_info(const MultiLayerMap& m, const int i, const int j, double& temp, double& hum, double& water, double& lux)
-{
-	temp = 100. / m.get_sum(i, j);
-	hum = m.get_field(1).value(i, j);
-	int nb_dir = 16;
-	int nb_step = 3;
-	double val = m.get_sum(i, j);
-	double total = nb_dir * 3.1415 / 2.0;
-	double sum_exp = 0;
-
-	for(int d = 0; d < nb_dir; d++)
+BiomeInfo::BiomeInfo(const MultiLayerMap& m)
+	: slope(SimpleLayerMap::generate_slope_map(m).normalize())
+	, exposure(get_light_exposure(m).normalize())
+	, water_index(get_water_indexes(m).normalize())
+	, height(m.generate_field().normalize())
+	, sediments(m.get_field(1)) 
 	{
-		double angle = (2.*3.1415) * d / nb_dir;
-		Eigen::Vector2d delta_pos = {cos(angle), sin(angle)};
-		double covA = 0;
-		double h = 0;
-
-		for(int s = 0; s < nb_step; ++s)
-		{
-			double v = m.get_sum(i + s * delta_pos(0), j + s * delta_pos(1)) - val;
-
-			if(v > 0)
-			{
-				double tmpCov = atan(v / delta_pos.norm());
-
-				if(tmpCov > covA)
-				{
-					covA = tmpCov;
-				}
-			}
-		}
-
-		sum_exp += (3.1415 / 2.0) - covA;
+		sediments.normalize();
 	}
-}
-
 
 SimpleLayerMap get_light_exposure(const DoubleField& df, const int nb_steps, const int nb_samples)
 {
@@ -77,5 +50,6 @@ SimpleLayerMap get_light_exposure(const DoubleField& df, const int nb_steps, con
 			res.at(i, j) = sum_exp / total;
 		}
 	}
+
 	return res;
 }

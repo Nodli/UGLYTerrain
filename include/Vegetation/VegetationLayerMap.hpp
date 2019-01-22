@@ -1,15 +1,8 @@
 #pragma once
 #include <Grid2d.hpp>
-#include <vector>
+#include <Vegetation/Plant/Plant.hpp>
 
-class Plant
-{
-public:
-	int _age = 0;
-	int _max_age = 70;
-	int _reproduction_age = 20;
-	float _health = 1.0;
-};
+#include <vector>
 
 class VegetationLayerMap : public Grid2d
 {
@@ -20,7 +13,7 @@ public:
 	 *
 	 * @param hf        the layer to copy
 	 */
-	VegetationLayerMap(const VegetationLayerMap& vl)
+	VegetationLayerMap(const VegetationLayerMap & vl)
 		: Grid2d(vl), _cells(vl._cells) {}
 	/**
 	 * @brief Construct a new Vegetation layer from an existing vegetation layer
@@ -66,11 +59,11 @@ public:
 		_cells.resize(cell_number());
 	}
 
-    std::vector<Plant>& at(int i, int j)
-    {
-        return _cells.at(index(i, j));
-    }
+	std::vector<Plant*>& at(int i, int j)
+	{
+		return _cells.at(index(i, j));
+	}
 
 private:
-	std::vector<std::vector<Plant>> _cells;
+	std::vector<std::vector<Plant*>> _cells;
 };

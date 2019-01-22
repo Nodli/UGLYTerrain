@@ -34,6 +34,7 @@ set(sources
     "src/Weather/Biome.cpp"
     "src/Vegetation/Vegetation.cpp"
     "src/Vegetation/VegetationLayerMap.cpp"
+    "src/Vegetation/Plant/Grass.cpp"
     "src/Utils.cpp")
 
 set(test_sources

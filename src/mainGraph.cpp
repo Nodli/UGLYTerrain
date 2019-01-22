@@ -176,8 +176,8 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			}
 
 			// std::cout << "erotion" << std::endl;
-			// erode_using_exposition(mlm, 0.1);
-			// transport(mlm, 20);
+			erode_using_exposition(mlm, 0.1);
+			transport(mlm, 20);
 			std::cout << "vegetation" << std::endl;
 			simulate(mlm);
 		}
