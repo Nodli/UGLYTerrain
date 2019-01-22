@@ -3,14 +3,7 @@
 #include <MultiLayerMap.hpp>
 #include <Weather/Biome.hpp>
 #include <Vegetation/VegetationLayerMap.hpp>
-#include <Vegetation/Plant/Grass.hpp>
-/**
- * @brief Test for generation density function
- * 
-*/
-// SimpleLayerMap grass_density(const MultiLayerMap& m);
-
-SimpleLayerMap bush_density(const MultiLayerMap& m);
+#include <Vegetation/MountainFlore.hpp>
 
 SimpleLayerMap tree_density(const MultiLayerMap& m);
 

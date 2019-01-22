@@ -32,7 +32,7 @@ SimpleLayerMap strong_grass_density(const BiomeInfo& bi)
 	return density;
 }
 
-bool Grass::is_dead()
+bool Grass::is_dead() const
 {
 	return _age > _max_age * sqrt(_health) * 1.2;
 }
@@ -56,9 +56,7 @@ void Grass::update(std::mt19937& gen, std::uniform_real_distribution<>& rdis, Ve
 
 			if(target.size() < 20 && chance < _density->value(pos[select_nei]))
 			{
-				//Grass new_born();
-				//ref._health = _density->value(pos[select_nei]);
-				target.push_back(new Grass(_max_age, _reproduction_age, _density->value(pos[select_nei]), _density));
+				target.push_back(new Grass(_ID, _max_age, _reproduction_age, _density->value(pos[select_nei]), _density));
 			}
 		}
 	}

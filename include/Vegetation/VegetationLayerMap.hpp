@@ -59,10 +59,25 @@ public:
 		_cells.resize(cell_number());
 	}
 
+	/**
+	 * @brief gets the concent of a cell
+	 * 
+	 * @param i, j 		the coordinates of the cell
+	 * @return std::vector<Plant*>& 	the array of plant representing the cell
+	 */
 	std::vector<Plant*>& at(int i, int j)
 	{
 		return _cells.at(index(i, j));
 	}
+
+	/**
+	 * @brief gets the number of element of a certain type in a cell
+	 * 
+	 * @param i, j		the coordinate of the cell 
+	 * @param ID 		the ID of the plant
+	 * @return int 		the number of plant of type ID
+	 */
+	int count_ID_at(const int i, const int j, const int ID) const;
 
 private:
 	std::vector<std::vector<Plant*>> _cells;
