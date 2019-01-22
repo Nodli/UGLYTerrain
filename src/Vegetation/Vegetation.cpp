@@ -140,21 +140,9 @@ void save_simulation(VegetationLayerMap& distribution, int iter)
 	{
 		for(int i = 0; i < distribution.grid_width(); ++i)
 		{
-			//int size = distribution.at(i, j).size();
 			int nb_grass = distribution.count_ID_at(i, j, 0);
 			int nb_bush = distribution.count_ID_at(i, j, 1);
-			// if(size > 0)
-			// output << 0 << " " << 0 << " " << 0 << " ";
-			// else
 			output << 25 - nb_grass << " " << 25 - nb_bush << " " << 25 - nb_grass - nb_bush << " ";
-			// else
-			// output << 25 << " " << 25 << " " << 25 << " ";
-			// if(distribution.at(i, j).size() != 0)
-			// std::cout << distribution.at(i, j).size() << " ";
-			// if(distrib.value(i, j) == 0)
-			// {
-			//  output << 0 << " " << 0 << " " << 0 << " ";
-			// }
 		}
 
 		//std::cout << std::endl;
@@ -183,7 +171,7 @@ void simulate(const MultiLayerMap& mlm)
 	std::uniform_real_distribution<> rdis(0, 1);
 	bool nope = true;
 	Grass ref_grass(0, 40, 10, 1.0, &g_density);
-	Bush ref_bush(1, 100, 30, 1.0, &b_density);
+	Bush ref_bush(1, 100, 0, 1.0, &b_density);
 	int nb_seeds = 50;
 
 	for(int i = 0; i < nb_seeds; ++i)

@@ -80,6 +80,30 @@ public:
 	}
 
 	/**
+	 * @brief Tells if a position is inside the grid
+	 *
+	 * @param i, j      the position to test
+	 * @return true     if pos point to a valid cell
+	 * @return false    if pos points outside the grid
+	 */
+	bool inside(const int i, const int j) const
+	{
+		return !(i < 0 || i >= _grid_width || j < 0 || j >= _grid_height);
+	}
+
+	/**
+	 * @brief Tells if a position is inside the grid
+	 *
+	 * @param pos       the position to test
+	 * @return true     if pos point to a valid cell
+	 * @return false    if pos points outside the grid
+	 */
+	bool inside(Eigen::Vector2i pos) const
+	{
+		return inside(pos(0), pos(1));
+	}
+
+	/**
 	 * @brief Get the positions of the neiboring cells
 	 *
 	 * @param i, j      the position of the cell
