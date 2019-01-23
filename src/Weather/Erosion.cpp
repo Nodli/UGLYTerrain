@@ -208,8 +208,12 @@ void erode_using_exposition(MultiLayerMap& layers, const double k){
 	}
 }
 
-void erode_materials_constant(MultiLayerMap& layers, const double k){
+void erode_layered_materials_using_exposition(MultiLayerMap& layers,
+					const std::vector<double>& layers_top_heights,
+					const std::vector<double>& layers_erosion_values){
+
 	assert(layers.get_layer_number() > 0);
+	assert(layers_top_heights.size() > 0 && layers_top_heights.size() == layers_erosion_values.size());
 
 	// creating the sediment layer if necessary
 	if(layers.get_layer_number() == 1){
@@ -225,16 +229,17 @@ void erode_materials_constant(MultiLayerMap& layers, const double k){
 	for(int h = 0; h < layers.grid_height(); ++h){
 		for(int w = 0; w < layers.grid_width(); ++w){
 
-			// modofy erosion factor based on material
-			double material_weighted_k;
-			if(terrain.at(w, h) > 0.75){
-				material_weighted_k = k;
-			}else{
-				material_weighted_k = k / 10.;
+			// find the erosion value based on the height of the current layer
+			int ilayer = 1;
+			while(ilayer < layers_top_heights.size()
+			&& terrain.at(w, h) > layers_top_heights[ilayer]){
+				++ilayer;
 			}
 
-			layers.get_field(0).at(w, h) -= material_weighted_k;
-			layers.get_field(1).at(w, h) += material_weighted_k;
+			double material_erosion_value = layers_erosion_values[ilayer];
+
+			layers.get_field(0).at(w, h) -= material_erosion_value;
+			layers.get_field(1).at(w, h) += material_erosion_value;
 		}
 	}
 }
