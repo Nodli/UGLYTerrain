@@ -7,20 +7,10 @@ void Weather_info(const MultiLayerMap& m, const int i, const int j, double& temp
 
 /**
  * @brief Get the light exposition of a MultiLayerMap
- * 
+ *
  * @param m                 The source MultiLayerMap
+ * @param nb_steps          The radius used for calculating the exposure, measured in cells of the grid
+ * @param nb_sambles        The number of direction for calculating the exposure
  * @return SimpleLayerMap   A field contaning the exposition information
  */
-SimpleLayerMap get_light_exposition(const MultiLayerMap& m);
-
-/**
- * @brief Test for generation density function
- * 
- */
-SimpleLayerMap grass_density(const MultiLayerMap& m);
-
-SimpleLayerMap bush_density(const MultiLayerMap& m);
-
-SimpleLayerMap tree_density(const MultiLayerMap& m);
-
-void generate_distribution(const MultiLayerMap& m);
+SimpleLayerMap get_light_exposure(const MultiLayerMap& m, const int nb_steps = 15, const int nb_samples = 50);

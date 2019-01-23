@@ -196,7 +196,7 @@ void erode_using_exposition(MultiLayerMap& layers, const double k){
 		layers.new_layer();
 	}
 
-	SimpleLayerMap terrain_exposure = get_light_exposition(layers);
+	SimpleLayerMap terrain_exposure = get_light_exposure(layers);
 	terrain_exposure.normalize();
 
 	// apply erosion on layers
@@ -220,7 +220,8 @@ void erode_layered_materials_using_exposition(MultiLayerMap& layers,
 		layers.new_layer();
 	}
 
-	SimpleLayerMap terrain_exposure = get_light_exposition(layers);
+	//NANI DESU KA ?
+	SimpleLayerMap terrain_exposure = get_light_exposure(layers);
 	terrain_exposure.normalize();
 
 	SimpleLayerMap terrain = layers.generate_field();
