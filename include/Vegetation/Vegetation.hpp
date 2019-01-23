@@ -5,8 +5,6 @@
 #include <Vegetation/VegetationLayerMap.hpp>
 #include <Vegetation/MountainFlore.hpp>
 
-SimpleLayerMap tree_density(const MultiLayerMap& m);
-
 void generate_distribution(const MultiLayerMap& m);
 
 void simulate(const MultiLayerMap& mlm);

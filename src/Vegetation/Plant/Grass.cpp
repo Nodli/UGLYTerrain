@@ -8,7 +8,7 @@ SimpleLayerMap low_grass_density(const BiomeInfo& bi)
 	{
 		for(int i = 0; i < density.grid_width(); i++)
 		{
-			double value = sqrt(bi.water_index.value(i, j)) * (1 - bi.height.value(i, j));
+			double value = std::min(1.5*sqrt(bi.water_index.value(i, j)) * (1 - bi.height.value(i, j)), 1.0);
 			density.set_value(i, j, value);
 		}
 	}
@@ -24,7 +24,7 @@ SimpleLayerMap strong_grass_density(const BiomeInfo& bi)
 	{
 		for(int i = 0; i < density.grid_width(); i++)
 		{
-			double value = std::max(sqrt(bi.water_index.value(i, j)), bi.sediments.value(i, j)*bi.sediments.value(i, j));
+			double value = std::min(1.3*std::max(sqrt(bi.water_index.value(i, j)), bi.sediments.value(i, j)*bi.sediments.value(i, j)), 1.0);
 			density.set_value(i, j, value);
 		}
 	}
@@ -54,7 +54,7 @@ void Grass::update(std::mt19937& gen, std::uniform_real_distribution<>& rdis, Ve
 			int select_nei = vn * (nb - 1);
 			auto& target = distribution.at(pos[select_nei].x(), pos[select_nei].y());
 
-			if(target.size() < 20 && chance < _density->value(pos[select_nei]))
+			if(target.size() < 10 && chance < _density->value(pos[select_nei]))
 			{
 				target.push_back(new Grass(_ID, _max_age, _reproduction_age, _density->value(pos[select_nei]), _density));
 			}
