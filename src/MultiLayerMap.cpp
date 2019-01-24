@@ -1,6 +1,5 @@
 #include <MultiLayerMap.hpp>
 
-
 double MultiLayerMap::value(const int i, const int j) const
 {
 	double result = 0;
