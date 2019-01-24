@@ -194,3 +194,12 @@ protected:
 
 std::istream& operator>>(std::istream& is, MultiLayerMap& m);
 std::ostream& operator<<(std::ostream& os, const MultiLayerMap& m);
+
+/**
+ * @brief Normalizes the MultiLayerMap as a whole an not each SimpleLayerMap independently 
+ *
+ * @param mlm 			a MultiLayerMap to normalize
+ * @return MultiLayerMap 	a normalized copy of mlm
+ */
+MultiLayerMap normalized(const MultiLayerMap& mlm);
+

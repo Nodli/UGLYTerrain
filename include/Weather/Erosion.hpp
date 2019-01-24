@@ -59,10 +59,15 @@ void erode_using_exposition(MultiLayerMap& layers, const double k);
 /**
  * @brief Erodes a Multi Layer Map using the exposure in a multi-material context 
  *
- * @param layers    the Multi Layer Map to erode
- * @param k         the erosion value
+ * @param layers    			the Multi Layer Map to erode
+ * @param layers_top_heights		list of the heights of the top of the layers, in increasing order
+ * @param layers_erosion_values		list of the erosion values for the layers, in the same order as layers_top_heights
+ *					with one more value for the topmost 'infinite' layer
  */
-void erode_materials_constant(MultiLayerMap& layers, const double k);
+void erode_layered_materials_using_exposition(MultiLayerMap& layers,
+					const std::vector<double>& layers_top_heights,
+					const std::vector<double>& layers_erosion_values,
+					const double layers_angle = 0.);
 
 /**
  * @brief Transports the sediments towards the neighbors in 8-connexity from a Multi Layer Map until stable

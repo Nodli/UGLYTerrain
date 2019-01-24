@@ -92,7 +92,6 @@ double MultiLayerMap::get_sum(const int i, const int j) const
 	return res;
 }
 
-
 std::istream& operator>>(std::istream& is, MultiLayerMap& m)
 {
 	is >> m._a.x();
@@ -138,3 +137,31 @@ std::ostream& operator<<(std::ostream& os, const MultiLayerMap& m)
 
 	return os;
 }
+
+MultiLayerMap normalized(const MultiLayerMap& mlm){
+	SimpleLayerMap terrain = mlm.generate_field();
+	double whole_max = terrain.get_max();
+	double whole_min = mlm.get_field(0).get_min(); // minimum of everything is the minimum of the bedrock layer
+	double whole_range = whole_max - whole_min;
+
+	MultiLayerMap output(mlm);
+
+	// translating bedrock layer before normalization
+	for(int w = 0; w < output.grid_width(); ++w){
+		for(int h = 0; h < output.grid_height(); ++h){
+			output.get_field(0).at(w, h) -= whole_min;
+		}
+	}
+
+	// scaling all layers with the global range
+	for(int ilayer = 0; ilayer < output.get_layer_number(); ++ilayer){
+		for(int w = 0; w < output.grid_width(); ++w){
+			for(int h = 0; h < output.grid_height(); ++h){
+				output.get_field(ilayer).at(w, h) /= whole_range;
+			}
+		}
+	}
+
+	return output;
+}
+

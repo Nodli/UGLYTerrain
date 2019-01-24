@@ -72,7 +72,7 @@ public:
 	/**
 	 * @brief Gets size of a cell of the grid
 	 *
-	 * @return int      the total number of cells
+	 * @return Eigen::Vector2d	the size of a single cell
 	 */
 	Eigen::Vector2d cell_size() const
 	{

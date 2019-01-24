@@ -208,34 +208,48 @@ void erode_using_exposition(MultiLayerMap& layers, const double k){
 	}
 }
 
-void erode_materials_constant(MultiLayerMap& layers, const double k){
+void erode_layered_materials_using_exposition(MultiLayerMap& layers,
+					const std::vector<double>& layers_top_heights,
+					const std::vector<double>& layers_erosion_values,
+					const double layers_angle){
+
 	assert(layers.get_layer_number() > 0);
+	assert(layers_top_heights.size() > 0 && (layers_top_heights.size() + 1) == layers_erosion_values.size());
 
 	// creating the sediment layer if necessary
 	if(layers.get_layer_number() == 1){
 		layers.new_layer();
 	}
 
-	//NANI DESU KA ?
 	SimpleLayerMap terrain_exposure = get_light_exposure(layers);
 	terrain_exposure.normalize();
 
 	SimpleLayerMap terrain = layers.generate_field();
 
+	const double layers_randian = M_PI * layers_angle / 180.;
+
 	// apply erosion on layers
 	for(int h = 0; h < layers.grid_height(); ++h){
+
+		// computing angular displacement for the current h value
+		std::vector<double> layers_angled_heights(layers_top_heights.size());
+		for(int ilayer = 0; ilayer != layers_top_heights.size(); ++ilayer){
+			layers_angled_heights[ilayer] = layers_top_heights[ilayer] + tan(layers_angle) * (h - layers.grid_height() / 2) * layers.cell_size().y();
+		}
+
 		for(int w = 0; w < layers.grid_width(); ++w){
 
-			// modofy erosion factor based on material
-			double material_weighted_k;
-			if(terrain.at(w, h) > 0.75){
-				material_weighted_k = k;
-			}else{
-				material_weighted_k = k / 10.;
+			// find the erosion value based on the height of the current layer
+			int ilayer = 0;
+			while(ilayer < layers_top_heights.size()
+			&& terrain.at(w, h) > layers_angled_heights[ilayer]){
+				++ilayer;
 			}
 
-			layers.get_field(0).at(w, h) -= material_weighted_k;
-			layers.get_field(1).at(w, h) += material_weighted_k;
+			double material_erosion_value = layers_erosion_values[ilayer];
+
+			layers.get_field(0).at(w, h) -= material_erosion_value * terrain_exposure.at(w, h);
+			layers.get_field(1).at(w, h) += material_erosion_value * terrain_exposure.at(w, h);
 		}
 	}
 }
