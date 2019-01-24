@@ -11,7 +11,7 @@
  * @brief Compute Hydraulic area from an heightmap
  *
  * @param heightMap         the source for the computation
- * @param distribute        weither or not the area of a point should be distributed on the neighbors
+ * @param distribute        wether or not the area of a point should be distributed on the neighbors
  * @return SimpleLayerMap   the computed area
  */
 SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute = true);
@@ -29,7 +29,7 @@ SimpleLayerMap get_water_indexes(const DoubleField& heightmap);
  *
  * @param layers        the source for heightmap and hydraulic area computation
  * @param k             intensity of erosion
- * @param distribute    weither or not the area of a point should be distributed on the neighbors
+ * @param distribute    wether or not the area of a point should be distributed on the neighbors
  */
 void erode_from_area(MultiLayerMap& layers, double k, bool distribute = true);
 
