@@ -195,6 +195,32 @@ public:
 	int neighbors_info(const int i, const int j, double* v, Eigen::Vector2i* p, double* s) const;
 
 	/**
+	 * @brief Get all the information of a neigborhood
+	 *
+	 * @param pos       the position of the cell on the grid
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @return int      the number of neigbors
+
+	 */
+	int neighbors_info_4connex(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s) const
+	{
+		return neighbors_info(pos(0), pos(1), v, p, s);
+	}
+
+	/**
+	 * @brief Get all the information of a neigborhood
+	 *
+	 * @param i, j      the position of the cell on the grid
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info_4connex(const int i, const int j, double* v, Eigen::Vector2i* p, double* s) const;
+
+	/**
 	 * @brief Get the information of a neigborhood if the slope is superior / inferior to a threshold value
 	 *
 	 * @param pos       the position of the cell on the grid
@@ -207,6 +233,23 @@ public:
 	 * @return int      the number of neigbors
 	 */
 	int neighbors_info_filter(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const
+	{
+		return neighbors_info_filter(pos(0), pos(1), v, p, s, s_filter, sup);
+	}
+
+	/**
+	 * @brief Get the information of a neigborhood if the slope is superior / inferior to a threshold value
+	 *
+	 * @param pos       the position of the cell on the grid
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 *		    values are signed and the slope vector is oriented from pos towards its neighbors
+	 * @param s_filter  the minimal slope value to be considered as a neighbor
+	 * @param sup       1 to filter slopes such as s > s_filter and 0 such as s < s_filter using signed values
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info_filter_4connex(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const
 	{
 		return neighbors_info_filter(pos(0), pos(1), v, p, s, s_filter, sup);
 	}
@@ -225,6 +268,19 @@ public:
 	 */
 	int neighbors_info_filter(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const;
 
+	/**
+	 * @brief Get all the information of a neigborhood
+	 *
+	 * @param i, j      the position of the cell on the grid
+	 * @param v         the value of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param p         the positions of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 * @param s         the slopes of the neighbors (a pointer to an array of size at least 8 / nullptr)
+	 *		    values are signed and the slope vector is oriented from pos towards its neighbors
+	 * @param s_filter  the minimal slope value to be considered as a neighbor
+	 * @param sup       1 to filter slopes such as s > s_filter and 0 such as s < s_filter using signed values
+	 * @return int      the number of neigbors
+	 */
+	int neighbors_info_filter_4connex(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const;
 
 	/**
 	 * @brief Affectation operator

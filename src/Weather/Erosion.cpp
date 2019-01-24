@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include <Weather/Erosion.hpp>
+#include <Weather/Biome.hpp>
 #include <BooleanField.hpp>
 #include <Utils.hpp>
 
@@ -187,39 +188,73 @@ void erode_using_mean_double_slope(MultiLayerMap& layers, const double k){
 	}
 }
 
-float erosion_control_function(const double slope){
-
-	// max slope to consider
-	float max_slope_threshold = 40.;
-
-	// fall-off function taken from implicit function ray-marching
-	float slope_remap = slope / max_slope_threshold;
-	float temp_value = 1. - slope_remap * slope_remap;
-
-	return temp_value * temp_value * temp_value;
-
-}
-
-void erode_slope_controled(MultiLayerMap& layers, const double k){
+void erode_using_exposure(MultiLayerMap& layers, const double k){
 	assert(layers.get_layer_number() > 0);
 
 	// creating the sediment layer if necessary
-	if (layers.get_layer_number() == 1){
+	if(layers.get_layer_number() == 1){
 		layers.new_layer();
 	}
 
-	for(int j = 0; j < layers.grid_height(); ++j){
-		for(int i = 0; i < layers.grid_width(); ++i){
-			double delta_value = k * erosion_control_function(layers.get_field(0).slope(i, j));
+	SimpleLayerMap terrain_exposure = get_light_exposure(layers);
+	terrain_exposure.normalize();
 
-			layers.get_field(0).at(i, j) -= delta_value;
-			layers.get_field(1).at(i, j) += delta_value;
+	// apply erosion on layers
+	for(int h = 0; h < layers.grid_height(); ++h){
+		for(int w = 0; w < layers.grid_width(); ++w){
+			layers.get_field(0).at(w, h) -= k * terrain_exposure.at(w, h);
+			layers.get_field(1).at(w, h) += k * terrain_exposure.at(w, h);
 		}
 	}
-
 }
 
-void transport_8connex(MultiLayerMap& layers, const double rest_angle, const double quantity_tolerance)
+void erode_layered_materials_using_exposure(MultiLayerMap& layers,
+					const std::vector<double>& layers_top_heights,
+					const std::vector<double>& layers_erosion_values,
+					const double layers_angle){
+
+	assert(layers.get_layer_number() > 0);
+	assert(layers_top_heights.size() > 0 && (layers_top_heights.size() + 1) == layers_erosion_values.size());
+
+	// creating the sediment layer if necessary
+	if(layers.get_layer_number() == 1){
+		layers.new_layer();
+	}
+
+	SimpleLayerMap terrain_exposure = get_light_exposure(layers);
+	terrain_exposure.normalize();
+
+	SimpleLayerMap terrain = layers.generate_field();
+
+	const double layers_randian = M_PI * layers_angle / 180.;
+
+	// apply erosion on layers
+	for(int h = 0; h < layers.grid_height(); ++h){
+
+		// computing angular displacement for the current h value
+		std::vector<double> layers_angled_heights(layers_top_heights.size());
+		for(int ilayer = 0; ilayer != layers_top_heights.size(); ++ilayer){
+			layers_angled_heights[ilayer] = layers_top_heights[ilayer] + tan(layers_angle) * (h - layers.grid_height() / 2) * layers.cell_size().y();
+		}
+
+		for(int w = 0; w < layers.grid_width(); ++w){
+
+			// find the erosion value based on the height of the current layer
+			int ilayer = 0;
+			while(ilayer < layers_top_heights.size()
+			&& terrain.at(w, h) > layers_angled_heights[ilayer]){
+				++ilayer;
+			}
+
+			double material_erosion_value = layers_erosion_values[ilayer];
+
+			layers.get_field(0).at(w, h) -= material_erosion_value * terrain_exposure.at(w, h);
+			layers.get_field(1).at(w, h) += material_erosion_value * terrain_exposure.at(w, h);
+		}
+	}
+}
+
+void transport(MultiLayerMap& layers, const double rest_angle, const double quantity_tolerance)
 {
 	assert(layers.get_layer_number() > 0);
 
@@ -234,10 +269,8 @@ void transport_8connex(MultiLayerMap& layers, const double rest_angle, const dou
 	// generating the base terrain layer on which slopes will be computed
 	SimpleLayerMap terrain = layers.generate_field();
 
-	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
 
-	// queue all cells of the grid as they could be unstable
-	// @DEBUG: using a temp vector to randomize the order
+	// temporary vector to shuffle grid cells
 	std::vector<Eigen::Vector2i> coord_vector;
 	for(int i = 0; i < terrain.grid_height(); ++i){
 		for(int j = 0; j < terrain.grid_width(); ++j){
@@ -245,12 +278,17 @@ void transport_8connex(MultiLayerMap& layers, const double rest_angle, const dou
 		}
 	}
 	std::random_shuffle(coord_vector.begin(), coord_vector.end());
+
+	// queue all cells of the grid as they could be unstable
 	std::queue<Eigen::Vector2i> unstable_coord;
 	for(int i = 0; i != coord_vector.size(); ++i){
 		unstable_coord.push(coord_vector[i]);
 	}
 
-	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
+	coord_vector.clear();
+
+	// updating stability map with all cells unstable
+	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
 
 	while(!unstable_coord.empty()){
 		std::cout << "queue size: " << unstable_coord.size() << std::endl;
@@ -281,7 +319,7 @@ void transport_8connex(MultiLayerMap& layers, const double rest_angle, const dou
 				double sediments_at_unstable_cell = layers.get_field(1).at(unstable_cell);
 
 				// minimal amount of sediments missing to stabilize unstable_cell
-				// with regard to one of its neighbor
+				// with regard to the easiest neighbor (the highest among unstable neighbors)
 				// sub. in this order because there must be min_neighborhood_slope > slope_stability_threshold
 				double min_stability_difference = min_neighborhood_slope - slope_stability_threshold;
 
@@ -318,7 +356,6 @@ void transport_8connex(MultiLayerMap& layers, const double rest_angle, const dou
 					}
 				}
 			}
-		// neighbors > 1 because if neighbors == 1 then unstable_cell has been stabilized regarding this neighbor during this iteration
 		}while(neighbors > 0 && available_sediments);
 
 		// unstable_cell is now stable either because the slope difference is not big enough anymore
@@ -359,8 +396,6 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 		unstable_coord.push(coord_vector[i]);
 	}
 
-	std::cout << "slope_stability_threshold: " << slope_stability_threshold << std::endl;
-
 	while(!unstable_coord.empty()){
 		std::cout << "queue size: " << unstable_coord.size() << std::endl;
 
@@ -379,7 +414,7 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 			}
 
 			//computing neighborhood parameters
-			neighbors = terrain.neighbors_info_filter(unstable_cell, values, positions, slopes,
+			neighbors = terrain.neighbors_info_filter_4connex(unstable_cell, values, positions, slopes,
 								  - slope_stability_threshold, false);
 
 			if(neighbors > 0){
@@ -427,12 +462,145 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 					}
 				}
 			}
-		// neighbors > 1 because if neighbors == 1 then unstable_cell has been stabilized regarding this neighbor during this iteration
 		}while(neighbors > 0 && available_sediments);
 
 		// unstable_cell is now stable either because the slope difference is not big enough anymore
 		// or because there is no more sediments to transport from unstable_cell
 		stability_map.at(unstable_cell) = true;
 		unstable_coord.pop();
+	}
+}
+
+void transport_varying_stability_angle(MultiLayerMap& layers,
+					const double min_rest_angle, const double max_rest_angle,
+					const double quantity_tolerance)
+{
+	assert(layers.get_layer_number() > 0);
+
+	// generating the base terrain layer on which slopes & drainage area will be computed
+	SimpleLayerMap terrain = layers.generate_field();
+
+	// computing the stability of each pixel using the drainage area
+	// linear interpolation between min_rest_angle and max_rest_angle
+	SimpleLayerMap drainage_area = get_area(terrain);
+	double normalization_factor = 1. / (layers.grid_width() * layers.grid_height());
+	SimpleLayerMap slope_stability_threshold = (1. - drainage_area * normalization_factor)
+						* (max_rest_angle - min_rest_angle) + min_rest_angle;
+	for(int h = 0; h != layers.grid_width(); ++h){
+		for(int w = 0; w != layers.grid_width(); ++w){
+			slope_stability_threshold.at(w, h) = layers.cell_size().x() * tan(slope_stability_threshold.at(w, h) * 180. * M_PI);
+		}
+	}
+
+	// temp storage of neighborhood
+	double values[8];
+	Eigen::Vector2i positions[8];
+	double slopes[8];
+
+	// temporary vector to shuffle grid cells
+	std::vector<Eigen::Vector2i> coord_vector;
+	for(int i = 0; i < terrain.grid_height(); ++i){
+		for(int j = 0; j < terrain.grid_width(); ++j){
+			coord_vector.push_back({i, j});
+		}
+	}
+	std::random_shuffle(coord_vector.begin(), coord_vector.end());
+
+	// queue all cells of the grid as they could be unstable
+	std::queue<Eigen::Vector2i> unstable_coord;
+	for(int i = 0; i != coord_vector.size(); ++i){
+		unstable_coord.push(coord_vector[i]);
+	}
+
+	coord_vector.clear();
+
+	// updating stability map with all cells unstable
+	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
+
+	while(!unstable_coord.empty()){
+		std::cout << "queue size: " << unstable_coord.size() << std::endl;
+
+		// pick the next unstable cell
+		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
+
+		int counter = 0;
+
+		int neighbors;
+		bool available_sediments = true;
+
+		do{
+			// checking that there is a relevant amount of sediments at the cell
+			if(layers.get_field(1).at(unstable_cell) < quantity_tolerance){
+				break;
+			}
+
+			//computing neighborhood parameters
+			neighbors = terrain.neighbors_info_filter(unstable_cell, values, positions, slopes,
+								  - slope_stability_threshold.at(unstable_cell), false);
+
+			if(neighbors > 0){
+				opp_array(neighbors, slopes); // values are all negative here
+
+				// stabilization
+				double min_neighborhood_slope = min_array(neighbors, slopes);
+				double sediments_at_unstable_cell = layers.get_field(1).at(unstable_cell);
+
+				// minimal amount of sediments missing to stabilize unstable_cell
+				// with regard to the easiest neighbor (the highest among unstable neighbors)
+				// sub. in this order because there must be min_neighborhood_slope > slope_stability_threshold
+				double min_stability_difference = min_neighborhood_slope - slope_stability_threshold.at(unstable_cell);
+
+				// minimal amount of sediments to transport to all neighbors to stabilize unstable_cell
+				// with regard to the neighbor that gave min_neighborhood_slope
+				// @DEBUG: not sure, does the matter need to be ponderated by the 8-connexity distance or this is considered done when ponderating the slope
+				double min_stability_all_neighbors = min_stability_difference * neighbors;
+				double amount_to_transport_all_neighbors = min_stability_difference * neighbors;
+				if(amount_to_transport_all_neighbors > sediments_at_unstable_cell){
+					amount_to_transport_all_neighbors = sediments_at_unstable_cell;
+					available_sediments = false;
+				}
+
+				// checking that amount_to_transport is a relevant amount of sediments
+				double amount_to_transport = amount_to_transport_all_neighbors / neighbors;
+				if(amount_to_transport < quantity_tolerance){
+					break;
+				}
+
+				// transporting some sediments to stabilize with regard to one neighbor
+				for(int neigh = 0; neigh != neighbors; ++neigh){
+					// updating the sediment layer
+					layers.get_field(1).at(unstable_cell) -= amount_to_transport;
+					layers.get_field(1).at(positions[neigh]) += amount_to_transport;
+
+					// updating terrain
+					terrain.at(unstable_cell) -= amount_to_transport;
+					terrain.at(positions[neigh]) += amount_to_transport;
+
+					// adding neighbor to queue as if it may have become unstable
+					if(stability_map.at(positions[neigh])){
+						stability_map.at(positions[neigh]) = false;
+						unstable_coord.push(positions[neigh]);
+					}
+				}
+			}
+		}while(neighbors > 0 && available_sediments);
+
+		// unstable_cell is now stable either because the slope difference is not big enough anymore
+		// or because there is no more sediments to transport from unstable_cell
+		stability_map.at(unstable_cell) = true;
+		unstable_coord.pop();
+
+		// updating rest angle map using the new drainage area
+		/*
+		drainage_area = get_area(terrain);
+		normalization_factor = 1. / (layers.grid_width() * layers.grid_height());
+		slope_stability_threshold = (1. - drainage_area * normalization_factor)
+					* (max_rest_angle - min_rest_angle) + min_rest_angle;
+		for(int h = 0; h != layers.grid_width(); ++h){
+			for(int w = 0; w != layers.grid_width(); ++w){
+				slope_stability_threshold.at(w, h) = layers.cell_size().x() * tan(slope_stability_threshold.at(w, h) * 180. * M_PI);
+			}
+		}
+		*/
 	}
 }

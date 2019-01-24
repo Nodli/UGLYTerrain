@@ -153,6 +153,36 @@ int DoubleField::neighbors_info(const int i, const int j, double* v, Eigen::Vect
 	return nb;
 }
 
+int DoubleField::neighbors_info_4connex(const int i, const int j, double* v, Eigen::Vector2i* p, double* s) const
+{
+	Eigen::Vector2i* positions;
+	if(p == nullptr){
+		positions = new Eigen::Vector2i[8]; // temp allocation because values need to be used for v[k]
+	}else{
+		positions = p;
+	}
+
+	int nb = neighbors_4connex(i, j, positions);
+	double ij_value = value(i, j);
+
+	for(int k = 0; k < nb; ++k)
+	{
+		if(v != nullptr){
+			v[k] = value(positions[k]);
+		}
+
+		if(s != nullptr){
+			s[k] = (v[k] - ij_value) / def_nei_dist[k];
+		}
+	}
+
+	if(p == nullptr){
+		delete positions;
+	}
+
+	return nb;
+}
+
 int DoubleField::neighbors_info_filter(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter, const bool sup) const
 {
 	int nb = neighbors(i, j, p);
@@ -185,6 +215,37 @@ int DoubleField::neighbors_info_filter(const int i, const int j, double* v, Eige
 	return threshold_nb;
 }
 
+int DoubleField::neighbors_info_filter_4connex(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter, const bool sup) const
+{
+	int nb = neighbors_4connex(i, j, p);
+	int threshold_nb = 0;
+	double ij_value = value(i, j);
+
+	for(int ineigh = 0; ineigh < nb; ++ineigh)
+	{
+		// values are computed in place but will be overridden / not considered if threshold_nb is not incremented
+		p[threshold_nb] = p[ineigh];
+		v[threshold_nb] = value(p[threshold_nb]);
+		s[threshold_nb] = v[threshold_nb] - ij_value;
+
+		if(sup)
+		{
+			if(s[threshold_nb] > s_filter)
+			{
+				++threshold_nb;
+			}
+		}
+		else
+		{
+			if(s[threshold_nb] < s_filter)
+			{
+				++threshold_nb;
+			}
+		}
+	}
+
+	return threshold_nb;
+}
 
 DoubleField& DoubleField::operator=(const DoubleField& sf)
 {

@@ -186,3 +186,13 @@ public:
 protected:
 	std::vector<SimpleLayerMap> _layers; /**< Array of simple layer map*/
 };
+
+/**
+ * @brief Normalizes the MultiLayerMap as a whole an not each SimpleLayerMap independently 
+ *
+ * @param mlm 			a MultiLayerMap to normalize
+ * @return MultiLayerMap 	a normalized copy of mlm
+ */
+MultiLayerMap normalized(const MultiLayerMap& mlm);
+
+

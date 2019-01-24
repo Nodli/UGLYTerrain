@@ -41,4 +41,18 @@ public:
 	int _octaves;               /**< number of iteration of the noise*/
 };
 
+/**
+ * @brief Generates a stair-like height map for test purposes
+ *
+ * @param width, height      size of the height map
+ * @return SimpleLayerMap    the test height map
+ */
 SimpleLayerMap stair_layer(int width, int height, double amplitude);
+
+/**
+ * @brief Generates a double stair-like height map for test-purposes 
+ *
+ * @param width, height      size of the height map 
+ * @return SimpleLayerMap	 the test height map
+ */
+SimpleLayerMap double_stair_layer(int width, int height, double amplitude);

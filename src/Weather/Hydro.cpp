@@ -86,7 +86,7 @@ SimpleLayerMap get_water_indexes(const DoubleField& heightmap)
 	return water_index;
 }
 
-void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
+void erode_from_area(MultiLayerMap& layers, double k, bool distribute, bool transport)
 {
 	SimpleLayerMap area = get_area(layers, distribute);
 	SimpleLayerMap eroded_quantity(area);
@@ -110,22 +110,25 @@ void erode_from_area(MultiLayerMap& layers, double k, bool distribute)
 
 	layers.get_field(0) -= eroded_quantity;
 
-	// add sed
-	for(int j = 0; j < area.grid_height(); ++j)
+	if(transport)
 	{
-		for(int i = 0; i < area.grid_width(); i++)
+		// add sed
+		for(int j = 0; j < area.grid_height(); ++j)
 		{
-			// proposed: sqrt(area) / sqrt(1+slope*slope)
-			// implemented: log(area) / sqrt(1+slope*slope)
-			sed_quantity.set_value(i, j, log(area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
+			for(int i = 0; i < area.grid_width(); i++)
+			{
+				// proposed: sqrt(area) / sqrt(1+slope*slope)
+				// implemented: log(area) / sqrt(1+slope*slope)
+				sed_quantity.set_value(i, j, log(area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
+			}
 		}
+
+		sed_quantity.normalize();
+		double sed_quantity_sum = sed_quantity.get_sum();
+		sed_quantity = sed_quantity * (1/sed_quantity_sum) * eroded_quantity_sum;
+
+		layers.get_field(1) += sed_quantity;
 	}
-
-	sed_quantity.normalize();
-	double sed_quantity_sum = sed_quantity.get_sum();
-	sed_quantity = sed_quantity * (1/sed_quantity_sum) * eroded_quantity_sum;
-
-	layers.get_field(1) += sed_quantity;
 }
 
 void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k)

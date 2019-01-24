@@ -175,7 +175,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			if(ImGui::Button("Erode and transport"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
 				erode_using_median_slope(mlm, erosion_factor);
-				transport_8connex(mlm, rest_angle);
+				transport(mlm, rest_angle);
 			}
 
 			ImGui::TreePop();
