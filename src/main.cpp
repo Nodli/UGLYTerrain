@@ -34,7 +34,6 @@ void test_thermal_erosion_transport_stair(unsigned int iterations = 101, unsigne
 		//erode_using_mean_slope(mlm, 0.1);
 		//erode_using_median_double_slope(mlm, 0.1);
 		//erode_using_mean_double_slope(mlm, 0.1);
-		//erode_layered_materias_using_exposition(mlm, 0.1);
 
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
@@ -81,7 +80,47 @@ int main()
 	sf.export_as_pgm("IintialTerrain.pgm", true);
 	//SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
 
-	const int erosion_transport_iterations = 1;
+	// determining layering
+	std::vector<double> material_layers_top = {0.09, 0.11,
+						0.29, 0.31,
+						0.69, 0.71,
+						0.79, 0.81};
+	std::vector<double> material_resistances = {0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01};
+
+	/*
+	std::vector<double> material_layers_top = {0.09, 0.11,
+						0.19, 0.21,
+						0.29, 0.31,
+						0.39, 0.41,
+						0.49, 0.51,
+						0.59, 0.61,
+						0.69, 0.71,
+						0.79, 0.81,
+						0.89, 0.91};
+	std::vector<double> material_resistances = {0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01};
+	*/
+
+	// rescaling layers to the whole height range
+	const double bottom_height = sf.get_min();
+	const double height_range = sf.get_max() - bottom_height;
+	for(int ilayer = 0; ilayer != material_layers_top.size(); ++ilayer){
+		material_layers_top[ilayer] = bottom_height + material_layers_top[ilayer] * height_range;
+	}
+
+	const int erosion_transport_iterations = 101;
 	const int save_period = 10;
 	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
 		std::string folder_name = "ErosionTransport" + std::to_string(istep);
@@ -91,7 +130,8 @@ int main()
 		}
 
 		// Thermal erosion
-		erode_constant(mlm, 0.01);
+		//erode_constant(mlm, 0.01);
+		erode_layered_materials_using_exposition(mlm, material_layers_top, material_resistances, 10);
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");
@@ -104,9 +144,6 @@ int main()
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
 			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalTransportTerrain.obj");
 		}
-
-		MultiLayerMap normalized_mlm = normalized(mlm);
-		normalized_mlm.generate_field().export_as_obj("normalized.obj");
 	}
 
 	/*
