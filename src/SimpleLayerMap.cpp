@@ -104,6 +104,22 @@ SimpleLayerMap operator+(SimpleLayerMap lsf, const SimpleLayerMap& rsf)
 	return lsf;
 }
 
+SimpleLayerMap& SimpleLayerMap::operator+=(const double& d)
+{
+	for(int i = 0; i < this->_values.size(); ++i)
+	{
+		this->_values[i] += d;
+	}
+
+	return *this;
+}
+
+SimpleLayerMap operator+(SimpleLayerMap lsf, const double& rd)
+{
+	lsf += rd;
+	return lsf;
+}
+
 SimpleLayerMap& SimpleLayerMap::operator-=(const SimpleLayerMap& sf)
 {
 	if(this->_values.size() == sf._values.size())
@@ -121,6 +137,28 @@ SimpleLayerMap operator-(SimpleLayerMap lsf, const SimpleLayerMap& rsf)
 {
 	lsf -= rsf;
 	return lsf;
+}
+
+SimpleLayerMap& SimpleLayerMap::operator-=(const double& d)
+{
+	for(int i = 0; i < this->_values.size(); ++i)
+	{
+		this->_values[i] -= d;
+	}
+
+	return *this;
+}
+
+SimpleLayerMap operator-(SimpleLayerMap lsf, const double& rd)
+{
+	lsf -= rd;
+	return lsf;
+}
+
+SimpleLayerMap operator-(const double& ld, SimpleLayerMap rsf)
+{
+	rsf -= ld;
+	return rsf;
 }
 
 SimpleLayerMap& SimpleLayerMap::operator*=(const SimpleLayerMap& sf)
