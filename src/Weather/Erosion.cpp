@@ -230,7 +230,7 @@ void erode_layered_materials_using_exposition(MultiLayerMap& layers,
 
 	// apply erosion on layers
 	for(int h = 0; h < layers.grid_height(); ++h){
-		
+
 		// computing angular displacement for the current h value
 		std::vector<double> layers_angled_heights(layers_top_heights.size());
 		for(int ilayer = 0; ilayer != layers_top_heights.size(); ++ilayer){
@@ -248,8 +248,8 @@ void erode_layered_materials_using_exposition(MultiLayerMap& layers,
 
 			double material_erosion_value = layers_erosion_values[ilayer];
 
-			layers.get_field(0).at(w, h) -= material_erosion_value;
-			layers.get_field(1).at(w, h) += material_erosion_value;
+			layers.get_field(0).at(w, h) -= material_erosion_value * terrain_exposure.at(w, h);
+			layers.get_field(1).at(w, h) += material_erosion_value * terrain_exposure.at(w, h);
 		}
 	}
 }
