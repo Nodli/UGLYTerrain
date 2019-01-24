@@ -3,7 +3,7 @@
 SimpleLayerMap grass_density(const MultiLayerMap& m)
 {
     SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(m).normalize();
-    SimpleLayerMap exposition = get_light_exposure(m).normalize();
+    SimpleLayerMap exposure = get_light_exposure(m).normalize();
 	SimpleLayerMap water_index = get_water_indexes(m).normalize();
     SimpleLayerMap height = m.generate_field().normalize();
     SimpleLayerMap density(static_cast<Grid2d>(m));
@@ -23,7 +23,7 @@ SimpleLayerMap grass_density(const MultiLayerMap& m)
 SimpleLayerMap bush_density(const MultiLayerMap& m)
 {
     SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(m).normalize();
-    SimpleLayerMap exposition = get_light_exposure(m).normalize();
+    SimpleLayerMap exposure = get_light_exposure(m).normalize();
 	SimpleLayerMap water_index = get_water_indexes(m).normalize();
     SimpleLayerMap height = m.generate_field().normalize();
     SimpleLayerMap density(static_cast<Grid2d>(m));
@@ -32,7 +32,7 @@ SimpleLayerMap bush_density(const MultiLayerMap& m)
 	{
 		for(int i = 0; i < density.grid_width(); i++)
 		{
-            double value = slope.value(i, j)*height.value(i,j)*exposition.value(i, j);
+            double value = slope.value(i, j)*height.value(i,j)*exposure.value(i, j);
 			density.set_value(i, j, value);
 		}
 	}
@@ -43,7 +43,7 @@ SimpleLayerMap bush_density(const MultiLayerMap& m)
 SimpleLayerMap tree_density(const MultiLayerMap& m)
 {
     SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(m).normalize();
-    SimpleLayerMap exposition = get_light_exposure(m).normalize();
+    SimpleLayerMap exposure = get_light_exposure(m).normalize();
 	SimpleLayerMap water_index = get_water_indexes(m).normalize();
     SimpleLayerMap height = m.generate_field().normalize();
     SimpleLayerMap density(static_cast<Grid2d>(m));
@@ -52,7 +52,7 @@ SimpleLayerMap tree_density(const MultiLayerMap& m)
 	{
 		for(int i = 0; i < density.grid_width(); i++)
 		{
-            double value = water_index.value(i, j)*exposition.value(i, j);
+            double value = water_index.value(i, j)*exposure.value(i, j);
 			density.set_value(i, j, value);
 		}
 	}

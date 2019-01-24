@@ -54,7 +54,7 @@ void erode_using_mean_double_slope(MultiLayerMap& layers, const double k);
  * @param layers    the Multi Layer Map to erode
  * @param k         the erosion value
  */
-void erode_using_exposition(MultiLayerMap& layers, const double k);
+void erode_using_exposure(MultiLayerMap& layers, const double k);
 
 /**
  * @brief Erodes a Multi Layer Map using the exposure in a multi-material context 
@@ -64,7 +64,7 @@ void erode_using_exposition(MultiLayerMap& layers, const double k);
  * @param layers_erosion_values		list of the erosion values for the layers, in the same order as layers_top_heights
  *					with one more value for the topmost 'infinite' layer
  */
-void erode_layered_materials_using_exposition(MultiLayerMap& layers,
+void erode_layered_materials_using_exposure(MultiLayerMap& layers,
 					const std::vector<double>& layers_top_heights,
 					const std::vector<double>& layers_erosion_values,
 					const double layers_angle = 0.);

@@ -131,7 +131,7 @@ int main()
 
 		// Thermal erosion
 		//erode_constant(mlm, 0.01);
-		erode_layered_materials_using_exposition(mlm, material_layers_top, material_resistances, 10);
+		erode_layered_materials_using_exposure(mlm, material_layers_top, material_resistances, 10);
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");

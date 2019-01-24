@@ -188,7 +188,7 @@ void erode_using_mean_double_slope(MultiLayerMap& layers, const double k){
 	}
 }
 
-void erode_using_exposition(MultiLayerMap& layers, const double k){
+void erode_using_exposure(MultiLayerMap& layers, const double k){
 	assert(layers.get_layer_number() > 0);
 
 	// creating the sediment layer if necessary
@@ -208,7 +208,7 @@ void erode_using_exposition(MultiLayerMap& layers, const double k){
 	}
 }
 
-void erode_layered_materials_using_exposition(MultiLayerMap& layers,
+void erode_layered_materials_using_exposure(MultiLayerMap& layers,
 					const std::vector<double>& layers_top_heights,
 					const std::vector<double>& layers_erosion_values,
 					const double layers_angle){
