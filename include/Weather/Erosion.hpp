@@ -49,7 +49,7 @@ void erode_using_mean_slope(MultiLayerMap& layers, const double k);
 void erode_using_mean_double_slope(MultiLayerMap& layers, const double k);
 
 /**
- * @brief Erodes a Multi Layer Map using the exposure of each cell 
+ * @brief Erodes a Multi Layer Map using the exposure of each cell
  *
  * @param layers    the Multi Layer Map to erode
  * @param k         the erosion value
@@ -57,7 +57,7 @@ void erode_using_mean_double_slope(MultiLayerMap& layers, const double k);
 void erode_using_exposure(MultiLayerMap& layers, const double k);
 
 /**
- * @brief Erodes a Multi Layer Map using the exposure in a multi-material context 
+ * @brief Erodes a Multi Layer Map using the exposure in a multi-material context
  *
  * @param layers    			the Multi Layer Map to erode
  * @param layers_top_heights		list of the heights of the top of the layers, in increasing order
@@ -86,5 +86,16 @@ void transport(MultiLayerMap& layers, const double rest_angle = 45, const double
  * @param quantity_tolerance 	the quantity under which no transport occurs because the quantity is considered negligible
  */
 void transport_4connex(MultiLayerMap& layers, const double rest_angle = 45, const double quantity_tolerance = 0.000000000000001);
+
+/**
+ * @brief Transports the sediments towards the neighbors in 8-connexity from a Multi Layer Map until stable
+ *
+ * @param layers        	the Multi Layer Map containing sediments to transport
+ * @param rest_angle    	the angle over which sediments are stable
+ * @param quantity_tolerance 	the quantity under which no transport occurs because the quantity is considered negligible
+ */
+void transport_varying_stability_angle(MultiLayerMap& layers,
+					const double min_rest_angle = 20, const double max_rest_angle = 30,
+					const double quantity_tolerance = 0.000000000000001);
 
 /** @}*/

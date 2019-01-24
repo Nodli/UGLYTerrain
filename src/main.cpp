@@ -85,12 +85,6 @@ int main()
 						0.29, 0.31,
 						0.69, 0.71,
 						0.79, 0.81};
-	std::vector<double> material_resistances = {0.01, 0.00001,
-						0.01, 0.00001,
-						0.01, 0.00001,
-						0.01, 0.00001,
-						0.01};
-
 	/*
 	std::vector<double> material_layers_top = {0.09, 0.11,
 						0.19, 0.21,
@@ -101,6 +95,13 @@ int main()
 						0.69, 0.71,
 						0.79, 0.81,
 						0.89, 0.91};
+	*/
+	std::vector<double> material_resistances = {0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01};
+	/*
 	std::vector<double> material_resistances = {0.01, 0.00001,
 						0.01, 0.00001,
 						0.01, 0.00001,
@@ -139,6 +140,7 @@ int main()
 		}
 		// Thermal transport
 		transport(mlm, 20);
+		//transport_varying_stability_angle(mlm);
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
@@ -175,8 +177,7 @@ int main()
 	water_drop_transport(mlmTer, gen, 1000, 0.01, 0.1);
 	mlmTer.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmTer.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
-	*/
-
+*/
 	return 0;
 }
 
