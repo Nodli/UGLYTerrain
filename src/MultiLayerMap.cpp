@@ -99,7 +99,7 @@ MultiLayerMap normalized(const MultiLayerMap& mlm){
 	double whole_range = whole_max - whole_min;
 
 	MultiLayerMap output(mlm);
-	
+
 	// translating bedrock layer before normalization
 	for(int w = 0; w < output.grid_width(); ++w){
 		for(int h = 0; h < output.grid_height(); ++h){
@@ -108,7 +108,7 @@ MultiLayerMap normalized(const MultiLayerMap& mlm){
 	}
 
 	// scaling all layers with the global range
-	for(int ilayer = 1; ilayer < output.get_layer_number(); ++ilayer){
+	for(int ilayer = 0; ilayer < output.get_layer_number(); ++ilayer){
 		for(int w = 0; w < output.grid_width(); ++w){
 			for(int h = 0; h < output.grid_height(); ++h){
 				output.get_field(ilayer).at(w, h) /= whole_range;
