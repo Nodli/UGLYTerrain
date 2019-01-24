@@ -308,6 +308,11 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 			ImGui::TreePop();
 		}
+
+		if(ImGui::Button("Texturize"))
+		{
+			save_colorized(mlm);
+		}
 	}
 
 	export_tab(mlm.generate_field(), std::string(params.saveName));
