@@ -1,6 +1,6 @@
 #include "Noise/TerrainNoise.hpp"
 
-FastNoise noise;
+//FastNoise noise;
 //noise.SetNoiseType(FastNoise::Perlin);
 
 double TerrainNoise::get_noise(int i, int j)
@@ -36,12 +36,24 @@ double TerrainNoise::get_noise(int i, int j)
 
 double TerrainNoise::get_noise2(int i, int j)
 {
-	noise.SetSeed(_base_noise.GetSeed());
-	noise.SetFrequency(_base_freq/2.0);
-	double noi = (0.5 + 0.5*noise.GetNoise(i, j));
+	_biome_noise.SetFrequency(_base_freq/2.0);
+	double noi = (0.5 + 0.5*_biome_noise.GetNoise(i, j));
 
 	double val = get_noise(i, j);
 
+	return val*noi;
+}
+
+double TerrainNoise::get_noise3(int i, int j)
+{
+	_biome_noise.SetFrequency(_base_freq/4.0);
+	//int oct = _octaves;
+	double noi = (0.5 + 0.5*_biome_noise.GetNoise(i, j));
+	//_octaves = noi * _octaves;
+
+	double val = get_noise(i, j);
+
+	//_octaves = oct;
 	return val*noi;
 }
 

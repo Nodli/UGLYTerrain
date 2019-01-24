@@ -134,6 +134,20 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.seed2 = 4;
 		}
 
+		if(ImGui::Button("Huge Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			strcpy(params.saveName, "big");
+			params.sizeWidth = 1000;
+			params.sizeHeight = 1000;
+			params.posMin = Eigen::Vector2d(-50, -50);
+			params.posMax = Eigen::Vector2d(50, 50);
+			params.t_noise._amplitude = 10.0;
+			params.t_noise._base_freq = 0.005;
+			params.t_noise._octaves = 8;
+			params.seed1 = 0;
+			params.seed2 = 4;
+		}
+
 		if(ImGui::Button("Quick Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			strcpy(params.saveName, "quick");
@@ -229,6 +243,23 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 				for(int i = 0; i < params.sizeWidth; i++)
 				{
 					mlm.get_field(0).at(i, j) = params.t_noise.get_noise2(i, j);
+				}
+			}
+		}
+
+		if(ImGui::Button("Generate 3"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
+			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
+			mlm.new_layer();
+			params.t_noise._base_noise.SetSeed(params.seed1);
+			params.t_noise._ridge_noise.SetSeed(params.seed2);
+
+			for(int j = 0; j < params.sizeHeight; ++j)
+			{
+				for(int i = 0; i < params.sizeWidth; i++)
+				{
+					mlm.get_field(0).at(i, j) = params.t_noise.get_noise3(i, j);
 				}
 			}
 		}
