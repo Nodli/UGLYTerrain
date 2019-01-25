@@ -160,6 +160,10 @@ int main()
 	area_distributed.export_as_pgm("DistributedHydraulicArea.pgm", true);
 	area_steepest.export_as_pgm("OneWayHydraulicArea.pgm", true);
 
+	SimpleLayerMap filter(3, 3);
+	filter.set_all(0.1);
+	area_steepest.convolution(filter, 1, 1);
+
 	// Hydraulic erosion, terrain visualization
 	MultiLayerMap mlmBis(mlm);
 	MultiLayerMap mlmTer(mlm);
