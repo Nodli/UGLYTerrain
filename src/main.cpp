@@ -81,14 +81,14 @@ int main()
 	//SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
 
 	// determining layering
-	std::vector<double> material_layers_top = {0.09, 0.11,
+	std::vector<double> material_layers_top = {0.09, 0.15,
 						0.29, 0.31,
-						0.69, 0.71,
-						0.79, 0.81};
+						0.63, 0.71,
+						0.79, 0.83};
 	std::vector<double> material_resistances = {0.01, 0.00001,
+						0.01, 0.00002,
 						0.01, 0.00001,
-						0.01, 0.00001,
-						0.01, 0.00001,
+						0.01, 0.00003,
 						0.01};
 
 	/*

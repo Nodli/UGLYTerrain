@@ -147,6 +147,15 @@ public:
 	Eigen::Vector2i grid_position(const Eigen::Vector2d p) const;
 
 	/**
+	 * @brief Gets the position of a cell in the world
+	 * 
+	 * @param i, j 		the position of the cell in the grid
+	 * 
+	 * @return Eigen::Vector2d	the position of the corresponding cell in the world
+	 */
+	Eigen::Vector2d world_position(const int i, const int j) const;
+
+	/**
 	 * @brief Affectation operator
 	 *
 	 * @param g         the grid to affect

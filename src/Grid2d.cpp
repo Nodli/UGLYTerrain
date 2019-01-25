@@ -76,6 +76,11 @@ Eigen::Vector2i Grid2d::grid_position(const double x, const double y) const
 	return Eigen::Vector2i(dx, dy);
 }
 
+Eigen::Vector2d Grid2d::world_position(const int i, const int j) const
+{
+	return Eigen::Vector2d(_a[0] + i * _cell_size[0], _a[1] + j * _cell_size[1]);
+}
+
 Eigen::Vector2i Grid2d::grid_position(const Eigen::Vector2d p) const
 {
 	return grid_position(p(0), p(1));
