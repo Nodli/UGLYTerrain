@@ -154,10 +154,11 @@ int main()
 	*/
 	// Hydraulic erosion, area visualization
 	mlm.new_layer();
-	SimpleLayerMap area = get_area(mlm.generate_field());
-	area.export_as_pgm("DistributedHydraulicArea.pgm", true);
-	area = get_area(mlm.generate_field(), false);
-	area.export_as_pgm("OneWayHydraulicArea.pgm", true);
+
+	SimpleLayerMap area_distributed = get_area(mlm.generate_field());
+	SimpleLayerMap area_steepest 		= get_area(mlm.generate_field(), false);
+	area_distributed.export_as_pgm("DistributedHydraulicArea.pgm", true);
+	area_steepest.export_as_pgm("OneWayHydraulicArea.pgm", true);
 
 	// Hydraulic erosion, terrain visualization
 	MultiLayerMap mlmBis(mlm);
@@ -166,31 +167,31 @@ int main()
 	MultiLayerMap mlmQui(mlm);
 
 	// distributed erode
-	erode_from_area(mlm, 0.2, true, false);
+	erode_from_area(mlm, area_distributed, 0.2, false);
 	mlm.get_field(0).export_as_pgm("TerrainDistributedHydroErode.pgm", true);
 	mlm.get_field(0).export_as_obj("TerrainDistributedHydroErode.obj");
 	mlm.generate_field().export_as_obj("TerrainDistributedHydroErode.obj");
 
 	// distributed erode and transport
-	erode_from_area(mlmBis, 0.2);
+	erode_from_area(mlmBis, area_distributed, 0.2);
 	mlmBis.get_field(0).export_as_pgm("TerrainDistributedHydroErodeAndTransport.pgm", true);
 	mlmBis.get_field(0).export_as_obj("TerrainDistributedHydroErodeAndTransport.obj");
 	mlmBis.generate_field().export_as_obj("TerrainDistributedHydroErodeAndTransport.obj");
 
 	// one way erode
-	erode_from_area(mlmTer, 0.2, false, false);
+	erode_from_area(mlmTer, area_steepest, 0.2, false);
 	mlmTer.get_field(0).export_as_pgm("TerrainOneWayHydroErode.pgm", true);
 	mlmTer.get_field(0).export_as_obj("TerrainOneWayHydroErode.obj");
 	mlmTer.generate_field().export_as_obj("TerrainOneWayHydroErode.obj");
 
 	// one way erode and transport
-	erode_from_area(mlmQua, 0.2, false);
+	erode_from_area(mlmQua, area_steepest, 0.2);
 	mlmQua.get_field(0).export_as_pgm("TerrainOneWayHydroErodeAndTransport.pgm", true);
 	mlmQua.get_field(0).export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
 	mlmQua.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
 
 	// water drop
-	water_drop_transport(mlmQui, gen, 1000, 0.01, 0.01);
+	erode_from_droplets(mlmQui, gen, 1000, 0.01, 0.01);
 	mlmQui.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmQui.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
 

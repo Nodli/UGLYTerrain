@@ -72,9 +72,8 @@ SimpleLayerMap get_water_indexes(const DoubleField& heightmap)
 	return water_index;
 }
 
-void erode_from_area(MultiLayerMap& layers, double k, bool distribute, bool transport)
+void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, bool transport)
 {
-	SimpleLayerMap area = get_area(layers, distribute);
 	SimpleLayerMap eroded_quantity(area);
 	SimpleLayerMap sed_quantity(area);
 	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(layers);
@@ -117,7 +116,7 @@ void erode_from_area(MultiLayerMap& layers, double k, bool distribute, bool tran
 	}
 }
 
-void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k)
+void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k)
 {
 	std::uniform_int_distribution<> dis_width(0, layers.grid_width() - 1);
 	std::uniform_int_distribution<> dis_height(0, layers.grid_width() - 1);

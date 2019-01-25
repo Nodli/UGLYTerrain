@@ -25,22 +25,23 @@ SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute = true);
 SimpleLayerMap get_water_indexes(const DoubleField& heightmap);
 
 /**
- * @brief Erode from Hydraulic area
+ * @brief Erode and transport from Hydraulic area
  *
- * @param layers        the source for heightmap and hydraulic area computation
+ * @param layers        the source for heightmap computation
+ * @param area          the Hydraulic area used for erosion and transportation
  * @param k             intensity of erosion
- * @param distribute    wether or not the area of a point should be distributed on the neighbors
+ * @param transport     wether or not transportation is performed after erosion
  */
-void erode_from_area(MultiLayerMap& layers, double k, bool distribute = true, bool transport = true);
+void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, bool transport = true);
 
 /**
- * @brief Erode and transport from hydraulic area, drop by drop
+ * @brief Erode and transport using droplets
  *
- * @param layers          the source for heightmap and hydraulic area computation
- * @param n               number of water drops
- * @param water_per_drop  initial quantity of water in a drop
+ * @param layers          the source for heightmap computation
+ * @param gen             the random numbers generator
+ * @param n               number of droplets
  * @param water_loss      water quantity loss per iteration
- * @param initial_speed   initial speed of drops
+ * @param k               intensity of erosion per droplet
  */
-void water_drop_transport(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k);
+void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k);
 /** @}*/
