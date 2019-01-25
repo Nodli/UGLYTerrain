@@ -104,7 +104,7 @@ void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k
 			{
 				// proposed: sqrt(area) / sqrt(1+slope*slope)
 				// implemented: log(area) / sqrt(1+slope*slope)
-				sed_quantity.set_value(i, j, log(area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
+				sed_quantity.set_value(i, j, log(1 + area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
 			}
 		}
 
@@ -121,62 +121,90 @@ void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, int n, double
 	std::uniform_int_distribution<> dis_width(0, layers.grid_width() - 1);
 	std::uniform_int_distribution<> dis_height(0, layers.grid_width() - 1);
 	std::uniform_real_distribution<> dis_proportion(0, 1);
+
+	SimpleLayerMap& firstField = layers.get_field(0);
 	SimpleLayerMap heightmap = layers.generate_field();
-	heightmap.normalize();
 
 	for(int i = 0; i < n; i++)
 	{
 		int x = dis_width(gen);
 		int y = dis_height(gen);
 
+		double delta_sed = 0.0;
 		double qty_sed = 0.0;
 		double qty_water = 1.0;
 
-		heightmap = layers.generate_field();
-		heightmap.normalize();
-
 		while(qty_water > 0.0)
 		{
-			// update speed
-			double speed = heightmap.slope(x, y);
-
-			// update qty_sed
-			double arrache = std::min(2*speed, 1.0);								// between 0 and 1
-			double depose = 1.0 - std::min(std::sqrt(speed), 1.0);	// between 0 and 1
-			double delta_sed = arrache - depose;										// between -1 and 1
-			delta_sed *= k;
-
-			if(-delta_sed > qty_sed)			delta_sed = -qty_sed;	// qty_sed >= 0
-			if(delta_sed + qty_sed > 1.0) delta_sed = 1.0 - qty_sed;	// qty_sed <= 1
-			layers.get_field(0).at(x, y) -= delta_sed;
-			qty_sed += delta_sed;	// qty_sed between 0 and 1
-
 			// compute new x, y
 			double values[8];
 			Eigen::Vector2i positions[8];
 			double slopes[8];
 			double proportions[8];
 			int neigh_nb = heightmap.neighbors_info_filter(Eigen::Vector2i(x, y), values, positions, slopes);
-			proportion(neigh_nb, slopes, proportions);
-			double p = dis_proportion(gen);
-			double proportion_sum = 0.0;
 
-			if(neigh_nb == 0) qty_water = 0.0;
-			for(int j = 0; j < neigh_nb; j++)
+			// try deposit while no lower neighbor
+			while(neigh_nb == 0 && qty_sed > 0)
 			{
-				if(proportion_sum <= p && proportion_sum + proportions[j] >= p)
-				{
-					x = positions[j].x();
-					y = positions[j].y();
-					break;
-				}
-				proportion_sum += proportions[j];
+				delta_sed = -0.1 * k;
+
+				if(-delta_sed > qty_sed)			delta_sed = -qty_sed;				// qty_sed >= 0
+				if(delta_sed + qty_sed > 1.0) delta_sed = 1.0 - qty_sed;	// qty_sed <= 1
+
+				firstField.at(x, y) -= delta_sed;
+				heightmap.at(x, y) -= delta_sed;
+				qty_sed += delta_sed;
+
+				neigh_nb = heightmap.neighbors_info_filter(Eigen::Vector2i(x, y), values, positions, slopes);
 			}
 
-			// update qty_water
-			qty_water -= water_loss;
+			// if in a pit
+			if(neigh_nb == 0)
+			{
+				qty_water = 0.0;
+			}
+			else
+			{
+				double current_height = heightmap.value(x, y);
+				double speed = heightmap.slope(x, y);
+
+				// select the next position
+				proportion(neigh_nb, slopes, proportions);
+				double p = dis_proportion(gen);
+				double proportion_sum = 0.0;
+
+				for(int j = 0; j < neigh_nb; j++)
+				{
+					if(proportion_sum <= p && proportion_sum + proportions[j] >= p)
+					{
+						x = positions[j].x();
+						y = positions[j].y();
+						break;
+					}
+					proportion_sum += proportions[j];
+				}
+
+				// compute delta_sed
+				double max_erode = std::min(current_height - heightmap.value(x, y), 1.0);
+
+				double erode = std::min(speed, max_erode);						  						// between 0 and 1
+				double deposit = 1.0 - std::min(std::sqrt(1 + speed * speed), 1.0);	// between 0 and 1
+				delta_sed = erode - deposit;																				// between -1 and 1
+				delta_sed *= k;
+
+				if(-delta_sed > qty_sed)			delta_sed = -qty_sed;				// qty_sed >= 0
+				if(delta_sed + qty_sed > 1.0) delta_sed = 1.0 - qty_sed;	// qty_sed <= 1
+
+				// update qty_sed and layers
+				firstField.at(x, y) -= delta_sed;
+				heightmap.at(x, y) -= delta_sed;
+				qty_sed += delta_sed;	// qty_sed between 0 and 1
+
+				// update qty_water
+				qty_water -= water_loss;
+			}
 		}
 
-		layers.get_field(0).at(x, y) += qty_sed;
+		firstField.at(x, y) += qty_sed;
 	}
 }

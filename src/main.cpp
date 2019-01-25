@@ -198,7 +198,7 @@ int main()
 	mlmQua.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
 
 	// water drop
-	erode_from_droplets(mlmQui, gen, 1000, 0.01, 0.01);
+	erode_from_droplets(mlmQui, gen, 1000000, 0.01, 0.001);
 	mlmQui.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmQui.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
 
