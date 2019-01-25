@@ -161,8 +161,11 @@ int main()
 	area_steepest.export_as_pgm("OneWayHydraulicArea.pgm", true);
 
 	SimpleLayerMap filter(3, 3);
-	filter.set_all(0.1);
+	filter.set_all(0.11);
 	area_steepest.convolution(filter, 1, 1);
+	std::vector<std::pair<double, Eigen::Vector2i>> convoluted_values = area_steepest.full_convolution(filter);
+	area_steepest.import_list(convoluted_values);
+	area_steepest.export_as_pgm("OneWayConvolutedHydraulicArea.pgm", true);
 
 	// Hydraulic erosion, terrain visualization
 	MultiLayerMap mlmBis(mlm);
