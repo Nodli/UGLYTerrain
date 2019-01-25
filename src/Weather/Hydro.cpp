@@ -2,58 +2,6 @@
 #include <Utils.hpp>
 #include <iostream>
 
-void one_way(const DoubleField& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
-{
-	for(int i = 0; i < field.size(); ++i)
-	{
-		// coordinates of the ith highest cell
-		int x = field[i].second.x();
-		int y = field[i].second.y();
-		// neighbors informations
-		double values[8];
-		Eigen::Vector2i positions[8];
-		double slopes[8];
-
-		int neigh_nb = heightmap.neighbors_info_filter(field[i].second, values, positions, slopes);
-		int lowest_neigh = 0;
-
-		// get the lowest neighbor
-		for(int j = 0; j < neigh_nb; ++j)
-		{
-			if(slopes[j] < slopes[lowest_neigh])
-			{
-				lowest_neigh = j;
-			}
-		}
-
-		// add value of the ith highest cell to the lowest neighbor
-		area.at(positions[lowest_neigh].x(), positions[lowest_neigh].y()) += area.value(x, y);
-	}
-}
-
-void distribution(const DoubleField& heightmap, SimpleLayerMap& area, const std::vector<std::pair<double, Eigen::Vector2i>>& field)
-{
-	for(int i = 0; i < field.size(); ++i)
-	{
-		// coordinates of the ith highest cell
-		int x = field[i].second.x();
-		int y = field[i].second.y();
-		// neighbors informations
-		double values[8];
-		Eigen::Vector2i positions[8];
-		double slopes[8];
-		double proportions[8];
-		int neigh_nb = heightmap.neighbors_info_filter(field[i].second, values, positions, slopes);
-		proportion(neigh_nb, slopes, proportions);
-
-		// add to each neighbor the proportion of the ith highest cell value
-		for(int j = 0; j < neigh_nb; ++j)
-		{
-			area.at(positions[j].x(), positions[j].y()) += area.value(x, y) * (proportions[j]);
-		}
-	}
-}
-
 SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute)
 {
 	SimpleLayerMap area = SimpleLayerMap(static_cast<Grid2d>(heightmap));
@@ -61,9 +9,47 @@ SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute)
 
 	std::vector<std::pair<double, Eigen::Vector2i>> field = heightmap.sort_by_height();
 
-	if(distribute)	distribution(heightmap, area, field);
-	else 						one_way(heightmap, area, field);
-	
+	for(int i = 0; i < field.size(); ++i)
+	{
+		// coordinates of the ith highest cell
+		int x = field[i].second.x();
+		int y = field[i].second.y();
+		// neighbors informations
+		double values[8];
+		Eigen::Vector2i positions[8];
+		double slopes[8];
+
+		int neigh_nb = heightmap.neighbors_info_filter(field[i].second, values, positions, slopes);
+
+		if(distribute)
+		{
+			double proportions[8];
+			proportion(neigh_nb, slopes, proportions);
+
+			// add to each neighbor the proportion of the ith highest cell value
+			for(int j = 0; j < neigh_nb; ++j)
+			{
+				area.at(positions[j].x(), positions[j].y()) += area.value(x, y) * (proportions[j]);
+			}
+		}
+		else
+		{
+			int lowest_neigh = 0;
+
+			// get the lowest neighbor
+			for(int j = 0; j < neigh_nb; ++j)
+			{
+				if(slopes[j] < slopes[lowest_neigh])
+				{
+					lowest_neigh = j;
+				}
+			}
+
+			// add value of the ith highest cell to the lowest neighbor
+			area.at(positions[lowest_neigh].x(), positions[lowest_neigh].y()) += area.value(x, y);
+		}
+	}
+
 	return area;
 }
 

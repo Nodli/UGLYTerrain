@@ -164,7 +164,7 @@ int main()
 	MultiLayerMap mlmTer(mlm);
 	MultiLayerMap mlmQua(mlm);
 	MultiLayerMap mlmQui(mlm);
-/*
+
 	// distributed erode
 	erode_from_area(mlm, 0.2, true, false);
 	mlm.get_field(0).export_as_pgm("TerrainDistributedHydroErode.pgm", true);
@@ -188,9 +188,9 @@ int main()
 	mlmQua.get_field(0).export_as_pgm("TerrainOneWayHydroErodeAndTransport.pgm", true);
 	mlmQua.get_field(0).export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
 	mlmQua.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
-*/
+
 	// water drop
-	water_drop_transport(mlmQui, gen, 100000, 0.01, 0.01);
+	water_drop_transport(mlmQui, gen, 1000, 0.01, 0.01);
 	mlmQui.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmQui.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
 
