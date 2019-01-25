@@ -110,24 +110,42 @@ void generate_distribution(const MultiLayerMap& m)
 
 void save_simulation(VegetationLayerMap& distribution, int iter)
 {
-	std::string filename = "Simu_5/simulation_" + std::to_string(iter / 10) + ".ppm";
+	std::string filename = "Simu_6/simulation_" + std::to_string(iter / 10) + ".ppm";
 	std::ofstream output(filename, std::ofstream::out);
 	output << "P3" << std::endl;
 	output << distribution.grid_width() << " " << distribution.grid_height() << std::endl;
-	output << 12 << std::endl;
+	output << 255 << std::endl;
 
 	for(int j = distribution.grid_height() - 1; j >= 0; --j)
 	{
 		for(int i = 0; i < distribution.grid_width(); ++i)
 		{
-			int nb_grass2 = distribution.count_ID_at(i, j, 0);
-			int nb_bush = distribution.count_ID_at(i, j, 1);
-			int nb_tree = distribution.count_ID_at(i, j, 2);
-			int nb_grass = distribution.count_ID_at(i, j, 3);
-			output << 
-			12 - nb_grass - nb_tree - nb_grass2<< " " << 
-			12 - nb_bush - nb_tree - nb_grass2<< " " << 
-			12 - nb_grass - nb_bush - nb_grass2<< " ";
+			int size = distribution.at(i, j).size();
+			if(size != 0){
+				int nb_h_grass = distribution.count_ID_at(i, j, 0);
+				double force_h_grass = (double)nb_h_grass/10;
+				double prop_h_grass = force_h_grass*(double)nb_h_grass/size;
+				int nb_bush =    distribution.count_ID_at(i, j, 1);
+				double force_bush = (double)nb_bush/10;
+				double prop_bush = force_bush*(double)nb_bush/size;
+				int nb_tree =    distribution.count_ID_at(i, j, 2);
+				double force_tree = (double)nb_tree/10;
+				double prop_tree = force_tree*(double)nb_tree/size;
+				int nb_grass1 =  distribution.count_ID_at(i, j, 3);
+				double force_grass1 = (double)nb_grass1/10;
+				double prop_grass1 = force_grass1*(double)nb_grass1/size;
+				int nb_grass2 =  distribution.count_ID_at(i, j, 4);
+				double force_grass2 = (double)nb_grass2/10;
+				double prop_grass2 = force_grass2*(double)nb_grass2/size;
+				int r = 76  * prop_h_grass + 236 * prop_bush + 8   * prop_tree + 165 * prop_grass1 + 202 * prop_grass2;
+				int g = 119 * prop_h_grass + 174 * prop_bush + 78  * prop_tree + 208 * prop_grass1 + 178 * prop_grass2;
+				int b = 38  * prop_h_grass + 93  * prop_bush + 0   * prop_tree + 24  * prop_grass1 + 21  * prop_grass2;
+				output << r<< " " << g<< " " <<	b<< " ";
+			}
+			else
+			{
+				output << 0 << " " << 0 << " " << 0 << " ";
+			}
 		}
 
 		//std::cout << std::endl;
@@ -139,10 +157,6 @@ void save_simulation(VegetationLayerMap& distribution, int iter)
 
 void simulate(const MultiLayerMap& mlm)
 {
-	// SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(mlm).normalize();
-	// SimpleLayerMap exposition = get_light_exposure(mlm).normalize();
-	// SimpleLayerMap water_index = get_water_indexes(mlm).normalize();
-	// SimpleLayerMap height = SimpleLayerMap(mlm).normalize();
 	BiomeInfo bi(mlm);
 	VegetationLayerMap distribution(static_cast<Grid2d>(mlm));
 	SimpleLayerMap g_density = strong_grass_density(bi);
@@ -159,8 +173,9 @@ void simulate(const MultiLayerMap& mlm)
 	std::uniform_int_distribution<> dis_height(0, mlm.grid_width() - 1);
 	std::uniform_real_distribution<> rdis(0, 1);
 	bool nope = true;
-	Grass ref_grass(0, 30, 10, 1.0, &g_density);
-	Grass ref_grass2(3, 30, 5, 1.0, &g_density2);
+	Grass ref_grass(0, 30, 5, 1.0, &g_density);
+	Grass ref_grass2(3, 25, 1, 1.0, &g_density2);
+	Grass ref_grass3(4, 25, 1, 1.0, &g_density2);
 	Bush ref_bush(1, 100, 30, 1.0, &b_density);
 	Tree ref_tree(2, 200, 50, 1.0, &t_density);
 	int nb_seeds = 500;
@@ -192,9 +207,27 @@ void simulate(const MultiLayerMap& mlm)
 			int x = dis_width(gen);
 			int y = dis_height(gen);
 
-			if(rdis(gen) < g_density.value(x, y))
+			if(rdis(gen) < g_density2.value(x, y))
 			{
 				distribution.at(x, y).push_back(new Grass(ref_grass2));
+				nope = false;
+			}
+		}
+		while(nope);
+	}
+
+	for(int i = 0; i < nb_seeds; ++i)
+	{
+		nope = true;
+
+		do
+		{
+			int x = dis_width(gen);
+			int y = dis_height(gen);
+
+			if(rdis(gen) < g_density2.value(x, y))
+			{
+				distribution.at(x, y).push_back(new Grass(ref_grass3));
 				nope = false;
 			}
 		}
