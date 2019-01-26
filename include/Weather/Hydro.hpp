@@ -43,5 +43,5 @@ void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k
  * @param water_loss      water quantity loss per iteration
  * @param k               intensity of erosion per droplet
  */
-void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, int n, double water_loss, double k);
+void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, const SimpleLayerMap& brush, int n, double water_loss, double k, double kd = 0.5);
 /** @}*/
