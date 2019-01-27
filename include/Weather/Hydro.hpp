@@ -30,10 +30,10 @@ SimpleLayerMap get_water_indexes(const DoubleField& heightmap);
  * @param layers        the source for heightmap computation
  * @param area          the Hydraulic area used for erosion and transportation
  * @param k             intensity of erosion
- * @param kd            deposition weight, high value leads to more materials on high area values
  * @param transport     wether or not transportation is performed after erosion
+ * @param kd            transportation limiter, high value leads to more materials on high area values
  */
-void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, double kd = 0.1, bool transport = true);
+void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, bool transport = false, double kd = 0.1);
 
 /**
  * @brief Erode and transport using droplets

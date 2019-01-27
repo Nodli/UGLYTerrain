@@ -29,7 +29,7 @@ SimpleLayerMap get_area(const DoubleField& heightmap, bool distribute)
 			// add to each neighbor the proportion of the ith highest cell value
 			for(int j = 0; j < neigh_nb; ++j)
 			{
-				area.at(positions[j].x(), positions[j].y()) += area.value(x, y) * (proportions[j]);
+				area.at(positions[j].x(), positions[j].y()) += area.value(x, y) * proportions[j];
 			}
 		}
 		else
@@ -72,10 +72,9 @@ SimpleLayerMap get_water_indexes(const DoubleField& heightmap)
 	return water_index;
 }
 
-void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, double kd, bool transport)
+void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, bool transport, double kd)
 {
 	SimpleLayerMap eroded_quantity(area);
-	SimpleLayerMap sed_quantity(area);
 	SimpleLayerMap slope = SimpleLayerMap::generate_slope_map(layers);
 	slope.normalize();
 
@@ -97,6 +96,8 @@ void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k
 
 	if(transport)
 	{
+		SimpleLayerMap sed_quantity(area);
+
 		// add sed
 		for(int j = 0; j < area.grid_height(); ++j)
 		{
@@ -111,7 +112,7 @@ void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k
 		double sed_quantity_sum = sed_quantity.get_sum();
 		sed_quantity = sed_quantity * (1/sed_quantity_sum) * eroded_quantity_sum;
 
-		layers.get_field(1) += sed_quantity;
+		layers.get_field(layers.get_layer_number() - 1) += sed_quantity;
 	}
 }
 
@@ -122,6 +123,7 @@ void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, const SimpleL
 	std::uniform_real_distribution<> dis_proportion(0, 1);
 
 	SimpleLayerMap& firstField = layers.get_field(0);
+	SimpleLayerMap& topField = layers.get_field(layers.get_layer_number() - 1);
 	SimpleLayerMap heightmap = layers.generate_field();
 
 	for(int i = 0; i < n; i++)
@@ -152,7 +154,8 @@ void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, const SimpleL
 				if(-delta_sed > qty_sed)			delta_sed = -qty_sed;				// qty_sed >= 0
 				if(delta_sed + qty_sed > 1.0) delta_sed = 1.0 - qty_sed;	// qty_sed <= 1
 
-				firstField.at(x, y) -= delta_sed;
+				if(delta_sed > 0) firstField.at(x, y) -= delta_sed;
+				else 							topField.at(x, y) -= delta_sed;
 				heightmap.at(x, y) -= delta_sed;
 				qty_sed += delta_sed;
 
@@ -212,13 +215,15 @@ void erode_from_droplets(MultiLayerMap& layers, std::mt19937& gen, const SimpleL
 						}
 						else
 						{
-							firstField.at(field_col, field_row) -= brush.value(col, row) * delta_sed;
+							if(delta_sed > 0) firstField.at(field_col, field_row) -= brush.value(col, row) * delta_sed;
+							else 							topField.at(field_col, field_row) -= brush.value(col, row) * delta_sed;
 							heightmap.at(field_col, field_row) -= brush.value(col, row) * delta_sed;
 						}
 					}
 				}
 				
-				firstField.at(x, y) -= unused;
+				if(delta_sed > 0) firstField.at(x, y) -= unused;
+				else 							topField.at(x, y) -= unused;
 				heightmap.at(x, y) -= unused;
 				qty_sed += delta_sed;	// qty_sed between 0 and 1
 
