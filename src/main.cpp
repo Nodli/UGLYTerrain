@@ -157,6 +157,8 @@ int main()
 
 	SimpleLayerMap area_distributed = get_area(mlm.generate_field());
 	SimpleLayerMap area_steepest 		= get_area(mlm.generate_field(), false);
+	area_distributed.normalize();
+	area_steepest.normalize();
 	area_distributed.export_as_pgm("DistributedHydraulicArea.pgm", true);
 	area_steepest.export_as_pgm("OneWayHydraulicArea.pgm", true);
 
@@ -172,7 +174,7 @@ int main()
 	MultiLayerMap mlmTer(mlm);
 	MultiLayerMap mlmQua(mlm);
 	MultiLayerMap mlmQui(mlm);
-/*
+
 	// distributed erode
 	erode_from_area(mlm, area_distributed, 0.2, false);
 	mlm.get_field(0).export_as_pgm("TerrainDistributedHydroErode.pgm", true);
@@ -196,14 +198,14 @@ int main()
 	mlmQua.get_field(0).export_as_pgm("TerrainOneWayHydroErodeAndTransport.pgm", true);
 	mlmQua.get_field(0).export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
 	mlmQua.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
-*/
+/*
 	// water drop
 	filter.set_all(0.05);
 	filter.at(1, 1) = 0.6;
 	erode_from_droplets(mlmQui, gen, filter, 100000, 0.01, 0.01);
 	mlmQui.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
 	mlmQui.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
-
+*/
 	return 0;
 }
 

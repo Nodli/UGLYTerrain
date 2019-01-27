@@ -72,7 +72,7 @@ SimpleLayerMap get_water_indexes(const DoubleField& heightmap)
 	return water_index;
 }
 
-void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, bool transport)
+void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k, double kd, bool transport)
 {
 	SimpleLayerMap eroded_quantity(area);
 	SimpleLayerMap sed_quantity(area);
@@ -102,9 +102,8 @@ void erode_from_area(MultiLayerMap& layers, const SimpleLayerMap& area, double k
 		{
 			for(int i = 0; i < area.grid_width(); i++)
 			{
-				// proposed: sqrt(area) / sqrt(1+slope*slope)
-				// implemented: log(area) / sqrt(1+slope*slope)
-				sed_quantity.set_value(i, j, log(1 + area.value(i, j)) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
+				// sqrt(area) / sqrt(1+slope*slope)
+				sed_quantity.set_value(i, j, std::min(sqrt(area.value(i, j)), kd) / sqrt(1 + slope.value(i, j) * slope.value(i, j)));
 			}
 		}
 
