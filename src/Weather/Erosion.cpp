@@ -269,7 +269,6 @@ void transport(MultiLayerMap& layers, const double rest_angle, const double quan
 	// generating the base terrain layer on which slopes will be computed
 	SimpleLayerMap terrain = layers.generate_field();
 
-
 	// temporary vector to shuffle grid cells
 	std::vector<Eigen::Vector2i> coord_vector;
 	for(int i = 0; i < terrain.grid_height(); ++i){
@@ -291,7 +290,7 @@ void transport(MultiLayerMap& layers, const double rest_angle, const double quan
 	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
 
 	while(!unstable_coord.empty()){
-		std::cout << "queue size: " << unstable_coord.size() << std::endl;
+		//std::cout << "queue size: " << unstable_coord.size() << std::endl;
 
 		// pick the next unstable cell
 		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
@@ -373,17 +372,14 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 	double slope_stability_threshold = layers.cell_size().x() * tan(rest_angle / 180. * 3.14);
 
 	// temp storage of neighborhood
-	double values[8];
-	Eigen::Vector2i positions[8];
-	double slopes[8];
+	double values[4];
+	Eigen::Vector2i positions[4];
+	double slopes[4];
 
 	// generating the base terrain layer on which slopes will be computed
 	SimpleLayerMap terrain = layers.generate_field();
 
-	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
-
-	// queue all cells of the grid as they could be unstable
-	// @DEBUG: using a temp vector to randomize the order
+	// temporary vector to shuffle grid cells
 	std::vector<Eigen::Vector2i> coord_vector;
 	for(int i = 0; i < terrain.grid_height(); ++i){
 		for(int j = 0; j < terrain.grid_width(); ++j){
@@ -391,13 +387,20 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 		}
 	}
 	std::random_shuffle(coord_vector.begin(), coord_vector.end());
+
+	// queue all cells of the grid as they could be unstable
 	std::queue<Eigen::Vector2i> unstable_coord;
 	for(int i = 0; i != coord_vector.size(); ++i){
 		unstable_coord.push(coord_vector[i]);
 	}
 
+	coord_vector.clear();
+
+	// updating stability map with all cells unstable
+	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
+
 	while(!unstable_coord.empty()){
-		std::cout << "queue size: " << unstable_coord.size() << std::endl;
+		//std::cout << "queue size: " << unstable_coord.size() << std::endl;
 
 		// pick the next unstable cell
 		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
@@ -425,7 +428,7 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 				double sediments_at_unstable_cell = layers.get_field(1).at(unstable_cell);
 
 				// minimal amount of sediments missing to stabilize unstable_cell
-				// with regard to one of its neighbor
+				// with regard to the easiest neighbor (the highest among unstable neighbors)
 				// sub. in this order because there must be min_neighborhood_slope > slope_stability_threshold
 				double min_stability_difference = min_neighborhood_slope - slope_stability_threshold;
 

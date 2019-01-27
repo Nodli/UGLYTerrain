@@ -89,6 +89,7 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle = 45, cons
 
 /**
  * @brief Transports the sediments towards the neighbors in 8-connexity from a Multi Layer Map until stable
+ *	  This is NOT FUNCTIONAL 
  *
  * @param layers        	the Multi Layer Map containing sediments to transport
  * @param rest_angle    	the angle over which sediments are stable

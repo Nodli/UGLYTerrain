@@ -206,7 +206,7 @@ public:
 	 */
 	int neighbors_info_4connex(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s) const
 	{
-		return neighbors_info(pos(0), pos(1), v, p, s);
+		return neighbors_info_4connex(pos(0), pos(1), v, p, s);
 	}
 
 	/**
@@ -251,7 +251,7 @@ public:
 	 */
 	int neighbors_info_filter_4connex(const Eigen::Vector2i pos, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const
 	{
-		return neighbors_info_filter(pos(0), pos(1), v, p, s, s_filter, sup);
+		return neighbors_info_filter_4connex(pos(0), pos(1), v, p, s, s_filter, sup);
 	}
 
 	/**
