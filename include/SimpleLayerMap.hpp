@@ -119,6 +119,13 @@ public:
 	void set_all(const double value);
 
 	/**
+	 * @brief update values from a list of pairs <value/position>
+	 *
+	 * @param std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the Field
+	 */
+	void import_list(std::vector<std::pair<double, Eigen::Vector2i>> &list);
+
+	/**
 	 * @brief Normalize the values of the field
 	 *
 	 * @return SimpleLayerMap&	A reference to this SimpleLayerMap

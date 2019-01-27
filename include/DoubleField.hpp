@@ -283,6 +283,23 @@ public:
 	int neighbors_info_filter_4connex(const int i, const int j, double* v, Eigen::Vector2i* p, double* s, const double s_filter = 0., const bool sup = false) const;
 
 	/**
+	 * @brief Compute the convolution with a given filter for one value
+	 * 
+	 * @param filter		the filter to apply
+	 * @param i, j			the position to apply the filter
+	 * @return double		the result of the convolution
+	 */
+	double convolution(const DoubleField& filter, int i, int j) const;
+
+	/**
+	 * @brief Compute the convolution with a given filter for all values
+	 * 
+	 * @param filter		the filter to apply
+	 * @return std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the new values
+	 */
+	std::vector<std::pair<double, Eigen::Vector2i>> full_convolution(const DoubleField& filter) const;
+
+	/**
 	 * @brief Affectation operator
 	 *
 	 * @param sf            the Field to affect
@@ -320,7 +337,7 @@ public:
 	/**
 	 * @brief export the Field as a list of pairs <value/position>
 	 *
-	 * @return std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the Scalar Field
+	 * @return std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the Field
 	 */
 	std::vector<std::pair<double, Eigen::Vector2i>> export_to_list() const;
 

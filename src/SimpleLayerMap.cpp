@@ -26,6 +26,15 @@ void SimpleLayerMap::set_all(const double value)
 	std::fill(_values.begin(), _values.end(), value);
 }
 
+void SimpleLayerMap::import_list(std::vector<std::pair<double, Eigen::Vector2i>> &list)
+{
+	for(int i = 0; i < list.size(); ++i)
+	{
+		std::pair<double, Eigen::Vector2i> p = list[i];
+		at(p.second) = p.first;
+	}
+}
+
 SimpleLayerMap& SimpleLayerMap::normalize()
 {
 	double range = get_range();
