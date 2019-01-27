@@ -145,6 +145,9 @@ int main()
 		}
 
 		// Thermal erosion
+		//erode_constant(mlm, 0.01);
+		//erode_using_mean_double_slope(mlm, 0.01);
+		//erode_using_exposure(mlm, 0.01);
 		erode_layered_materials_using_exposure(mlm, material_layers_top, material_resistances, 10);
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
@@ -153,7 +156,8 @@ int main()
 		}
 
 		// Thermal transport
-		transport(mlm, 20);
+		transport(mlm, 30);
+		//transport_4connex(mlm, 30);
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
@@ -173,6 +177,7 @@ int main()
 		std::cout << "done" << std::endl;
 	}
 
+/*
 	// Hydraulic erosion, area visualization
 	mlm.new_layer();
 
@@ -219,7 +224,7 @@ int main()
 	mlmQua.get_field(0).export_as_pgm("TerrainOneWayHydroErodeAndTransport.pgm", true);
 	mlmQua.get_field(0).export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
 	mlmQua.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
-/*
+
 	// water drop
 	filter.set_all(0.05);
 	filter.at(1, 1) = 0.6;

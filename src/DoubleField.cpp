@@ -157,7 +157,7 @@ int DoubleField::neighbors_info_4connex(const int i, const int j, double* v, Eig
 {
 	Eigen::Vector2i* positions;
 	if(p == nullptr){
-		positions = new Eigen::Vector2i[8]; // temp allocation because values need to be used for v[k]
+		positions = new Eigen::Vector2i[4]; // temp allocation because values need to be used for v[k]
 	}else{
 		positions = p;
 	}
