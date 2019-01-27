@@ -291,7 +291,7 @@ void transport(MultiLayerMap& layers, const double rest_angle, const double quan
 	BooleanField stability_map(layers.grid_width(), layers.grid_height(), false);
 
 	while(!unstable_coord.empty()){
-		std::cout << "queue size: " << unstable_coord.size() << std::endl;
+		//std::cout << "queue size: " << unstable_coord.size() << std::endl;
 
 		// pick the next unstable cell
 		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
@@ -397,7 +397,7 @@ void transport_4connex(MultiLayerMap& layers, const double rest_angle, const dou
 	}
 
 	while(!unstable_coord.empty()){
-		std::cout << "queue size: " << unstable_coord.size() << std::endl;
+		//std::cout << "queue size: " << unstable_coord.size() << std::endl;
 
 		// pick the next unstable cell
 		const Eigen::Vector2i& unstable_cell = unstable_coord.front();
