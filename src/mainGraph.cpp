@@ -190,7 +190,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			}
 
 			// std::cout << "erotion" << std::endl;
-			erode_using_exposition(mlm, 0.1);
+			erode_using_exposure(mlm, 0.1);
 			transport(mlm, 20);
 			std::cout << "vegetation" << std::endl;
 			simulate(mlm);
@@ -283,7 +283,7 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 			if(ImGui::Button("Erode exposure"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
-				erode_using_exposition(mlm, erosion_factor);
+				erode_using_exposure(mlm, erosion_factor);
 			}
 
 			if(ImGui::Button("transport"))
