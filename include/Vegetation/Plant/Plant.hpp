@@ -21,7 +21,23 @@ public:
 		, _reproduction_age(p._reproduction_age)
 		, _health(p._health)
 		, _density(p._density) {}
+	
+	/**
+	 * @brief tells if the plant should die or not
+	 * 
+	 * @return true 	if the plant should die
+	 * @return false 	if the plant should live
+	 */
 	virtual bool is_dead() const = 0;
+
+	/**
+	 * @brief updates the plant
+	 * 
+	 * @param gen 			random number generator
+	 * @param rdis 			random distribution
+	 * @param distribution 	the vegetation layer
+	 * @param i, j			the position of the plant in the vegetation layer
+	 */
 	virtual void update(std::mt19937& gen, std::uniform_real_distribution<>& rdis, VegetationLayerMap& distribution, const int i, const int j) = 0;
 public:
     int _ID;

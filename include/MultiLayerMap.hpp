@@ -192,14 +192,31 @@ protected:
 	std::vector<SimpleLayerMap> _layers; /**< Array of simple layer map*/
 };
 
+/**
+ * @brief input flux operator
+ * 
+ * @param is 					the input stream to get the data from
+ * @param m 					the target multilayermap
+ * @return std::istream& 		the original input stream
+ */
 std::istream& operator>>(std::istream& is, MultiLayerMap& m);
+
+
+/**
+ * @brief output flux operator
+ * 
+ * @param os 					the output stream to save the data ta
+ * @param m 					the multilayermap to save
+ * @return std::ostream& 		the original output stream
+ */
 std::ostream& operator<<(std::ostream& os, const MultiLayerMap& m);
 
 /**
  * @brief Normalizes the MultiLayerMap as a whole an not each SimpleLayerMap independently 
  *
- * @param mlm 			a MultiLayerMap to normalize
+ * @param mlm 				a MultiLayerMap to normalize
  * @return MultiLayerMap 	a normalized copy of mlm
  */
 MultiLayerMap normalized(const MultiLayerMap& mlm);
+
 

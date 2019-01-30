@@ -14,18 +14,7 @@
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
 
-struct Parameters
-{
-	TerrainNoise t_noise = TerrainNoise(5.0, 1.0 / 200.0, 8);
-	char saveName[256] = "default";
-	int seed1 = 0;
-	int seed2 = 4;
-	int sizeWidth = 500;
-	int sizeHeight = 500;
-	Eigen::Vector2d posMin;//(-25, -25);
-	Eigen::Vector2d posMax;//(25, 25);
-};
-
+//SET UP RELATED FUNCITONS
 static void glfw_error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -76,6 +65,46 @@ void set_up_imgui(GLFWwindow* window)
 	ImGui::StyleColorsDark();
 }
 
+//LIB RELATED FUNCITONS
+struct Parameters
+{
+	TerrainNoise t_noise = TerrainNoise(5.0, 1.0 / 200.0, 8);
+	char saveName[256] = "default";
+	int seed1 = 0;
+	int seed2 = 4;
+	int cell_width_number = 500;
+	int cell_height_number = 500;
+	double size_width = 2.5;
+	double size_height = 2.5;
+	//double km_per_cell = 0.004;
+	double wavelength = 2;
+	double height = 0.5;
+	bool direct = true;
+	Eigen::Vector2d posMin;//(-25, -25);
+	Eigen::Vector2d posMax;//(25, 25);
+};
+
+void prepare_generation(MultiLayerMap& mlm, Parameters& params)
+{
+	if(params.direct)
+	{
+	}
+	else
+	{
+		params.cell_height_number = params.size_height * params.cell_width_number / params.size_width;
+		params.t_noise._base_freq = 2 * params.size_width / (params.wavelength * params.cell_width_number); //1/(params.wavelength*100);
+		params.t_noise._amplitude = params.height * (params.posMax(0) - params.posMin(0)) / params.size_width;
+	}
+
+	params.t_noise._base_noise.SetSeed(params.seed1);
+	params.t_noise._ridge_noise.SetSeed(params.seed2);
+	params.t_noise._biome_noise.SetSeed(params.seed1);
+	mlm = MultiLayerMap(params.cell_width_number, params.cell_height_number, params.posMin, params.posMax);
+	mlm.new_layer();
+}
+
+
+//INTERFACE RELATED FUNCITONS
 void export_tab(const SimpleLayerMap& sf, const std::string& name)
 {
 	if(ImGui::CollapsingHeader("Exports"))
@@ -123,8 +152,9 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		if(ImGui::Button("Big Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			strcpy(params.saveName, "big");
-			params.sizeWidth = 500;
-			params.sizeHeight = 500;
+			params.direct = true;
+			params.cell_width_number = 500;
+			params.cell_height_number = 500;
 			params.posMin = Eigen::Vector2d(-25, -25);
 			params.posMax = Eigen::Vector2d(25, 25);
 			params.t_noise._amplitude = 10.0;
@@ -137,8 +167,9 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		if(ImGui::Button("Huge Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			strcpy(params.saveName, "big");
-			params.sizeWidth = 1000;
-			params.sizeHeight = 1000;
+			params.direct = true;
+			params.cell_width_number = 1000;
+			params.cell_height_number = 1000;
 			params.posMin = Eigen::Vector2d(-50, -50);
 			params.posMax = Eigen::Vector2d(50, 50);
 			params.t_noise._amplitude = 10.0;
@@ -151,8 +182,9 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 		if(ImGui::Button("Quick Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			strcpy(params.saveName, "quick");
-			params.sizeWidth = 100;
-			params.sizeHeight = 100;
+			params.direct = true;
+			params.cell_width_number = 100;
+			params.cell_height_number = 100;
 			params.posMin = Eigen::Vector2d(-5, -5);
 			params.posMax = Eigen::Vector2d(5, 5);
 			params.t_noise._amplitude = 2.5;
@@ -162,11 +194,28 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.seed2 = 4;
 		}
 
+		if(ImGui::Button("Pres quick Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			strcpy(params.saveName, "quick_");
+			params.direct = false;
+			params.size_width = 1.00;
+			params.size_height = 1.00;
+			params.cell_width_number = 100;
+			params.posMin = Eigen::Vector2d(-5, -5);
+			params.posMax = Eigen::Vector2d(5, 5);
+			params.wavelength = 1.0;
+			params.height = 0.2;
+			params.t_noise._octaves = 8;
+			params.seed1 = 0;
+			params.seed2 = 4;
+		}
+
 		if(ImGui::Button("Quick Test with veget"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			strcpy(params.saveName, "quick");
-			params.sizeWidth = 100;
-			params.sizeHeight = 100;
+			params.direct = true;
+			params.cell_width_number = 100;
+			params.cell_height_number = 100;
 			params.posMin = Eigen::Vector2d(-5, -5);
 			params.posMax = Eigen::Vector2d(5, 5);
 			params.t_noise._amplitude = 2.5;
@@ -176,14 +225,11 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.seed2 = 4;
 			std::cout << "generation" << std::endl;
 			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
-			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
-			mlm.new_layer();
-			params.t_noise._base_noise.SetSeed(params.seed1);
-			params.t_noise._ridge_noise.SetSeed(params.seed2);
+			prepare_generation(mlm, params);
 
-			for(int j = 0; j < params.sizeHeight; ++j)
+			for(int j = 0; j < params.cell_height_number; ++j)
 			{
-				for(int i = 0; i < params.sizeWidth; i++)
+				for(int i = 0; i < params.cell_width_number; i++)
 				{
 					mlm.get_field(0).at(i, j) = params.t_noise.get_noise(i, j);
 				}
@@ -199,31 +245,51 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 	if(ImGui::CollapsingHeader("Caracteristics"))
 	{
-		ImGui::InputInt("Width", &params.sizeWidth);
-		ImGui::InputInt("Height", &params.sizeHeight);
-		ImGui::InputInt("Seed 1", &params.seed1);
-		ImGui::InputInt("Seed 2", &params.seed2);
+		if(ImGui::Button("Direct"))
+		{
+			params.direct = true;
+		}
+
+		if(ImGui::Button("Intuitive"))
+		{
+			params.direct = false;
+		}
+
+		if(params.direct)
+		{
+			ImGui::InputInt("Width", &params.cell_width_number);
+			ImGui::InputInt("Height", &params.cell_height_number);
+			ImGui::InputDouble("Amplitude max", &params.t_noise._amplitude);
+			ImGui::InputDouble("Base frequency", &params.t_noise._base_freq);
+		}
+		else
+		{
+			//UserFriendly
+			ImGui::InputDouble("Size width", &params.size_width);
+			ImGui::InputDouble("Size Length", &params.size_height);
+			ImGui::InputDouble("Wavelength", &params.wavelength);
+			ImGui::InputDouble("height", &params.height);
+			ImGui::InputInt("Width", &params.cell_width_number);
+		}
+
+		//Common
 		ImGui::InputDouble("minX", &params.posMin(0));
 		ImGui::SameLine();
 		ImGui::InputDouble("minY", &params.posMin(1));
 		ImGui::InputDouble("maxX", &params.posMax(0));
 		ImGui::SameLine();
 		ImGui::InputDouble("maxY", &params.posMax(1));
-		ImGui::InputDouble("Amplitude max", &params.t_noise._amplitude);
-		ImGui::InputDouble("Base frequency", &params.t_noise._base_freq);
+		ImGui::InputInt("Seed 1", &params.seed1);
+		ImGui::InputInt("Seed 2", &params.seed2);
 		ImGui::InputInt("Nb iterations", &params.t_noise._octaves);
 
 		if(ImGui::Button("Generate 1"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
-			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
-			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
-			mlm.new_layer();
-			params.t_noise._base_noise.SetSeed(params.seed1);
-			params.t_noise._ridge_noise.SetSeed(params.seed2);
+			prepare_generation(mlm, params);
 
-			for(int j = 0; j < params.sizeHeight; ++j)
+			for(int j = 0; j < params.cell_height_number; ++j)
 			{
-				for(int i = 0; i < params.sizeWidth; i++)
+				for(int i = 0; i < params.cell_width_number; i++)
 				{
 					mlm.get_field(0).at(i, j) = params.t_noise.get_noise(i, j);
 				}
@@ -232,15 +298,11 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 		if(ImGui::Button("Generate 2"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
-			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
-			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
-			mlm.new_layer();
-			params.t_noise._base_noise.SetSeed(params.seed1);
-			params.t_noise._ridge_noise.SetSeed(params.seed2);
+			prepare_generation(mlm, params);
 
-			for(int j = 0; j < params.sizeHeight; ++j)
+			for(int j = 0; j < params.cell_height_number; ++j)
 			{
-				for(int i = 0; i < params.sizeWidth; i++)
+				for(int i = 0; i < params.cell_width_number; i++)
 				{
 					mlm.get_field(0).at(i, j) = params.t_noise.get_noise2(i, j);
 				}
@@ -249,15 +311,11 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 
 		if(ImGui::Button("Generate 3"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
-			//SimpleLayerMap sf(sizeWidth, sizeHeight, posMin, posMax);
-			mlm = MultiLayerMap(params.sizeWidth, params.sizeHeight, params.posMin, params.posMax);
-			mlm.new_layer();
-			params.t_noise._base_noise.SetSeed(params.seed1);
-			params.t_noise._ridge_noise.SetSeed(params.seed2);
+			prepare_generation(mlm, params);
 
-			for(int j = 0; j < params.sizeHeight; ++j)
+			for(int j = 0; j < params.cell_height_number; ++j)
 			{
-				for(int i = 0; i < params.sizeWidth; i++)
+				for(int i = 0; i < params.cell_width_number; i++)
 				{
 					mlm.get_field(0).at(i, j) = params.t_noise.get_noise3(i, j);
 				}
@@ -307,6 +365,11 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			}
 
 			ImGui::TreePop();
+		}
+
+		if(ImGui::Button("Texturize"))
+		{
+			save_colorized(mlm);
 		}
 	}
 

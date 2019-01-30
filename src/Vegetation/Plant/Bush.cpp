@@ -9,8 +9,8 @@ SimpleLayerMap bush_density(const BiomeInfo& bi)
 		for(int i = 0; i < density.grid_width(); i++)
 		{
             double height = bi.height.value(i, j);
-            double hu = 1;//-5*height*height*height + 5*height*height;
-			double value = bi.slope.value(i, j) * 0.8 * bi.exposure.value(i, j);
+            double hu = 1.5 * (-5*height*height*height + 5*height*height);
+			double value = std::min(bi.slope.value(i, j) * hu * bi.exposure.value(i, j), 1.0);
 			density.set_value(i, j, value);
 		}
 	}
