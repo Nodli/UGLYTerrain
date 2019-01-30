@@ -194,6 +194,22 @@ void multi_layer_map_window(MultiLayerMap& mlm, Parameters& params)
 			params.seed2 = 4;
 		}
 
+		if(ImGui::Button("Pres quick Test"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
+		{
+			strcpy(params.saveName, "quick_");
+			params.direct = false;
+			params.size_width = 1.00;
+			params.size_height = 1.00;
+			params.cell_width_number = 100;
+			params.posMin = Eigen::Vector2d(-5, -5);
+			params.posMax = Eigen::Vector2d(5, 5);
+			params.wavelength = 1.0;
+			params.height = 0.2;
+			params.t_noise._octaves = 8;
+			params.seed1 = 0;
+			params.seed2 = 4;
+		}
+
 		if(ImGui::Button("Quick Test with veget"))                             // Buttons return true when clicked (most widgets return true when edited/activated)
 		{
 			strcpy(params.saveName, "quick");

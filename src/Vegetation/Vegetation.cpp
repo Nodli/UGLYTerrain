@@ -74,7 +74,7 @@ void generate_distribution(const MultiLayerMap& m)
 	}
 
 	distrib.export_as_pgm("TEST.pgm", true);
-	std::string filename = "distribT.ppm";
+	std::string filename = "random_distrib.ppm";
 	std::ofstream output(filename, std::ofstream::out);
 	output << "P3" << std::endl;
 	output << distrib.grid_width() << " " << distrib.grid_height() << std::endl;
@@ -90,15 +90,15 @@ void generate_distribution(const MultiLayerMap& m)
 			}
 			else if(distrib.value(i, j) == 1)
 			{
-				output << 30 << " " << 255 << " " << 10 << " ";
+				output << 165 << " " << 208 << " " << 24 << " ";
 			}
 			else if(distrib.value(i, j) == 2)
 			{
-				output << 10 << " " << 15 << " " << 200 << " ";
+				output << 236 << " " << 174 << " " << 93 << " ";
 			}
 			else if(distrib.value(i, j) == 3)
 			{
-				output << 255 << " " << 100 << " " << 100 << " ";
+				output << 165 << " " << 208 << " " << 24 << " ";
 			}
 		}
 
