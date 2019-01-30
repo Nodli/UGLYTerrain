@@ -26,6 +26,15 @@ void SimpleLayerMap::set_all(const double value)
 	std::fill(_values.begin(), _values.end(), value);
 }
 
+void SimpleLayerMap::import_list(std::vector<std::pair<double, Eigen::Vector2i>> &list)
+{
+	for(int i = 0; i < list.size(); ++i)
+	{
+		std::pair<double, Eigen::Vector2i> p = list[i];
+		at(p.second) = p.first;
+	}
+}
+
 SimpleLayerMap& SimpleLayerMap::normalize()
 {
 	double range = get_range();
@@ -104,6 +113,22 @@ SimpleLayerMap operator+(SimpleLayerMap lsf, const SimpleLayerMap& rsf)
 	return lsf;
 }
 
+SimpleLayerMap& SimpleLayerMap::operator+=(const double& d)
+{
+	for(int i = 0; i < this->_values.size(); ++i)
+	{
+		this->_values[i] += d;
+	}
+
+	return *this;
+}
+
+SimpleLayerMap operator+(SimpleLayerMap lsf, const double& rd)
+{
+	lsf += rd;
+	return lsf;
+}
+
 SimpleLayerMap& SimpleLayerMap::operator-=(const SimpleLayerMap& sf)
 {
 	if(this->_values.size() == sf._values.size())
@@ -121,6 +146,28 @@ SimpleLayerMap operator-(SimpleLayerMap lsf, const SimpleLayerMap& rsf)
 {
 	lsf -= rsf;
 	return lsf;
+}
+
+SimpleLayerMap& SimpleLayerMap::operator-=(const double& d)
+{
+	for(int i = 0; i < this->_values.size(); ++i)
+	{
+		this->_values[i] -= d;
+	}
+
+	return *this;
+}
+
+SimpleLayerMap operator-(SimpleLayerMap lsf, const double& rd)
+{
+	lsf -= rd;
+	return lsf;
+}
+
+SimpleLayerMap operator-(const double& ld, SimpleLayerMap rsf)
+{
+	rsf -= ld;
+	return rsf;
 }
 
 SimpleLayerMap& SimpleLayerMap::operator*=(const SimpleLayerMap& sf)

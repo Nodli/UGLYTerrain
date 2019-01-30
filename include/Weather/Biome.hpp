@@ -17,11 +17,11 @@ struct BiomeInfo
 };
 
 /**
- * @brief Get the light exposition of a field
+ * @brief Get the light exposure of a MultiLayerMap
  *
  * @param df                The source field
  * @param nb_steps          The radius used for calculating the exposure, measured in cells of the grid
  * @param nb_sambles        The number of direction for calculating the exposure
- * @return SimpleLayerMap   A field contaning the exposition information
+ * @return SimpleLayerMap   A field contaning the exposure information
  */
 SimpleLayerMap get_light_exposure(const DoubleField& df, const int nb_steps = 20, const int nb_samples = 20);

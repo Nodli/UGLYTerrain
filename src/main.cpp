@@ -77,9 +77,10 @@ int main()
 	}
 
 	sf.export_as_obj("InitialTerrain.obj");
-	sf.export_as_pgm("IintialTerrain.pgm", true);
+	sf.export_as_pgm("InitialTerrain.pgm", true);
 	//SimpleLayerMap::generate_slope_map(sf).export_as_pgm("Slope.pgm", true);
 
+	/*
 	// determining layering
 	std::vector<double> material_layers_top = {0.09, 0.11,
 						0.29, 0.31,
@@ -90,8 +91,7 @@ int main()
 						0.01, 0.00001,
 						0.01, 0.00001,
 						0.01};
-
-	/*
+	// --- ///
 	std::vector<double> material_layers_top = {0.09, 0.11,
 						0.19, 0.21,
 						0.29, 0.31,
@@ -105,6 +105,8 @@ int main()
 						0.01, 0.00001,
 						0.01, 0.00001,
 						0.01, 0.00001,
+						0.01};
+	std::vector<double> material_resistances = {0.01, 0.00001,
 						0.01, 0.00001,
 						0.01, 0.00001,
 						0.01, 0.00001,
@@ -112,6 +114,18 @@ int main()
 						0.01, 0.00001,
 						0.01};
 	*/
+
+	std::vector<double> material_layers_top = {0.09, 0.11,
+						0.29, 0.31,
+						0.39, 0.41,
+						0.79, 0.81,
+						0.84, 0.86};
+	std::vector<double> material_resistances = {0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01, 0.00001,
+						0.01};
 
 	// rescaling layers to the whole height range
 	const double bottom_height = sf.get_min();
@@ -123,6 +137,7 @@ int main()
 	const int erosion_transport_iterations = 101;
 	const int save_period = 10;
 	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
+		std::cout << "iteration " << istep + 1 << "...";
 		std::string folder_name = "ErosionTransport" + std::to_string(istep);
 		std::string sys_cmd = "mkdir " + folder_name;
 		if(istep % save_period == 0){
@@ -131,52 +146,92 @@ int main()
 
 		// Thermal erosion
 		//erode_constant(mlm, 0.01);
-		erode_layered_materials_using_exposition(mlm, material_layers_top, material_resistances, 10);
+		//erode_using_mean_double_slope(mlm, 0.01);
+		//erode_using_exposure(mlm, 0.01);
+		erode_layered_materials_using_exposure(mlm, material_layers_top, material_resistances, 10);
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalErosionTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalErosionTerrainSediments.obj");
 			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalErosionTerrain.obj");
 		}
+
 		// Thermal transport
-		transport(mlm, 20);
+		transport(mlm, 30);
+		//transport_4connex(mlm, 30);
 		if(istep % save_period == 0){
 			mlm.get_field(0).export_as_obj("./" + folder_name + "/ThermalTransportTerrainBedrock.obj");
 			mlm.get_field(1).export_as_obj("./" + folder_name + "/ThermalTransportTerrainSediments.obj");
 			mlm.generate_field().export_as_obj("./" + folder_name + "/ThermalTransportTerrain.obj");
 		}
+
+		// Water drop erosion
+		/*
+		water_drop_transport(mlm, gen, 1000, 0.01, 0.1);
+		if(istep % save_period == 0){
+			mlm.get_field(0).export_as_obj("./" + folder_name + "WaterDropTerrainBedrock.obj");
+			mlm.get_field(1).export_as_obj("./" + folder_name + "WaterDropTerrainSediments.obj");
+			mlm.generate_field().export_as_obj("./" + folder_name + "WaterDropTerrain.obj");
+		}
+		*/
+
+		std::cout << "done" << std::endl;
 	}
 
-	/*
+/*
 	// Hydraulic erosion, area visualization
 	mlm.new_layer();
-	SimpleLayerMap area = get_area(mlm.generate_field());
-	area.export_as_pgm("DistributedHydraulicArea.pgm", true);
-	area = get_area(mlm.generate_field(), false);
-	area.export_as_pgm("OneWayHydraulicArea.pgm", true);
+
+	SimpleLayerMap area_distributed = get_area(mlm.generate_field());
+	SimpleLayerMap area_steepest 		= get_area(mlm.generate_field(), false);
+	area_distributed.normalize();
+	area_steepest.normalize();
+	area_distributed.export_as_pgm("DistributedHydraulicArea.pgm", true);
+	area_steepest.export_as_pgm("OneWayHydraulicArea.pgm", true);
+
+	int filter_size = 3;
+	SimpleLayerMap filter(filter_size, filter_size);
+	filter.set_all(1.0/(double) (filter_size * filter_size));
+
+	std::vector<std::pair<double, Eigen::Vector2i>> convoluted_values = area_steepest.full_convolution(filter);
+	area_steepest.import_list(convoluted_values);
+	area_steepest.export_as_pgm("OneWayConvolutedHydraulicArea.pgm", true);
+
+	convoluted_values = area_distributed.full_convolution(filter);
+	area_distributed.import_list(convoluted_values);
+	area_distributed.export_as_pgm("DistributedConvolutedHydraulicArea.pgm", true);
 
 	// Hydraulic erosion, terrain visualization
 	MultiLayerMap mlmBis(mlm);
 	MultiLayerMap mlmTer(mlm);
+	MultiLayerMap mlmQua(mlm);
+	MultiLayerMap mlmQui(mlm);
+/*
+	// distributed erode
+	erode_from_area(mlm, area_distributed, 0.2);
+	mlm.generate_field().export_as_pgm("TerrainDistributedHydroErode.pgm", true);
+	mlm.generate_field().export_as_obj("TerrainDistributedHydroErode.obj");
 
-	// distributed
-	erode_from_area(mlm, 0.2);
+	// distributed erode and transport
+	erode_from_area(mlmBis, area_distributed, 0.2, true, 0.05);
+	mlmBis.generate_field().export_as_pgm("TerrainDistributedHydroErodeAndTransport.pgm", true);
+	mlmBis.generate_field().export_as_obj("TerrainDistributedHydroErodeAndTransport.obj");
 
-	mlm.get_field(0).export_as_pgm("TerrainDistributedHydroErode.pgm", true);
-	mlm.get_field(0).export_as_obj("TerrainDistributedHydroErode.obj");
-	mlm.generate_field().export_as_obj("TerrainDistributedHydroErodeAndTransport.obj");
+	// one way erode
+	erode_from_area(mlmTer, area_steepest, 0.2);
+	mlmTer.generate_field().export_as_pgm("TerrainOneWayHydroErode.pgm", true);
+	mlmTer.generate_field().export_as_obj("TerrainOneWayHydroErode.obj");
 
-	// one way
-	erode_from_area(mlmBis, 0.2, false);
-	mlmBis.get_field(0).export_as_pgm("TerrainOneWayHydroErode.pgm", true);
-	mlmBis.get_field(0).export_as_obj("TerrainOneWayHydroErode.obj");
-	mlmBis.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
-
+	// one way erode and transport
+	erode_from_area(mlmQua, area_steepest, 0.2, true, 0.05);
+	mlmQua.generate_field().export_as_pgm("TerrainOneWayHydroErodeAndTransport.pgm", true);
+	mlmQua.generate_field().export_as_obj("TerrainOneWayHydroErodeAndTransport.obj");
 	// water drop
-	water_drop_transport(mlmTer, gen, 1000, 0.01, 0.1);
-	mlmTer.get_field(0).export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
-	mlmTer.get_field(0).export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
-	*/
-
+	filter.set_all(0.05);
+	filter.at(1, 1) = 0.6;
+	erode_from_droplets(mlmQui, gen, filter, 100000, 0.01, 0.01, 0.1);
+	mlmQui.generate_field().export_as_pgm("TerrainWaterDropHydroErodeAndTransport.pgm", true);
+	mlmQui.generate_field().export_as_obj("TerrainWaterDropHydroErodeAndTransport.obj");
+*/
 	return 0;
 }
 

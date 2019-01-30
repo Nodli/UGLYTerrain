@@ -55,6 +55,7 @@ void generate_distribution(const MultiLayerMap& m)
 		while(nope);
 	}
 
+
 	for(int i = 0; i < 4000; ++i)
 	{
 		nope = true;
@@ -110,11 +111,12 @@ void generate_distribution(const MultiLayerMap& m)
 
 void save_simulation(VegetationLayerMap& distribution, int iter)
 {
-	std::string filename = "Simu_5/simulation_" + std::to_string(iter / 10) + ".ppm";
+	std::string filename = "simulation_" + std::to_string(iter / 10) + ".ppm";
 	std::ofstream output(filename, std::ofstream::out);
 	output << "P3" << std::endl;
 	output << distribution.grid_width() << " " << distribution.grid_height() << std::endl;
 	output << 12 << std::endl;
+
 
 	for(int j = distribution.grid_height() - 1; j >= 0; --j)
 	{

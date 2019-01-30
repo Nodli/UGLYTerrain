@@ -157,7 +157,7 @@ int DoubleField::neighbors_info_4connex(const int i, const int j, double* v, Eig
 {
 	Eigen::Vector2i* positions;
 	if(p == nullptr){
-		positions = new Eigen::Vector2i[8]; // temp allocation because values need to be used for v[k]
+		positions = new Eigen::Vector2i[4]; // temp allocation because values need to be used for v[k]
 	}else{
 		positions = p;
 	}
@@ -245,6 +245,47 @@ int DoubleField::neighbors_info_filter_4connex(const int i, const int j, double*
 	}
 
 	return threshold_nb;
+}
+
+double DoubleField::convolution(const DoubleField& filter, int i, int j) const
+{
+	double val = 0;
+
+	for(int y = 0; y < filter.grid_height(); ++y)
+	{
+		for(int x = 0; x < filter.grid_width(); ++x)
+		{
+			int half_filter = filter.grid_width() >> 1;
+
+			if(i + x - half_filter < 0 || j + y - half_filter < 0 || i + x - half_filter >= _grid_height || j + y - half_filter >= _grid_width)
+			{
+				val += 0;
+			}
+			else
+			{
+				double filter_value = filter.value(x, y);
+				val += value(i + x - half_filter, j + y - half_filter) * filter_value;
+			}
+		}
+	}
+
+	return val;
+}
+
+std::vector<std::pair<double, Eigen::Vector2i>> DoubleField::full_convolution(const DoubleField& filter) const
+{
+	std::vector<std::pair<double, Eigen::Vector2i>> field;
+
+	for(int j = 0; j < _grid_height; ++j)
+	{
+		for(int i = 0 ; i < _grid_width; ++i)
+		{
+			double new_value = convolution(filter, i, j);
+			field.push_back(std::make_pair(new_value, Eigen::Vector2i(i, j)));
+		}
+	}
+
+	return field;
 }
 
 DoubleField& DoubleField::operator=(const DoubleField& sf)

@@ -120,6 +120,13 @@ public:
 	void set_all(const double value);
 
 	/**
+	 * @brief update values from a list of pairs <value/position>
+	 *
+	 * @param std::vector<std::pair<double, Eigen::Vector2i>>  a list of pair <value/cell_position> representing the Field
+	 */
+	void import_list(std::vector<std::pair<double, Eigen::Vector2i>> &list);
+
+	/**
 	 * @brief Normalize the values of the field
 	 *
 	 * @return SimpleLayerMap&	A reference to this SimpleLayerMap
@@ -169,6 +176,23 @@ public:
 	 * @return SimpleLayerMap, result of the addition, by value
 	 */
 	friend SimpleLayerMap operator+(SimpleLayerMap lsf, const SimpleLayerMap& rsf);
+
+	/**
+	 * @brief Addition assignment operator
+	 *
+	 * @param d             the double to add to all values of the Scalar field
+	 * @return SimpleLayerMap& a reference to this Scalar Field
+	 */
+	SimpleLayerMap& operator+=(const double& d);
+	/**
+	 * @brief Addition operator
+	 *
+	 * @param lsf            the Scalar field to add on the left
+	 * @param rd             the double to add on the right
+	 * @return SimpleLayerMap, result of the addition, by value
+	 */
+	friend SimpleLayerMap operator+(SimpleLayerMap lsf, const double& rd);
+
 	/**
 	 * @brief Substraction assignment operator
 	 *
@@ -184,6 +208,31 @@ public:
 	 * @return SimpleLayerMap, result of the substraction, by value
 	 */
 	friend SimpleLayerMap operator-(SimpleLayerMap lsf, const SimpleLayerMap& rsf);
+
+	/**
+	 * @brief Substraction assignment operator
+	 *
+	 * @param d             the double to substract to all values of the Scalar field
+	 * @return SimpleLayerMap& a reference to this Scalar Field
+	 */
+	SimpleLayerMap& operator-=(const double& d);
+	/**
+	 * @brief Substraction operator
+	 *
+	 * @param lsf            the Scalar field to substract on the left
+	 * @param rd             the double to substract on the right
+	 * @return SimpleLayerMap, result of the substraction, by value
+	 */
+	friend SimpleLayerMap operator-(SimpleLayerMap lsf, const double& rd);
+	/**
+	 * @brief Substraction operator
+	 *
+	 * @param ld             the double to substract on the left 
+	 * @param rsf            the Scalar field to substract on the right 
+	 * @return SimpleLayerMap, result of the substraction, by value
+	 */
+	friend SimpleLayerMap operator-(const double& ld, SimpleLayerMap rsf);
+
 	/**
 	 * @brief Multiplication assignment operator
 	 *
