@@ -63,16 +63,16 @@ int main()
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	int size = 100;
+	int size = 500;
 	MultiLayerMap mlm(size, size, { -5, -5}, {5, 5});
 	SimpleLayerMap &sf = mlm.new_layer();
-	TerrainNoise t_noise(2.5, 1.0 / 100.0, 8);
+	TerrainNoise t_noise(2.2, 0.004, 8);
 
 	for(int j = 0; j < size; ++j)
 	{
 		for(int i = 0; i < size; i++)
 		{
-			sf.at(i, j) = t_noise.get_noise(i, j);
+			sf.at(i, j) = t_noise.get_noise3(i, j);
 		}
 	}
 
@@ -115,17 +115,32 @@ int main()
 						0.01};
 	*/
 
-	std::vector<double> material_layers_top = {0.09, 0.11,
+	std::vector<double> material_layers_top; 
+	/*{0.09, 0.11,
 						0.29, 0.31,
 						0.39, 0.41,
 						0.79, 0.81,
-						0.84, 0.86};
-	std::vector<double> material_resistances = {0.01, 0.00001,
+						0.84, 0.86};*/
+	std::vector<double> material_resistances;
+	/* = {0.01, 0.00001,
 						0.01, 0.00001,
 						0.01, 0.00001,
 						0.01, 0.00001,
 						0.01, 0.00001,
-						0.01};
+						0.01};*/
+	int nb_layers = 100;
+	double delta = 1.0/nb_layers;
+	std::uniform_real_distribution layer_disp(0.0, delta);
+	std::uniform_real_distribution layer_solid(0.0, 1.0);
+	for(int i = 0; i < nb_layers; ++i)
+	{
+		material_layers_top.push_back(i*delta+layer_disp(gen));
+		if(i%2 == 0){
+			material_resistances.push_back(0.005 + 0.01*layer_solid(gen));
+		}else{
+			material_resistances.push_back(0.00001 + 0.001*layer_solid(gen));
+		}
+	}
 
 	// rescaling layers to the whole height range
 	const double bottom_height = sf.get_min();
@@ -135,9 +150,9 @@ int main()
 	}
 
 	const int erosion_transport_iterations = 101;
-	const int save_period = 10;
+	const int save_period = 5;
 	for(int istep = 0; istep != erosion_transport_iterations; ++istep){
-		std::cout << "iteration " << istep + 1 << "...";
+		std::cout << "iteration " << istep + 1 << "..." << std::endl;
 		std::string folder_name = "ErosionTransport" + std::to_string(istep);
 		std::string sys_cmd = "mkdir " + folder_name;
 		if(istep % save_period == 0){

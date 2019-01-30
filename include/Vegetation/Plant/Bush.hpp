@@ -3,6 +3,10 @@
 #include <MultiLayerMap.hpp>
 #include <Vegetation/VegetationLayerMap.hpp>
 
+/** \addtogroup Vegetation
+ * @{
+ */
+
 SimpleLayerMap bush_density(const BiomeInfo& bi);
 
 class Bush : public Plant
@@ -15,3 +19,6 @@ public:
 	virtual bool is_dead() const;
 	virtual void update(std::mt19937& gen, std::uniform_real_distribution<>& rdis, VegetationLayerMap& distribution, const int i, const int j);
 };
+
+
+/** @}*/

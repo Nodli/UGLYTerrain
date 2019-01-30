@@ -4,6 +4,10 @@
 
 #include <vector>
 
+/** \addtogroup Vegetation
+ * @{
+ */
+
 class VegetationLayerMap : public Grid2d
 {
 public:
@@ -82,3 +86,6 @@ public:
 private:
 	std::vector<std::vector<Plant*>> _cells;
 };
+
+
+/** @}*/

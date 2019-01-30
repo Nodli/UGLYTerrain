@@ -2,6 +2,9 @@
 #include <SimpleLayerMap.hpp>
 #include <Weather/Biome.hpp>
 #include <iostream>
+/** \addtogroup Vegetation
+ * @{
+ */
 class VegetationLayerMap;
 
 class Plant
@@ -47,3 +50,5 @@ public:
 	double _health;
 	const SimpleLayerMap* _density;
 };
+
+/** @}*/
