@@ -3,7 +3,9 @@
 #include <MultiLayerMap.hpp>
 #include <Weather/Hydro.hpp>
 
-void Weather_info(const MultiLayerMap& m, const int i, const int j, double& temp, double& hum, double& water, double& lux);
+/** \addtogroup Biomes
+ * @{
+ */
 
 struct BiomeInfo
 {
@@ -32,3 +34,5 @@ SimpleLayerMap get_light_exposure(const DoubleField& df, const int nb_steps = 20
  * @param mlm 					the source multilayermap
  */
 void save_colorized(const MultiLayerMap& mlm);
+
+/** @}*/

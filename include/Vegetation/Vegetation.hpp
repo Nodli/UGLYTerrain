@@ -5,6 +5,11 @@
 #include <Vegetation/VegetationLayerMap.hpp>
 #include <Vegetation/MountainFlore.hpp>
 
+/**
+ * @brief generate a basic distribution of species
+ * 
+ * @param mlm       the input terrain for the simulation
+ */
 void generate_distribution(const MultiLayerMap& m);
 
 /**

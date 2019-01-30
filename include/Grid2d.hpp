@@ -171,8 +171,6 @@ public:
 	Grid2d& operator=(Grid2d&& g);
 
 protected:
-
-protected:
 	/**
 	 * @brief Gets the index on the array of values for a given position
 	 *
