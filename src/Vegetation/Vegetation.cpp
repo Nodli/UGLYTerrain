@@ -111,8 +111,9 @@ void generate_distribution(const MultiLayerMap& m)
 
 void save_simulation(VegetationLayerMap& distribution, const MultiLayerMap& mlm, int iter, std::mt19937& gen)
 {
-	std::string filename = "simulation_" + std::to_string(iter / 10) + ".ppm";
+	std::string filename = "Simu/simulation_" + std::to_string(iter / 10) + ".ppm";
 	std::uniform_real_distribution<> rdis(0, 0.05);
+	std::uniform_int_distribution<> noise(0,15);
 	std::ofstream output(filename, std::ofstream::out);
 	filename = "Data_Simu_7/simulation_grass_" + std::to_string(iter / 10) + ".data";
 	std::ofstream output_grass(filename, std::ofstream::out);
@@ -134,6 +135,7 @@ void save_simulation(VegetationLayerMap& distribution, const MultiLayerMap& mlm,
 		for(int i = 0; i < distribution.grid_width(); ++i)
 		{
 			int size = distribution.at(i, j).size();
+			int r, g, b;
 			if(size != 0){
 				int nb_h_grass = distribution.count_ID_at(i, j, 0);
 				double force_h_grass = (double)nb_h_grass/10;
@@ -150,10 +152,10 @@ void save_simulation(VegetationLayerMap& distribution, const MultiLayerMap& mlm,
 				int nb_grass2 =  distribution.count_ID_at(i, j, 4);
 				double force_grass2 = (double)nb_grass2/10;
 				double prop_grass2 = force_grass2*(double)nb_grass2/size;
-				int r = 76  * prop_h_grass + 236 * prop_bush + 8   * prop_tree + 165 * prop_grass1 + 202 * prop_grass2;
-				int g = 119 * prop_h_grass + 174 * prop_bush + 78  * prop_tree + 208 * prop_grass1 + 178 * prop_grass2;
-				int b = 38  * prop_h_grass + 93  * prop_bush + 0   * prop_tree + 24  * prop_grass1 + 21  * prop_grass2;
-				output << r<< " " << g<< " " <<	b<< " ";
+				r = 76  * prop_h_grass + 236 * prop_bush + 8   * prop_tree + 165 * prop_grass1 + 202 * prop_grass2;
+				g = 119 * prop_h_grass + 174 * prop_bush + 78  * prop_tree + 208 * prop_grass1 + 178 * prop_grass2;
+				b = 38  * prop_h_grass + 93  * prop_bush + 0   * prop_tree + 24  * prop_grass1 + 21  * prop_grass2;
+				//output << r<< " " << g<< " " <<	b<< " ";
 				if(nb_h_grass != 0)
 				{
 					Eigen::Vector2d pos = distribution.world_position(i, j);
@@ -182,8 +184,24 @@ void save_simulation(VegetationLayerMap& distribution, const MultiLayerMap& mlm,
 			}
 			else
 			{
-				output << 0 << " " << 0 << " " << 0 << " ";
+				r = 0; g = 0; b = 0;
+				//output << 0 << " " << 0 << " " << 0 << " ";
 			}
+
+			double pr = std::min(1.0, (double)size/6.0);
+			double npr = 1.0-pr;
+
+			int val_noise = noise(gen);
+
+			if(mlm.get_field(1).value(i, j) >= 0.01)
+			{
+				output << (int)(npr*(100+val_noise) + pr*r) << " " << (int)(npr*(55+val_noise) + pr*g) << " " << (int)(npr*(0+val_noise)+pr*b) << " ";
+			}
+			else
+			{
+				output << (int)(npr*(150+val_noise)+pr*r) << " " << (int)(npr*(150+val_noise)+pr*g) << " " << (int)(npr*(150+val_noise)+pr*b) << " ";
+			}
+
 		}
 
 		//std::cout << std::endl;
@@ -222,7 +240,7 @@ void simulate(const MultiLayerMap& mlm)
 	Grass ref_grass3(4, 25, 1, 1.0, &g_density2);
 	Bush ref_bush(1, 100, 30, 1.0, &b_density);
 	Tree ref_tree(2, 200, 50, 1.0, &t_density);
-	int nb_seeds = 50;
+	int nb_seeds = 100;
 
 	for(int i = 0; i < nb_seeds; ++i)
 	{
