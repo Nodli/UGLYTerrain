@@ -16,7 +16,7 @@ These images show real terrain photos that we compare to the result of the layer
 
 
 <img src="./results/jura_photo.jpg" width="470"/> <img src="./results/jura_simu.png" width="390"/> 
-<p align="center"> <b><i>Picture taken in the Jura Mountains, [Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr]</i></b></p>
+<p align="center"> <b>Picture taken in the Jura Mountains, [Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr]</b></p>
 
 
 ## How to compile the code
