@@ -9,13 +9,13 @@ Three people worked on this project: BONIS Thomas, CREVITS François and myself,
 ## Results
 The report and defense PDF files are available in ```results/```.
 
-<img src="./results/swiss_alps_photo.jpg" width="400"/> <img src="./results/swiss_alps_simu.png" width="400"/> 
+<img src="./results/swiss_alps_photo.jpg" width="359"/> <img src="./results/swiss_alps_simu.png" width="500"/> 
 
-<img src="./results/jura_photo.jpg" width="400"/> <img src="./results/jura_simu.png" width="400"/> 
+Picture taken in the Swiss Alps, *[Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]*
 
+<img src="./results/jura_photo.jpg" width="470"/> <img src="./results/jura_simu.png" width="390"/> 
 
-"Picture taken in the Swiss Alps, [Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]"
-"Picture taken in the Jura Mountains, [Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr]"
+Picture taken in the Jura Mountains, *[Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr]*
 
 ## How to compile the code
 Most of the functionnalities are linux only.
