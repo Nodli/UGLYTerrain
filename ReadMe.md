@@ -36,8 +36,8 @@ Code documentation is available to compile using the command :
 ```
 To then open the documentation, open the file __./doc/html/index.html__ in your favourite browser.
 
-# Running the application
-It is possible to run three applications.
-- the unitary tests using : `./build/test`
-- the integrations tests using : `./build/genTerrain`
-- the graphical interface using : `./build/genTerrainGraphique`
+## Running the application
+Three applications are built:
+- `./build/test` runs all unitary tests
+- `./build/genTerrain` runs integration tests
+- `./build/genTerrainGraphique` runs the graphics interface
