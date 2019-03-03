@@ -12,7 +12,7 @@ The [report](./results/report.pdf) and [defense](./results/defense.pdf) PDF file
 These images show real terrain photos that we compare to the result of the layer-based thermal erosion model on a randomly generated initial terrain.
 
 <img src="./results/swiss_alps_photo.jpg" width="359"/> <img src="./results/swiss_alps_simu.png" width="500"/> 
-<p align="center"> <i>Picture taken in the Swiss Alps, [Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]</i></p>
+<p align="center"> <b>Picture taken in the Swiss Alps, [Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]</b></p>
 
 
 <img src="./results/jura_photo.jpg" width="470"/> <img src="./results/jura_simu.png" width="390"/> 
