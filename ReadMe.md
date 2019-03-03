@@ -12,11 +12,11 @@ The [report](./results/report.pdf) and [defense](./results/defense.pdf) PDF file
 These images show the result of the layer-based thermal erosion model on a randomly generated initial terrain. We compare them to real terrain photos.
 
 <img src="./results/swiss_alps_photo.jpg" width="359"/> <img src="./results/swiss_alps_simu.png" width="500"/> 
-<p align="center"> Picture taken in the Swiss Alps, *[Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]* </p>
+<p align="center"> Picture taken in the Swiss Alps, <i>[Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]</i></p>
 
 
 <img src="./results/jura_photo.jpg" width="470"/> <img src="./results/jura_simu.png" width="390"/> 
-<p align="center"> Picture taken in the Jura Mountains, *[Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr]* </p>
+<p align="center"> Picture taken in the Jura Mountains, <i>Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr</i></p>
 
 
 ## How to compile the code
