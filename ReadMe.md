@@ -7,15 +7,17 @@ The application generates a terrain using a Perlin Noise on which we apply therm
 Three people worked on this project: BONIS Thomas, CREVITS François and myself, Hugo RAMBURE. My principal contribution to this project is the modeling of the thermal erosion of terrains. A layer-based erosion model was implemented during the final iteration to show that the terrain topography is dependent on the underground geological structures.
 
 ## Results
-The report and defense PDF files are available in ```results/```.
+The [report](./results/report.pdf) and [defense](./results/defense.pdf) PDF files are available in the ```results/``` folder.
+
+These images show the result of the layer-based thermal erosion model on a randomly generated initial terrain. We compare them to real terrain photos.
 
 <img src="./results/swiss_alps_photo.jpg" width="359"/> <img src="./results/swiss_alps_simu.png" width="500"/> 
+<p align="center"> Picture taken in the Swiss Alps, *[Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]* </p>
 
-Picture taken in the Swiss Alps, *[Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]*
 
 <img src="./results/jura_photo.jpg" width="470"/> <img src="./results/jura_simu.png" width="390"/> 
+<p align="center"> Picture taken in the Jura Mountains, *[Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr]* </p>
 
-Picture taken in the Jura Mountains, *[Laboratoire de Geosciences de Lyon / ENS Lyon, Pierre Thomas, planet-terre.ens-lyon.fr]*
 
 ## How to compile the code
 Most of the functionnalities are linux only.
