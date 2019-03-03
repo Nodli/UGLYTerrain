@@ -20,8 +20,7 @@ These images show the result of the layer-based thermal erosion model on a rando
 
 
 ## How to compile the code
-Most of the functionnalities are linux only.
-In order to build the projet run the following commands:
+The application is Linux only but runs on the Linux Bash Shell for Windows. The project is built using the following commands:
 ```shell
     mkdir build
     cd build
@@ -30,11 +29,11 @@ In order to build the projet run the following commands:
 ```
 
 ## Documentation
-Code documentation is available to compile using the command :
+The documentation uses the Doxygen format and can be compiled using the command:
 ```shell
     doxygen docTerraGen
 ```
-To then open the documentation, open the file __./doc/html/index.html__ in your favourite browser.
+The documentation file __./doc/html/index.html__ can be opened with your favorite browser
 
 ## Running the application
 Three applications are built:
