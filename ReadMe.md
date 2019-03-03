@@ -9,7 +9,7 @@ Three people worked on this project: **BONIS Thomas**, **CREVITS François** and
 ## Results
 The [report](./results/report.pdf) and [defense](./results/defense.pdf) PDF files are available in the ```results/``` folder.
 
-These images show the result of the layer-based thermal erosion model on a randomly generated initial terrain. We compare them to real terrain photos.
+These images show real terrain photos that we compare to the result of the layer-based thermal erosion model on a randomly generated initial terrain.
 
 <img src="./results/swiss_alps_photo.jpg" width="359"/> <img src="./results/swiss_alps_simu.png" width="500"/> 
 <p align="center"> Picture taken in the Swiss Alps, <i>[Geosciences Montpellier, J. Malavieille, insu.cnrs.fr]</i></p>
