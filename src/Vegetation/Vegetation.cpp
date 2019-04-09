@@ -4,6 +4,7 @@
 
 void generate_distribution(const MultiLayerMap& m)
 {
+
 	BiomeInfo bi(m);
 	int maxVal = 255;
 	SimpleLayerMap distrib(static_cast<Grid2d>(m));

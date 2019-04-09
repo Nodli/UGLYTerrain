@@ -21,6 +21,7 @@ void test_thermal_erosion_transport_stair(unsigned int iterations = 101, unsigne
 
 	mlm.get_field(0).export_as_obj("InitialTerrain.obj");
 
+
 	for(int istep = 0; istep != iterations; ++istep){
 		std::string folder_name = "ErosionTransport" + std::to_string(istep);
 		std::string sys_cmd = "mkdir " + folder_name;
@@ -132,7 +133,7 @@ int main()
 	// 					0.01};
 	// */
 
-	// std::vector<double> material_layers_top; 
+	// std::vector<double> material_layers_top;
 	// /*{0.09, 0.11,
 	// 					0.29, 0.31,
 	// 					0.39, 0.41,
