@@ -4,7 +4,7 @@ This is a C++ project done for the "Modeling for Video Games" subject during my 
 
 The application generates a terrain using a Perlin Noise, on which we apply thermal and hydraulic erosion models. The terrain is then populated with fictive vegetal species depending on their needs and the local terrain parameters such as humidity and light exposure.
 
-Three people worked on this project: **BONIS Thomas**, **CREVITS François** and myself, **Hugo RAMBURE**. My main contribution to this project is the modeling of the thermal erosion of terrains. A layer-based erosion model was implemented during the final iteration to show that the terrain topography is dependent on the underground geological structures.
+Three people worked on this project: [**BONIS Thomas**](https://github.com/Tomtomgome), **CREVITS François** and myself, **Hugo RAMBURE**. My main contribution to this project is the modeling of the thermal erosion of terrains. A layer-based erosion model was implemented during the final iteration to show that the terrain topography is dependent on the underground geological structures.
 
 ## Results
 The [report](./results/report.pdf) and [defense](./results/defense.pdf) PDF files are available in the ```results/``` folder.
